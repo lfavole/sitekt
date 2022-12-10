@@ -1,0 +1,7 @@
+{% extends "page_base.html" %}
+{% load markdown %}
+
+{% block content %}
+<h1>{{ article.title }}</h1>
+{{ article.content | markdown }}
+{% endblock %}

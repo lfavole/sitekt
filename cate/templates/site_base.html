@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load nav %}
+
+{% block body %}
+<header>
+<div class="titre">{% block title-header %}{% endblock %}</div>
+</header>
+<nav>
+<div class="menu">
+{{ pages | nav }}
+</div>
+</nav>
+<main>
+{% block content %}{% endblock %}
+</main>
+{% endblock %}

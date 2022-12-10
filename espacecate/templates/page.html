@@ -1,0 +1,6 @@
+{% extends "page_base.html" %}
+{% load markdown %}
+
+{% block content %}
+{{ page.content | markdown }}
+{% endblock %}

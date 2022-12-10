@@ -1,0 +1,12 @@
+{% extends "page_base.html" %}
+
+{% block content %}
+<h1>Documents téléchargeables</h1>
+{% if docs %}
+<ul>{% for doc in docs %}
+<li><a href="{{ doc.file }}" target="_blank">{{ doc.title }}</a></li>{% endfor %}
+</ul>
+{% else %}
+<p>Aucun document téléchargeable</p>
+{% endif %}
+{% endblock %}

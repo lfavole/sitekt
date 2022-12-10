@@ -1,0 +1,5 @@
+db.sqlite3
+my.cnf
+**/__pycache__/**
+static/**
+media/**

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Site du caté{% endblock %}
+
+{% block body %}
+<main>
+<h1>Bienvenue sur le site du caté !</h1>
+<ul>
+	<li><a href="{% url "espacecate:page" "index" %}">Espace caté</a></li>
+	<li><a href="aumonerie/">Aumônerie</a></li>
+</ul>
+</main>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "page_base.html" %}
+
+{% block content %}
+<h1>Articles</h1>
+{% if articles %}
+<ul>{% for article in articles %}
+<li><a href="{% url "articles" article.slug %}">{{ article.title }}</a></li>{% endfor %}
+</ul>
+{% else %}
+<p>Aucun article</p>
+{% endif %}
+{% endblock %}
