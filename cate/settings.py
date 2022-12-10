@@ -26,8 +26,15 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "+jt!%+%erdp^y7h37v#68x31+u9ut6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "") == "True"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.43.206", "lfavole.pythonanywhere.com", "cate.pythonanywhere.com"]
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CONN_MAX_AGE = 600
+    ALLOWED_HOSTS = [os.environ.get("DJANGO_HOST", "")]
+else:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.43.206"]
 
+PYTHONANYWHERE = "pythonanywhere" in os.environ.get("DJANGO_HOST", "")
 
 # Application definition
 
@@ -84,11 +91,15 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
-} if not (BASE_DIR / "my.cnf").exists() else {
+} if not PYTHONANYWHERE else {
     "default": {
         "ENGINE": "django.db.backends.mysql",
+        "NAME": os.environ.get("DJANGO_MYSQL_NAME", ""),
+        "USER": os.environ.get("DJANGO_MYSQL_USER", ""),
+        "PASSWORD": os.environ.get("DJANGO_MYSQL_PASSWORD", ""),
+        "HOST": os.environ.get("DJANGO_MYSQL_HOST", ""),
         "OPTIONS": {
-            "read_default_file": str(BASE_DIR / "my.cnf"),
+            "init_command": 'SET sql_mode="STRICT_TRANS_TABLES"',
         },
     }
 }
