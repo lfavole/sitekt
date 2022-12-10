@@ -1,0 +1,182 @@
+form.plein-ecran {
+	background-color:white;
+	padding:0.5em;
+}
+form.plein-ecran, form.plein-ecran input, form.plein-ecran button {
+	font-size:32px;
+}
+main:not(.chargement) p {
+	text-align:justify;
+}
+
+.btns .question {
+	float:right;
+	position:relative;
+	width:150px;
+	text-align:center;
+}
+.btns .question .prog {
+	position:absolute;
+	left:0px;
+	bottom:-4px;
+	width:0%;
+	height:4px;
+	background-color:#01579b;
+	transition:width .4s;
+}
+.barre {
+	position:relative;
+	background-color:#80deea;
+	height:5px;
+	margin:calc(1em + 16px) auto calc(1em + 50px) auto;
+	width:90%;
+}
+form.plein-ecran .barre {
+	height:10px;
+	margin:calc(1em + 32px) auto calc(1em + 100px) auto;
+}
+.barre div {
+	position:absolute;
+	left:0%;
+	top:20px;
+	transform:translateX(-50%);
+	font-size:1.5em;
+	text-align:center;
+	white-space:nowrap;
+	transition:color .4s;
+}
+form.plein-ecran .barre div {
+	font-size:1em;
+	top:40px;
+}
+.barre div.rouge {
+	color:red;
+}
+fieldset {
+	border:2px solid black;
+	padding:8px;
+	transition:border-color .4s;
+}
+fieldset.rouge {
+	border-color:red;
+}
+.barre div::before {
+	content:"";
+	position:absolute;
+	width:4px;
+	height:20px;
+	background-color:#01579b;
+	left:50%;
+	transform:translateX(-50%);
+	top:-20px;
+}
+form.plein-ecran .barre div::before {
+	width:8px;
+	height:40px;
+	top:-40px;
+}
+.barre div.curseur {
+	position:absolute;
+	left:0px;
+	top:0px;
+	bottom:0px;
+	width:0%;
+	height:100%;
+	background-color:#01579b;
+	transform:unset;
+	transition:width .4s ease-in-out;
+}
+form.plein-ecran .barre div.curseur {
+	top:0px;
+}
+.barre div.curseur::before {
+	position:absolute;
+	border:10px solid transparent;
+	border-top-color:black;
+	background-color:unset;
+	left:unset;
+	right:0px;
+	top:-16px;
+	transform:translateX(50%);
+}
+form.plein-ecran .barre div.curseur::before{
+	border-width:20px;
+}
+form.plein-ecran fieldset:first-of-type p {
+	flex-wrap:wrap;
+	width:100%;
+}
+form.plein-ecran fieldset:first-of-type p label {
+	width:100%;
+	text-align:center;
+	margin-bottom:0.2em;
+}
+form.plein-ecran fieldset:first-of-type p input {
+	text-align:center;
+	flex:0 0 80%;
+	margin:0px auto;
+	height:2em;
+	border-radius:2em;
+	border-width:4px;
+}
+ul.reponse {
+	list-style-type:none;
+	padding-left:1.875em;
+	line-height:1.25em;
+}
+form.plein-ecran ul.reponse li {
+	display:flex;
+	align-items:center;
+}
+form.plein-ecran input[type=radio], form.plein-ecran input[type=checkbox] {
+	width:1em;
+	height:1em;
+	margin:0px 0.3em 0px 0px;
+}
+form.plein-ecran label {
+	width:calc(100% - 1em);
+}
+ul.reponse input:disabled {
+	filter:none;
+}
+select[multiple] {
+	padding:1px 2px;
+	margin:0px 0.3em;
+	vertical-align:middle;
+}
+
+
+ul.reponse.juste, ul.reponse.faux, ul.reponse.aucune-reponse {
+	padding:5px 0px 5px 10px;
+	border-left:5px solid;
+	margin:10px 0px 10px 20px;
+}
+ul.reponse.juste {
+	border-color:#64dd17;
+}
+ul.reponse.faux {
+	border-color:#ff5722;
+}
+ul.reponse.aucune-reponse {
+	border-color:#2196f3;
+}
+
+input.vvrai:checked::before, input.vvrai:checked::after {
+	background-color:#008000;
+}
+input.vrai:checked::before, input.vrai:checked::after {
+	background-color:#00cc00;
+}
+input.faux:checked::before input.faux:checked::after {
+	background-color:#aa0000;
+}
+
+.r-select.r-success {
+	background-color:#8f8;
+}
+.r-select.r-error {
+	background-color:#f88;
+}
+.r-select.r-info {
+	background-color:#88f;
+}
