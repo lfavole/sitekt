@@ -1,19 +1,18 @@
 # Source code for article:
 # https://hakibenita.com/django-markdown
 
-from typing import Optional
 import re
-import markdown as md
-from markdown.inlinepatterns import LinkInlineProcessor, LINK_RE
+from typing import Optional
 from urllib.parse import urlparse
 
-from django import template
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
+from django import template
 from django.template.defaultfilters import stringfilter
-from django.urls import reverse, resolve, Resolver404, NoReverseMatch
+from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.safestring import mark_safe
-
+import markdown as md
+from markdown.inlinepatterns import LINK_RE, LinkInlineProcessor
 
 class Error(Exception):
     pass
