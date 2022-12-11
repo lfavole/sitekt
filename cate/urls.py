@@ -28,6 +28,8 @@ urlpatterns = [
     add_website("espacecate"),
     # add_website("aumonerie"),
     path("", views.home),
-    *static(settings.STATIC_URL, document_root = settings.STATIC_ROOT or ""),
-    *static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT or ""),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT or "")
+    urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT or "")
