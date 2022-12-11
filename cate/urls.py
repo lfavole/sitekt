@@ -28,7 +28,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     add_website("espacecate"),
     # add_website("aumonerie"),
-    path("", views.home),
+    path("", views.home, name = "home"),
 ]
 
 if settings.DEBUG:
