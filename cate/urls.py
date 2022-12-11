@@ -24,6 +24,7 @@ def add_website(name):
     return path(name + "/", include(name + ".urls", namespace = name))
 
 urlpatterns = [
+    path("admin/docs/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
     add_website("espacecate"),
     # add_website("aumonerie"),
