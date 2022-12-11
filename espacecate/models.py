@@ -4,6 +4,12 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from uservisit.models import UserVisit, UserVisitManager
+
+class EspacecateUserVisit(UserVisit):
+	objects = UserVisitManager()
+
+EspacecateUserVisit.objects.klass = EspacecateUserVisit
 
 class PageBase(models.Model):
 	slug = models.fields.SlugField("ID", max_length = 100, editable = False, primary_key = True)
@@ -15,7 +21,7 @@ class PageBase(models.Model):
 		abstract = True
 
 	def _generate_slug(self):
-		max_length = self._meta.get_field("slug").max_length
+		max_length = self._meta.get_field("slug").max_length # type: ignore
 		value = self.title
 		slug_candidate = slug_original = slugify(value, allow_unicode = False)
 		i = 0

@@ -44,6 +44,7 @@ PYTHONANYWHERE = "pythonanywhere" in os.environ.get("DJANGO_HOST", "")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
+    "django.contrib.admindocs",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "adminsortable2",
     "cate",
+    "uservisit",
     "espacecate",
     # "aumonerie",
 ]
@@ -63,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "uservisit.middleware.UserVisitMiddleware",
 ]
 
 ROOT_URLCONF = "cate.urls"

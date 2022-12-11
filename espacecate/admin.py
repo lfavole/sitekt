@@ -2,8 +2,13 @@ from adminsortable2.admin import SortableAdminMixin
 from cate.widgets import MarkdownEditor
 from django.contrib import admin
 from django import forms
+from uservisit.admin import UserVisitAdmin
 
-from .models import Article, Document, Enfant, Page
+from .models import Article, Document, Enfant, EspacecateUserVisit, Page
+
+@admin.register(EspacecateUserVisit)
+class EspacecateUserVisitAdmin(UserVisitAdmin):
+	pass
 
 class PageAdminForm(forms.ModelForm):
 	model = Page
