@@ -96,10 +96,10 @@ class Enfant(models.Model):
 
 	ecole = models.fields.CharField("École", choices = ECOLES, max_length = 15)
 	classe = models.fields.CharField("Classe", choices = CLASSES, max_length = 5)
-	redoublement = models.fields.BooleanField("Redoublement") # TODO: translate
+	redoublement = models.fields.BooleanField("Redoublement")
 
-	annees_evf = models.fields.IntegerField("Années d'éveil à la foi", validators = [MinValueValidator(0), MaxValueValidator(10000)]) # FIXME
-	annees_kt = models.fields.IntegerField("Années de caté", validators = [MinValueValidator(0), MaxValueValidator(10000)]) # FIXME
+	annees_evf = models.fields.IntegerField("Années d'éveil à la foi", validators = [MinValueValidator(0), MaxValueValidator(4)])
+	annees_kt = models.fields.IntegerField("Années de caté", validators = [MinValueValidator(0), MaxValueValidator(3)])
 
 	bapteme = models.fields.BooleanField("Baptême")
 	date_bapteme = models.fields.DateField("Date du baptême")
