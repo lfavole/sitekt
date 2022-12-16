@@ -1,20 +1,25 @@
 import os
+from pathlib import Path
 import sys
 
-PYTHONANYWHERE = os.environ.get("PYTHONANYWHERE_SITE", "") != ""
+sys.path.insert(0, str(Path(__file__).parent))
+from common import PYTHONANYWHERE, run
+import settings
 
 if not PYTHONANYWHERE:
 	sys.exit()
 
 USERNAME = os.environ.get("USERNAME", "")
 
-FOLDER = "/home/" + USERNAME + "/django-cate/cate"
+FOLDER = Path(__file__).parent / settings.APP_NAME
 if not os.path.exists(FOLDER):
-    os.makedirs(FOLDER)
+    os.makedirs(FOLDER, exist_ok = True)
 os.chdir(FOLDER)
 
-os.system("git init")
-os.system("git pull https://github.com/lfavole/django-cate.git")
-os.system("python manage.py migrate")
-os.system("python manage.py collectstatic --no-input")
+manage_py_args = [sys.executable, str(Path(__file__).parent.parent / "cate/manage.py")]
+
+run("git init")
+run(["git", "pull", settings.GITHUB_REPO + ".git", "main"])
+run([*manage_py_args, "migrate"])
+run([*manage_py_args, "migrate"])
 print("OK")

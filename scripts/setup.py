@@ -1,59 +1,85 @@
+import getpass
 import importlib
-import os
 from pathlib import Path
-import shlex
 import sys
 
-PYTHONANYWHERE = os.environ.get("PYTHONANYWHERE_SITE", "") != ""
+from dotenv import set_key
 
-if not PYTHONANYWHERE:
-	sys.exit()
+sys.path.insert(0, str(Path(__file__).parent))
+from common import PYTHONANYWHERE, cprint, run
+import settings
 
-USERNAME = os.environ.get("USERNAME", "")
+def main():
+	cprint("Configuration du site du caté Django", "blue")
+	print()
 
-def install(package: str, module_name: str | None = None):
-	if not module_name:
-		module_name = package.lower()
+	if not PYTHONANYWHERE:
+		cprint("You're not on a PythonAnywhere server: setup stopped", "red")
+		sys.exit()
 
-	try:
-		importlib.import_module(module_name)
-	except ImportError:
-		print("Installation de " + package + "...")
-		os.system("pip install " + shlex.quote(package))
-		if os.system("python -c " + shlex.quote("import " + module_name)) != 0:
-			print("Impossible d'importer " + package + " (import " + module_name + ") après son installation")
+	def install(package: str, module_name: str):
+		"""
+		Install a package with `pip`. `package` is the pip package name and `module_name` is the module name to import.
+		"""
+		if not module_name:
+			module_name = package.lower()
+
+		try:
+			importlib.import_module(module_name)
+		except ImportError:
+			print("Installing " + package + "...")
+			run([sys.executable, "-m", "pip", "install", package])
+			print("Checking installation...")
+			if run([sys.executable, "-c", "import " + package]).returncode != 0:
+				print("Can't import " + package + "(import " + module_name + ")")
+			else:
+				print(package + " installed")
 		else:
-			print(package + " installé")
-	else:
-		print(package + " déjà installé")
+			print(package + " already installed")
+		print()
 
-install("Django")
-install("django-admin-sortable2", "adminsortable2")
-install("python-dotenv", "dotenv")
+	print("Installing modules (if they are not already installed)")
 
-HOST = USERNAME + ".pythonanywhere.com"
-APP_NAME = "cate"
-FOLDER = str(Path(__file__).resolve().parent / APP_NAME)
+	install("Django", "django")
+	install("django-admin-sortable2", "adminsortable2")
+	install("python-dotenv", "dotenv")
 
-with open("/var/www/" + HOST.replace(".", "_") + "_wsgi.py", "w") as f:
-	f.write(f"""\
-import sys
-sys.path.insert(0, {repr(FOLDER)})
+	if PYTHONANYWHERE:
+		USERNAME = getpass.getuser()
+		PREFIX = settings.APP_NAME.upper()
 
-from {APP_NAME}.wsgi import application
-""")
+		if settings.HOST is None:
+			if PYTHONANYWHERE:
+				settings.HOST = USERNAME + ".pythonanywhere.com"
+			else:
+				cprint("The host setting is required when we're not on a PythonAnywhere server.", "red")
+				sys.exit()
 
-with open(FOLDER + "/.env", "w") as f:
-	def export_env_var(name, value):
-		# os.system(f"export {name}=" + shlex.quote(value))
-		f.write(name + "=" + value + "\n")
+		FOLDER = Path(__file__).resolve().parent / settings.APP_NAME
 
-	export_env_var("DJANGO_HOST", HOST)
-	export_env_var("DJANGO_SECRET_KEY", "jw0dfaz&#eybk^@d#y%(xdr23+f$q3gri4d3djea4ou2fc%l=&")
+		with open("/var/www/" + settings.HOST.replace(".", "_").lower().strip() + "_wsgi.py", "w") as f:
+			f.write(f"""\
+		import sys
+		sys.path.insert(0, {repr(str(FOLDER))})
 
-	export_env_var("DJANGO_MYSQL_NAME", USERNAME + "$django")
-	export_env_var("DJANGO_MYSQL_USER", USERNAME)
-	export_env_var("DJANGO_MYSQL_PASSWORD", "PyMySQL#05200")
-	export_env_var("DJANGO_MYSQL_HOST", USERNAME + ".mysql.pythonanywhere-services.com")
+		from {settings.APP_NAME}.wsgi import application
+		""")
 
-print("OK")
+		env_file = FOLDER / ".env"
+		def export_env_var(name, value):
+			if "\\" in value:
+				print("Antislash \\ detected in the " + name + " variable; there can be problems when loading this variable")
+			set_key(env_file, PREFIX + "_" + name, value)
+
+		export_env_var("HOST", settings.HOST)
+		export_env_var("SECRET_KEY", settings.SECRET_KEY)
+
+		export_env_var("MYSQL_NAME", USERNAME + "$" + settings.DB_NAME)
+		export_env_var("MYSQL_USER", USERNAME)
+		export_env_var("MYSQL_PASSWORD", settings.DB_PASSWORD)
+		export_env_var("MYSQL_HOST", USERNAME + ".mysql.pythonanywhere-services.com")
+
+	print("OK")
+
+if __name__ == "__main__":
+	main()
