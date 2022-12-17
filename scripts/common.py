@@ -20,15 +20,14 @@ def is_sensitive(key_name: str):
 
 	return False
 
-def run(args: list[str] | str, pipe = False):
+def run(args: list[str] | str, pipe = False, **kwargs):
 	"""
 	Run the command specified by args and show
 	"""
 	if isinstance(args, str):
 		args = shlex.split(args)
-	kwargs = {}
 	if pipe:
-		kwargs = {"stdin": sp.PIPE, "stdout": sp.PIPE, "stderr": sp.PIPE}
+		kwargs = {**kwargs, "stdin": sp.PIPE, "stdout": sp.PIPE, "stderr": sp.PIPE}
 	if not pipe:
 		print()
 		print("--- Command: " + " ".join(shlex.quote(arg) for arg in args) + "---")
