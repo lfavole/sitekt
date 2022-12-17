@@ -1,3 +1,4 @@
+import argparse
 import getpass
 import importlib
 from pathlib import Path
@@ -8,8 +9,21 @@ from common import PYTHONANYWHERE, cprint, run
 import settings
 
 def main():
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
+	args = parser.parse_args()
+	interactive: bool = args.interactive
+
 	cprint("Configuration du site du caté Django", "blue")
 	print()
+
+	if not (Path(__file__).resolve().parent / "settings.py").exists():
+		cprint("The settings.py file doesn't exist: " + ("creating it" if interactive else "setup stopped"), "red")
+		if not interactive:
+			sys.exit()
+		else:
+			from create_settings import create_settings_file
+			create_settings_file()
 
 	if not PYTHONANYWHERE:
 		cprint("You're not on a PythonAnywhere server: setup stopped", "red")
@@ -50,26 +64,22 @@ def main():
 			if PYTHONANYWHERE:
 				settings.HOST = USERNAME + ".pythonanywhere.com"
 			else:
-				cprint("The host setting is required when we're not on a PythonAnywhere server.", "red")
+				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
 				sys.exit()
 
-		FOLDER = Path(__file__).resolve().parent / settings.APP_NAME
+		BASE_FOLDER = Path(__file__).resolve().parent / settings.APP_NAME
 
-		with open(FOLDER / ".env", "w") as f:
-			def export_env_var(name, value):
-				if "\\" in value:
-					print("Antislash \\ detected in the " + name + " variable; there can be problems when loading this variable")
-				f.write("export " + PREFIX + "_" + name + "=" + repr(value))
+		wsgi_file = "/var/www/" + settings.HOST.replace(".", "_").lower().strip() + "_wsgi.py"
+		print("Creating WSGI file " + wsgi_file)
+		with open(wsgi_file, "w") as f:
+			f.write(f"""\
+import sys
+sys.path.insert(0, {repr(str(BASE_FOLDER))})
 
-			export_env_var("HOST", settings.HOST)
-			export_env_var("SECRET_KEY", settings.SECRET_KEY)
+from {settings.APP_NAME}.wsgi import application
+""")
 
-			export_env_var("MYSQL_NAME", USERNAME + "$" + settings.DB_NAME)
-			export_env_var("MYSQL_USER", USERNAME)
-			export_env_var("MYSQL_PASSWORD", settings.DB_PASSWORD)
-			export_env_var("MYSQL_HOST", USERNAME + ".mysql.pythonanywhere-services.com")
-
-	print("OK")
+	cprint("OK", "green")
 
 if __name__ == "__main__":
 	main()
