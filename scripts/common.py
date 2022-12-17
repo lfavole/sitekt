@@ -51,9 +51,12 @@ def colored(text: str, color: str | None = None, on_color: str | None = None, at
 	Available attributes : bold, dark, underline, blink, reverse, concealed, strike
 
 	Examples :
-		colored("Hello world!", "red", "grey", ["blue", "blink"])
+		colored("Hello world!", "red", "grey", ["bold", "blink"])
 		colored("Hello world!", "green")
 	"""
+	if os.environ.get("COLORED") == "0":
+		return text
+
 	def get_color_code(color: str, background = False):
 		color = color.lower()
 		color_id = 3 # normal (dark) colors = 3x
