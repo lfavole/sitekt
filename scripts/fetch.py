@@ -1,15 +1,13 @@
+import getpass
 import os
 from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, run
+from common import PYTHONANYWHERE, cprint, run
 import settings
 
-if not PYTHONANYWHERE:
-	sys.exit()
-
-USERNAME = os.environ.get("USERNAME", "")
+USERNAME = getpass.getuser()
 
 FOLDER = Path(__file__).parent / settings.APP_NAME
 if not os.path.exists(FOLDER):
@@ -18,8 +16,22 @@ os.chdir(FOLDER)
 
 manage_py_args = [sys.executable, str(Path(__file__).parent.parent / "cate/manage.py")]
 
-run("git init")
-run(["git", "pull", settings.GITHUB_REPO + ".git", "main"])
-run([*manage_py_args, "migrate"])
-run([*manage_py_args, "migrate"])
-print("OK")
+def run_with_explanation(cmd: str | list[str], expl: str):
+	print(expl[0].upper() + expl[1:])
+	if run(cmd, cwd = FOLDER).returncode != 0:
+		cprint("Error while " + expl, "red")
+
+def fetch():
+	cprint("Fetching script", "blue")
+	print()
+
+	run_with_explanation("git init", "creating git repo")
+	run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git", "main"], "fetching changes")
+
+	run_with_explanation([*manage_py_args, "migrate"], "migrating database")
+	run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "collecting static files")
+
+	cprint("OK", "green")
+
+if __name__ == "__main__":
+	fetch()
