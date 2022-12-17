@@ -41,7 +41,11 @@ class UserVisitMiddleware:
 
 		request.session.save()
 
+		if not request.resolver_match:
+			return resp
 		app_name = request.resolver_match.app_name
+		if not app_name:
+			return resp
 		model_name = app_name[0].upper() + app_name[1:].lower()
 		try:
 			models = importlib.import_module(f"{app_name}.models")

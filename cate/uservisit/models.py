@@ -1,6 +1,5 @@
 import datetime
 import hashlib
-from tkinter import N
 from typing import Any, Type
 import uuid
 
