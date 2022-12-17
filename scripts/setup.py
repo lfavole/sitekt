@@ -3,8 +3,6 @@ import importlib
 from pathlib import Path
 import sys
 
-from dotenv import set_key
-
 sys.path.insert(0, str(Path(__file__).parent))
 from common import PYTHONANYWHERE, cprint, run
 import settings
@@ -57,27 +55,19 @@ def main():
 
 		FOLDER = Path(__file__).resolve().parent / settings.APP_NAME
 
-		with open("/var/www/" + settings.HOST.replace(".", "_").lower().strip() + "_wsgi.py", "w") as f:
-			f.write(f"""\
-		import sys
-		sys.path.insert(0, {repr(str(FOLDER))})
+		with open(FOLDER / ".env", "w") as f:
+			def export_env_var(name, value):
+				if "\\" in value:
+					print("Antislash \\ detected in the " + name + " variable; there can be problems when loading this variable")
+				f.write("export " + PREFIX + "_" + name + "=" + repr(value))
 
-		from {settings.APP_NAME}.wsgi import application
-		""")
+			export_env_var("HOST", settings.HOST)
+			export_env_var("SECRET_KEY", settings.SECRET_KEY)
 
-		env_file = FOLDER / ".env"
-		def export_env_var(name, value):
-			if "\\" in value:
-				print("Antislash \\ detected in the " + name + " variable; there can be problems when loading this variable")
-			set_key(env_file, PREFIX + "_" + name, value)
-
-		export_env_var("HOST", settings.HOST)
-		export_env_var("SECRET_KEY", settings.SECRET_KEY)
-
-		export_env_var("MYSQL_NAME", USERNAME + "$" + settings.DB_NAME)
-		export_env_var("MYSQL_USER", USERNAME)
-		export_env_var("MYSQL_PASSWORD", settings.DB_PASSWORD)
-		export_env_var("MYSQL_HOST", USERNAME + ".mysql.pythonanywhere-services.com")
+			export_env_var("MYSQL_NAME", USERNAME + "$" + settings.DB_NAME)
+			export_env_var("MYSQL_USER", USERNAME)
+			export_env_var("MYSQL_PASSWORD", settings.DB_PASSWORD)
+			export_env_var("MYSQL_HOST", USERNAME + ".mysql.pythonanywhere-services.com")
 
 	print("OK")
 
