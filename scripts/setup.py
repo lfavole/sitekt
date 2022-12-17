@@ -8,26 +8,21 @@ sys.path.insert(0, str(Path(__file__).parent))
 from common import PYTHONANYWHERE, cprint, run
 import settings
 
-def main():
-	parser = argparse.ArgumentParser()
-	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
-	args = parser.parse_args()
-	interactive: bool = args.interactive
-
+def setup(interactive = False):
 	cprint("Configuration du site du caté Django", "blue")
 	print()
 
 	if not (Path(__file__).resolve().parent / "settings.py").exists():
 		cprint("The settings.py file doesn't exist: " + ("creating it" if interactive else "setup stopped"), "red")
 		if not interactive:
-			sys.exit()
+			return
 		else:
 			from create_settings import create_settings_file
 			create_settings_file()
 
 	if not PYTHONANYWHERE:
 		cprint("You're not on a PythonAnywhere server: setup stopped", "red")
-		sys.exit()
+		return
 
 	def install(package: str, module_name: str):
 		"""
@@ -55,6 +50,7 @@ def main():
 	install("Django", "django")
 	install("django-admin-sortable2", "adminsortable2")
 	install("python-dotenv", "dotenv")
+	install("user-agents", "user_agents")
 
 	if PYTHONANYWHERE:
 		USERNAME = getpass.getuser()
@@ -65,7 +61,7 @@ def main():
 				settings.HOST = USERNAME + ".pythonanywhere.com"
 			else:
 				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
-				sys.exit()
+				return
 
 		BASE_FOLDER = Path(__file__).resolve().parent / settings.APP_NAME
 
@@ -82,4 +78,9 @@ from {settings.APP_NAME}.wsgi import application
 	cprint("OK", "green")
 
 if __name__ == "__main__":
-	main()
+	parser = argparse.ArgumentParser()
+	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
+	args = parser.parse_args()
+	interactive: bool = args.interactive
+
+	setup(interactive)
