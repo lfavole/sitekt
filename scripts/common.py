@@ -29,11 +29,13 @@ def run(args: list[str] | str, pipe = False):
 	kwargs = {}
 	if pipe:
 		kwargs = {"stdin": sp.PIPE, "stdout": sp.PIPE, "stderr": sp.PIPE}
-	print()
-	print("--- Command: " + " ".join(shlex.quote(arg) for arg in args) + "---")
+	if not pipe:
+		print()
+		print("--- Command: " + " ".join(shlex.quote(arg) for arg in args) + "---")
 	ret = sp.run(args, **kwargs)
-	print("--- End of command ---")
-	print()
+	if not pipe:
+		print("--- End of command ---")
+		print()
 	return ret
 
 
