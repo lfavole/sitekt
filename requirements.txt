@@ -1,0 +1,3 @@
+Django
+django-admin-sortable2
+user-agents
