@@ -49,7 +49,6 @@ def setup(interactive = False):
 
 	install("Django", "django")
 	install("django-admin-sortable2", "adminsortable2")
-	install("python-dotenv", "dotenv")
 	install("user-agents", "user_agents")
 
 	if PYTHONANYWHERE:
