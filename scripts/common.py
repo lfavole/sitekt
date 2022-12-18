@@ -5,7 +5,8 @@ import shlex
 import subprocess as sp
 import sys
 
-PYTHONANYWHERE = os.environ.get("PYTHONANYWHERE_SITE", "") != ""
+PYTHONANYWHERE_SITE = os.environ.get("PYTHONANYWHERE_SITE", "")
+PYTHONANYWHERE = PYTHONANYWHERE_SITE != ""
 
 def is_sensitive(key_name: str):
 	"""

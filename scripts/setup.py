@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, cprint, install, parse_packages_list, run
+from common import PYTHONANYWHERE, PYTHONANYWHERE_SITE, cprint, install, parse_packages_list, run
 
 def setup(interactive = False):
 	cprint("Configuration du site du caté Django", "blue")
@@ -42,7 +42,7 @@ def setup(interactive = False):
 
 		if settings.HOST is None:
 			if PYTHONANYWHERE:
-				settings.HOST = USERNAME + ".pythonanywhere.com"
+				settings.HOST = USERNAME + "." + PYTHONANYWHERE_SITE
 			else:
 				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
 				return
