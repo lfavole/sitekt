@@ -47,7 +47,7 @@ def setup(interactive = False):
 				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
 				return
 
-		BASE_FOLDER = Path(__file__).resolve().parent / settings.APP_NAME
+		BASE_FOLDER = Path(__file__).resolve().parent.parent / settings.APP_NAME
 
 		wsgi_file = "/var/www/" + settings.HOST.replace(".", "_").lower().strip() + "_wsgi.py"
 		print("Creating WSGI file " + wsgi_file)
