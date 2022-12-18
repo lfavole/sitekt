@@ -1,10 +1,7 @@
 import os
 import shlex
 import subprocess as sp
-
-from colorama import init
-
-init()
+import sys
 
 PYTHONANYWHERE = os.environ.get("PYTHONANYWHERE_SITE", "") != ""
 
@@ -41,6 +38,8 @@ def run(args: list[str] | str, pipe = False, **kwargs):
 COLORS = ["grey", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]
 ATTRIBUTES = ["", "bold", "dark", "italic", "underline", "blink", "rapidblink", "reverse", "concealed", "strike"]
 
+colorama_inited = sys.platform != "win32"
+
 def colored(text: str, color: str | None = None, on_color: str | None = None, attrs: list[str] | None = None):
 	"""
 	Colorize text.
@@ -53,8 +52,21 @@ def colored(text: str, color: str | None = None, on_color: str | None = None, at
 		colored("Hello world!", "red", "grey", ["bold", "blink"])
 		colored("Hello world!", "green")
 	"""
+	global colorama_inited
 	if os.environ.get("COLORED") == "0":
 		return text
+
+	if not colorama_inited:
+		try:
+			from colorama import init
+		except ImportError:
+			install("colorama", "colorama")
+		try:
+			from colorama import init
+		except ImportError:
+			os.putenv("COLORED", "0")
+		init()
+		colorama_inited = True
 
 	def get_color_code(color: str, background = False):
 		color = color.lower()
