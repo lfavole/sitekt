@@ -41,7 +41,7 @@ folders = sorted(
 	and not path.name.startswith("_")
 )
 DEFAULT_APP_NAME = folders[0].name
-DEFAULT_GITHUB_REPO = run("git remote get-url origin", True).stdout.decode("utf-8", "replace").strip()
+DEFAULT_GITHUB_REPO = run("git remote get-url origin", True).stdout.decode("utf-8", "replace").strip().removesuffix(".git")
 
 def create_settings_file(settings: dict[str, Any] = {}, interactive = True):
 	"""
@@ -88,7 +88,7 @@ DB_PASSWORD = {input_pass("Database password", get_key("DB_PASSWORD"), not inter
 
 	settings_content += f"""\
 
-GITHUB_REPO = {input_default("GitHub repo URL", get_key("GITHUB_REPO") or DEFAULT_GITHUB_REPO)!r}
+GITHUB_REPO = {input_default("GitHub repo URL (without .git)", get_key("GITHUB_REPO") or DEFAULT_GITHUB_REPO)!r}
 """
 
 	with open(SETTINGS_FILE, "w") as f:
