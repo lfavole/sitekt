@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--host", type = str, default = "0.0.0.0", help = "host to use for the server (default: %(default)s)")
-	parser.add_argument("--port", type = int, default = 80, help = "port to use for the server (default: %(default)s)")
+	parser.add_argument("--port", type = int, default = 8080, help = "port to use for the server (default: %(default)s)")
 	parser.add_argument("--dev", action = "store_true", help = "use the development server")
 	args = parser.parse_args()
 
