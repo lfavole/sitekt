@@ -1,5 +1,6 @@
 import importlib
 import os
+import re
 import shlex
 import subprocess as sp
 import sys
@@ -115,3 +116,6 @@ def install(package: str, module_name: str):
 	else:
 		print(package + " already installed")
 	print()
+
+def parse_packages_list(text: str) -> list[tuple[str, str, str]]:
+	return re.findall("(.*?)\s*?([=<>~].*?)?\s*?(#\s*?.*?)?\n", text)
