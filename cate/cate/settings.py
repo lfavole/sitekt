@@ -11,24 +11,24 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
-
-from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / ".env")
-
+sys.path.insert(0, str(BASE_DIR.parent / "scripts"))
+from common import PYTHONANYWHERE
+import settings
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "+jt!%+%erdp^y7h37v#68x31+u9ut6^8zryj@#zmu5p$_!u2)u")
+SECRET_KEY = settings.SECRET_KEY or "+jt!%+%erdp^y7h37v#68x31+u9ut6^8zryj@#zmu5p$_!u2)u"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG", "") == "True"
+DEBUG = settings.DEBUG
 
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
@@ -37,8 +37,6 @@ if not DEBUG:
     ALLOWED_HOSTS = [os.environ.get("DJANGO_HOST", "")]
 else:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.43.206"]
-
-PYTHONANYWHERE = "pythonanywhere" in os.environ.get("DJANGO_HOST", "")
 
 # Application definition
 
@@ -99,7 +97,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
-} if not PYTHONANYWHERE else {
+} if settings.USE_SQLITE else {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DJANGO_MYSQL_NAME", ""),
