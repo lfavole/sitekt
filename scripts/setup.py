@@ -1,11 +1,10 @@
 import argparse
 import getpass
-import importlib
 from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, cprint, run
+from common import PYTHONANYWHERE, cprint, install, parse_packages_list, run
 import settings
 
 def setup(interactive = False):
@@ -20,36 +19,21 @@ def setup(interactive = False):
 			from create_settings import create_settings_file
 			create_settings_file()
 
-	if not PYTHONANYWHERE:
-		cprint("You're not on a PythonAnywhere server: setup stopped", "red")
-		return
-
-	def install(package: str, module_name: str):
-		"""
-		Install a package with `pip`. `package` is the pip package name and `module_name` is the module name to import.
-		"""
-		if not module_name:
-			module_name = package.lower()
-
-		try:
-			importlib.import_module(module_name)
-		except ImportError:
-			print("Installing " + package + "...")
-			run([sys.executable, "-m", "pip", "install", package])
-			print("Checking installation...")
-			if run([sys.executable, "-c", "import " + package]).returncode != 0:
-				print("Can't import " + package + "(import " + module_name + ")")
-			else:
-				print(package + " installed")
-		else:
-			print(package + " already installed")
-		print()
+	# if not PYTHONANYWHERE or True:
+		# cprint("You're not on a PythonAnywhere server: setup stopped", "red")
+		# return
 
 	print("Installing modules (if they are not already installed)")
 
-	install("Django", "django")
-	install("django-admin-sortable2", "adminsortable2")
-	install("user-agents", "user_agents")
+	with open(Path(__file__).resolve().parent.parent / "requirements.txt") as f:
+		requirements = f.read()
+
+	for package, version, comment in parse_packages_list(requirements):
+		install(package + version, comment.removeprefix("#").strip())
+	if sys.platform == "win32":
+		install("waitress", "waitress")
+	else:
+		install("gunicorn", "gunicorn")
 
 	if PYTHONANYWHERE:
 		USERNAME = getpass.getuser()

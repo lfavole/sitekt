@@ -1,3 +1,4 @@
-Django
-django-admin-sortable2
-user-agents
+Django # django
+Markdown # markdown
+django-admin-sortable2 # adminsortable2
+user-agents # user_agents
