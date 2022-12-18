@@ -15,7 +15,10 @@ SETTINGS_FILE = FOLDER / "settings.py"
 def get_random_secret_key():
 	return "".join(secrets.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50))
 
-def input_default(prompt: str, default = None):
+def input_default(prompt: str, default = None, show = False):
+	if show:
+		print(prompt.rstrip() + ": " + default)
+		return
 	if default is None:
 		return input(prompt.rstrip() + ": ")
 	ret = input(f"{prompt.rstrip()} [default: {default}]: ")
@@ -23,8 +26,13 @@ def input_default(prompt: str, default = None):
 		return default
 	return ret
 
-def input_pass(prompt: str):
+def input_pass(prompt: str, default = None, show = False):
+	if show:
+		print(prompt.rstrip() + ": " + default)
+		return
 	return getpass.getpass(prompt.rstrip() + ": ")
+
+TRUE_VALUES = ("y", "yes", "true", "1")
 
 folders = sorted(
 	path for path in FOLDER.parent.glob("*/")
@@ -35,7 +43,7 @@ DEFAULT_GITHUB_REPO = run("git remote get-url origin", True).stdout.decode("utf-
 
 def create_settings_file(settings: dict[str, Any] = {}, interactive = True):
 	"""
-	Create the `settings.py` file interactively.
+	Create the `settings.py` file interactively or not.
 	"""
 	def get_key(key: str):
 		ret = settings.get(key)
@@ -53,16 +61,30 @@ def create_settings_file(settings: dict[str, Any] = {}, interactive = True):
 		print()
 
 	settings_content = f"""\
-# Settings (auto-generated on {dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} by {FILE.name})
+# Settings (auto-generated on {dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} by scripts/{FILE.name})
 
-APP_NAME = {(APP_NAME := get_key("APP_NAME") or input_default("App name", DEFAULT_APP_NAME))!r}
-HOST = {get_key("HOST") or (None if PYTHONANYWHERE else input_default("Host"))!r}
-SECRET_KEY = {get_key("SECRET_KEY") or input_default("Secret key", get_random_secret_key())!r}
+APP_NAME = {(APP_NAME := input_default("App name", get_key("APP_NAME") or DEFAULT_APP_NAME, not interactive))!r}
+HOST = {(None if PYTHONANYWHERE else input_default("Host", get_key("HOST"), not interactive))!r}
+DEBUG = {(input_default("Debug mode", get_key("DEBUG"), not interactive) if not PYTHONANYWHERE else False)!r}
+SECRET_KEY = {input_default("Secret key", get_key("SECRET_KEY") or get_random_secret_key(), not interactive)!r}
+"""
 
-DB_NAME = {get_key("DB_NAME") or input_default("Database name", APP_NAME)!r}
-DB_PASSWORD = {get_key("DB_PASSWORD") or input_pass("Database password")!r}
+	if get_key("USE_SQLITE") is True or input_default("Use SQLite").lower() in TRUE_VALUES:
+		settings_content += f"""\
 
-GITHUB_REPO = {get_key("GITHUB_REPO") or input_default("GitHub repo URL", DEFAULT_GITHUB_REPO)!r}
+USE_SQLITE = True
+"""
+	else:
+		settings_content += f"""\
+
+USE_SQLITE = False
+DB_NAME = {input_default("Database name", get_key("DB_NAME") or APP_NAME, not interactive)!r}
+DB_PASSWORD = {input_pass("Database password", get_key("DB_PASSWORD"), not interactive)!r}
+"""
+
+	settings_content += f"""\
+
+GITHUB_REPO = {input_default("GitHub repo URL", get_key("GITHUB_REPO") or DEFAULT_GITHUB_REPO)!r}
 """
 
 	with open(SETTINGS_FILE, "w") as f:
