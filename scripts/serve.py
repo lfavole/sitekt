@@ -5,29 +5,29 @@ import sys
 FOLDER = Path(__file__).parent
 sys.path.insert(0, str(FOLDER))
 from common import PYTHONANYWHERE, cprint, run
+from fetch import fetch
 import settings
 
 BASE_DIR = FOLDER.parent / settings.APP_NAME
 
-if PYTHONANYWHERE:
-	cprint("Can't serve the website with this script on a PythonAnywhere server", "red")
-	print("Your website is available on https://" + (settings.HOST or getpass.getuser() + ".pythonanywhere.com"))
-	sys.exit()
+def serve(host = "0.0.0.0", port = 8080, dev = False):
+	if PYTHONANYWHERE:
+		cprint("Can't serve the website with this script on a PythonAnywhere server", "red")
+		print("Your website is available on https://" + ((settings.HOST or getpass.getuser()) + ".pythonanywhere.com"))
+		return
 
-def serve(host = "0.0.0.0", port = 80, dev = False):
+	fetch()
+
+	cprint("Serving script", "blue")
+	print()
+
 	if dev:
+		print("Serving with Django development server")
 		run([sys.executable, str(BASE_DIR / "manage.py"), "runserver", host + ":" + str(port)])
 		return
 
 	try:
-		# from gunicorn.app.base import Application  # type: ignore
-		# options = {"bind": host + ":" + str(port)}
-		# sys.path.insert(0, str(FOLDER.parent / "cate"))
-		# import cate.wsgi  # type: ignore
-		# class MyApplication(Application):
-		# 	def load(self):
-		# 		return cate.wsgi.application
-		# MyApplication(cate.wsgi.application, options).run()
+		print("Serving with Gunicorn")
 		proc = run([sys.executable, "-m", "gunicorn", settings.APP_NAME + ".wsgi", "-b", host + ":" + str(port)], cwd = BASE_DIR)
 		if proc.returncode == 0:
 			return
@@ -35,6 +35,7 @@ def serve(host = "0.0.0.0", port = 80, dev = False):
 		pass
 
 	try:
+		print("Serving with Waitress")
 		from waitress import serve  # type: ignore
 		sys.path.insert(0, str(FOLDER.parent / "cate"))
 		import cate.wsgi  # type: ignore
