@@ -22,6 +22,8 @@ sys.path.insert(0, str(BASE_DIR.parent / "scripts"))
 from common import PYTHONANYWHERE, PYTHONANYWHERE_SITE
 import settings
 
+USERNAME = getpass.getuser()
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -35,7 +37,7 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     CONN_MAX_AGE = 600
-    ALLOWED_HOSTS = [settings.HOST or (getpass.getuser() + "." + PYTHONANYWHERE_SITE)]
+    ALLOWED_HOSTS = [settings.HOST or (USERNAME + "." + PYTHONANYWHERE_SITE)]
 else:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.43.206"]
 
@@ -101,10 +103,10 @@ DATABASES = {
 } if settings.USE_SQLITE else {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DJANGO_MYSQL_NAME", ""),
-        "USER": os.environ.get("DJANGO_MYSQL_USER", ""),
-        "PASSWORD": os.environ.get("DJANGO_MYSQL_PASSWORD", ""),
-        "HOST": os.environ.get("DJANGO_MYSQL_HOST", ""),
+        "NAME": settings.DB_NAME,
+        "USER": USERNAME if PYTHONANYWHERE else settings.DB_USER,
+        "PASSWORD": settings.DB_PASSWORD,
+        "HOST": (USERNAME + ".mysql." + PYTHONANYWHERE_SITE.replace("pythonanywhere.com", "pythonanywhere-services.com")) if PYTHONANYWHERE else settings.DB_HOST,
         "OPTIONS": {
             "init_command": 'SET sql_mode="STRICT_TRANS_TABLES"',
         },

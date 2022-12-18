@@ -80,7 +80,9 @@ USE_SQLITE = True
 		settings_content += f"""\
 
 USE_SQLITE = False
+DB_HOST = {(None if PYTHONANYWHERE else input_default("Database host", get_key("DB_HOST"), not interactive))!r}
 DB_NAME = {input_default("Database name", get_key("DB_NAME") or APP_NAME, not interactive)!r}
+DB_USER = {(None if PYTHONANYWHERE else input_default("Database user", get_key("DB_USER"), not interactive))!r}
 DB_PASSWORD = {input_pass("Database password", get_key("DB_PASSWORD"), not interactive)!r}
 """
 
