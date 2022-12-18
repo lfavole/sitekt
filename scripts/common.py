@@ -1,3 +1,4 @@
+import importlib
 import os
 import shlex
 import subprocess as sp
@@ -96,3 +97,21 @@ def cprint(text: str, color: str | None = None, on_color: str | None = None, att
 	Print colored text. Shorthand for print(colored(...)).
 	"""
 	print(colored(text, color, on_color, attrs), *args, **kwargs)
+
+def install(package: str, module_name: str):
+	"""
+	Install a package with `pip`. `package` is the pip package name and `module_name` is the module name to import.
+	"""
+	try:
+		importlib.import_module(module_name)
+	except ImportError:
+		print("Installing " + package + "...")
+		run([sys.executable, "-m", "pip", "install", package])
+		print("Checking installation...")
+		if run([sys.executable, "-c", "import " + module_name]).returncode != 0:
+			print("Can't import " + package + " (import " + module_name + ")")
+		else:
+			print(package + " installed")
+	else:
+		print(package + " already installed")
+	print()
