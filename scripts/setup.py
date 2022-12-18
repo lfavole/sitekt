@@ -5,7 +5,6 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import PYTHONANYWHERE, cprint, install, parse_packages_list, run
-import settings
 
 def setup(interactive = False):
 	cprint("Configuration du site du caté Django", "blue")
@@ -18,6 +17,8 @@ def setup(interactive = False):
 		else:
 			from create_settings import create_settings_file
 			create_settings_file()
+
+	import settings
 
 	# if not PYTHONANYWHERE or True:
 		# cprint("You're not on a PythonAnywhere server: setup stopped", "red")
