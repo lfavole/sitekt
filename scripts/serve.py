@@ -27,6 +27,9 @@ def serve(host = "0.0.0.0", port = 8080, dev = False):
 		return
 
 	try:
+		if Path("/sdcard").resolve().exists():
+			cprint("Termux environment detected; Gunicorn is not working on Termux", "red")
+			raise ImportError
 		print("Serving with Gunicorn")
 		proc = run([sys.executable, "-m", "gunicorn", settings.APP_NAME + ".wsgi", "-b", host + ":" + str(port)], cwd = BASE_DIR)
 		if proc.returncode == 0:
