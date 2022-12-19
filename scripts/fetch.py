@@ -9,7 +9,7 @@ import settings
 
 USERNAME = getpass.getuser()
 
-FOLDER = Path(__file__).parent
+FOLDER = Path(__file__).parent.parent
 if not os.path.exists(FOLDER):
     os.makedirs(FOLDER, exist_ok = True)
 
