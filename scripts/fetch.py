@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, cprint, get_wsgi_file, run
+from common import PYTHONANYWHERE, cprint, get_host, get_wsgi_file, run
 import settings
 
 USERNAME = getpass.getuser()
@@ -33,7 +33,7 @@ def fetch():
 
 	if PYTHONANYWHERE:
 		print("Touching WSGI file")
-		Path(get_wsgi_file()).touch()
+		Path(get_wsgi_file(settings)).touch()
 
 	cprint("OK", "green")
 

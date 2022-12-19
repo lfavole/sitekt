@@ -45,14 +45,14 @@ def setup(interactive = False):
 		USERNAME = getpass.getuser()
 		PREFIX = settings.APP_NAME.upper()
 
-		HOST = get_host()
+		HOST = get_host(settings)
 		if HOST is None:
 			cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
 			return
 
 		BASE_FOLDER = Path(__file__).resolve().parent.parent / settings.APP_NAME
 
-		wsgi_file = get_wsgi_file()
+		wsgi_file = get_wsgi_file(settings)
 		print("Creating WSGI file " + wsgi_file)
 		with open(wsgi_file, "w") as f:
 			f.write(f"""\
