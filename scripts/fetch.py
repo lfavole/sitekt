@@ -9,16 +9,15 @@ import settings
 
 USERNAME = getpass.getuser()
 
-FOLDER = Path(__file__).parent / settings.APP_NAME
+FOLDER = Path(__file__).parent
 if not os.path.exists(FOLDER):
     os.makedirs(FOLDER, exist_ok = True)
-os.chdir(FOLDER)
 
-manage_py_args = [sys.executable, str(Path(__file__).parent.parent / "cate/manage.py")]
+manage_py_args = [sys.executable, str(FOLDER / settings.APP_NAME / "manage.py")]
 
-def run_with_explanation(cmd: str | list[str], expl: str):
+def run_with_explanation(cmd: str | list[str], expl: str, cwd = FOLDER):
 	print(expl[0].upper() + expl[1:])
-	if run(cmd, cwd = FOLDER).returncode != 0:
+	if run(cmd, cwd = cwd).returncode != 0:
 		cprint("Error while " + expl, "red")
 
 def fetch():
