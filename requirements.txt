@@ -1,4 +1,7 @@
+colorama # colorama
 Django # django
 Markdown # markdown
 django-admin-sortable2 # adminsortable2
 user-agents # user_agents
+waitress # waitress
+gunicorn # gunicorn

@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, PYTHONANYWHERE_SITE, cprint, install, parse_packages_list, run
+from common import PYTHONANYWHERE, PYTHONANYWHERE_SITE, cprint, install, parse_packages_list
 
 def setup(interactive = False):
 	cprint("Configuration du site du caté Django", "blue")
@@ -20,21 +20,26 @@ def setup(interactive = False):
 
 	import settings
 
-	# if not PYTHONANYWHERE or True:
-		# cprint("You're not on a PythonAnywhere server: setup stopped", "red")
-		# return
-
 	print("Installing modules (if they are not already installed)")
 
 	with open(Path(__file__).resolve().parent.parent / "requirements.txt") as f:
 		requirements = f.read()
 
 	for package, version, comment in parse_packages_list(requirements):
+		# Don't install Colorama on non-Windows platforms
+		if sys.platform != "win32" and package == "colorama":
+			continue
+		# Don't install servers on PythonAnywhere
+		if PYTHONANYWHERE:
+			if package == "waitress" or package == "gunicorn":
+				continue
+		# Don't install Gunicorn (but install Waitress) on Windows and Android (Termux)
+		if (sys.platform == "win32" or hasattr(sys, "getandroidapilevel")) and package == "gunicorn":
+			continue
+		# Don't install Waitress (but install Gunicorn) on non-Windows platforms
+		if sys.platform != "win32" and package == "waitress":
+			continue
 		install(package + version, comment.removeprefix("#").strip())
-	if sys.platform == "win32":
-		install("waitress", "waitress")
-	else:
-		install("gunicorn", "gunicorn")
 
 	if PYTHONANYWHERE:
 		USERNAME = getpass.getuser()
