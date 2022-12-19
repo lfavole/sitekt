@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, PYTHONANYWHERE_SITE, cprint, install, parse_packages_list
+from common import HOST, PYTHONANYWHERE, PYTHONANYWHERE_SITE, cprint, get_wsgi_file, install, parse_packages_list
 
 def setup(interactive = False):
 	cprint("Configuration du site du caté Django", "blue")
@@ -45,16 +45,14 @@ def setup(interactive = False):
 		USERNAME = getpass.getuser()
 		PREFIX = settings.APP_NAME.upper()
 
-		if settings.HOST is None:
-			if PYTHONANYWHERE:
-				settings.HOST = USERNAME + "." + PYTHONANYWHERE_SITE
-			else:
-				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
-				return
+		HOST = get_host()
+		if HOST is None:
+			cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
+			return
 
 		BASE_FOLDER = Path(__file__).resolve().parent.parent / settings.APP_NAME
 
-		wsgi_file = "/var/www/" + settings.HOST.replace(".", "_").lower().strip() + "_wsgi.py"
+		wsgi_file = get_wsgi_file()
 		print("Creating WSGI file " + wsgi_file)
 		with open(wsgi_file, "w") as f:
 			f.write(f"""\

@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, cprint, run
+from common import PYTHONANYWHERE, cprint, get_wsgi_file, run
 import settings
 
 USERNAME = getpass.getuser()
@@ -30,6 +30,10 @@ def fetch():
 
 	run_with_explanation([*manage_py_args, "migrate"], "migrating database")
 	run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "collecting static files")
+
+	if PYTHONANYWHERE:
+		print("Touching WSGI file")
+		Path(get_wsgi_file()).touch()
 
 	cprint("OK", "green")
 

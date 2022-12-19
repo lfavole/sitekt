@@ -1,3 +1,4 @@
+import getpass
 import importlib
 import os
 import re
@@ -7,6 +8,23 @@ import sys
 
 PYTHONANYWHERE_SITE = os.environ.get("PYTHONANYWHERE_SITE", "")
 PYTHONANYWHERE = PYTHONANYWHERE_SITE != ""
+
+def get_host(settings):
+	"""
+	Get the host name from a settings module.
+	"""
+	if settings.HOST is not None:
+		return settings.HOST
+	if PYTHONANYWHERE:
+		return getpass.getuser() + "." + PYTHONANYWHERE_SITE
+
+def get_wsgi_file(settings):
+	"""
+	Get the path to the WSGI file.
+	"""
+	if not PYTHONANYWHERE:
+		return
+	return "/var/www/" + get_host(settings).replace(".", "_").lower().strip() + "_wsgi.py"
 
 def is_sensitive(key_name: str):
 	"""
