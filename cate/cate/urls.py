@@ -29,6 +29,7 @@ urlpatterns = [
     add_website("espacecate"),
     # add_website("aumonerie"),
     path("", views.home, name = "home"),
+    path("reload-website/", views.reload_website),
 ]
 
 if settings.DEBUG:
