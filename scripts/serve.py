@@ -62,4 +62,4 @@ if __name__ == "__main__":
 	parser.add_argument("--dev", action = "store_true", help = "use the development server")
 	args = parser.parse_args()
 
-	serve(App.get_from_argparse(args.app), args.host, args.port, args.dev)
+	serve(App.get_from_argparse(args.APP), args.host, args.port, args.dev)
