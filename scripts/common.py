@@ -142,4 +142,4 @@ def install(package: str, module_name: str):
 	print()
 
 def parse_packages_list(text: str) -> list[tuple[str, str, str]]:
-	return re.findall("(.*?)\s*?([=<>~].*?)?\s*?(#\s*?.*?)?\n", text)
+	return re.findall(r"(.*?)\s*?([=<>~].*?)?\s*?(#\s*?.*?)?\n", text)
