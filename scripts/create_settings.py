@@ -1,3 +1,4 @@
+import argparse
 import datetime as dt
 import getpass
 from pathlib import Path
@@ -124,4 +125,9 @@ def create_settings_file(settings: Settings | dict[str, Any] = {}, interactive =
 	return Settings(ret)
 
 if __name__ == "__main__":
-	create_settings_file()
+	parser = argparse.ArgumentParser()
+	parser.add_argument("APPS", nargs = "*", help = "App names (folders directly in the git repository)")
+	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
+	args = parser.parse_args()
+
+	create_settings_file(App.get_list_from_argparse(args.APPS), {}, args.interactive)

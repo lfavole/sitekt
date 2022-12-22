@@ -1,3 +1,4 @@
+import argparse
 import os
 from pathlib import Path
 import sys
@@ -40,4 +41,8 @@ def fetch():
 	cprint("OK", "green")
 
 if __name__ == "__main__":
-	fetch()
+	parser = argparse.ArgumentParser()
+	parser.add_argument("APPS", nargs = "*", help = "App names (folders directly in the git repository)")
+	args = parser.parse_args()
+
+	fetch(App.get_list_from_argparse(args.APPS))
