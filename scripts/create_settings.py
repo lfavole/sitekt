@@ -15,10 +15,12 @@ SETTINGS_FILE = FOLDER / "settings.py"
 def get_random_secret_key():
 	return "".join(secrets.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50))
 
-def input_default(prompt: str, default = None, show = False):
+def input_default(prompt: str, default: str | None = None, show = False):
 	if show:
-		print(prompt.rstrip() + ": " + default)
-		return
+		if default is None:
+			raise ValueError("default parameter mustn't be None when show is true")
+		print(prompt.rstrip() + ": " + default) # type: ignore
+		return default
 	if default is None:
 		return input(prompt.rstrip() + ": ")
 	ret = input(f"{prompt.rstrip()} [default: {default}]: ")
@@ -26,10 +28,18 @@ def input_default(prompt: str, default = None, show = False):
 		return default
 	return ret
 
-def input_pass(prompt: str, default = None, show = False):
+def input_question(prompt: str, default = False, show = False):
 	if show:
-		print(prompt.rstrip() + ": " + default)
-		return
+		print(prompt.rstrip() + " " + ("yes" if default else "no"))
+		return default
+	return input(prompt.rstrip() + " ") in TRUE_VALUES
+
+def input_pass(prompt: str, default: str | None = None, show = False):
+	if show:
+		if default is None:
+			raise ValueError("default parameter mustn't be None when show is true")
+		print(prompt.rstrip() + ": ********")
+		return default
 	return getpass.getpass(prompt.rstrip() + ": ")
 
 TRUE_VALUES = ("y", "yes", "true", "1")
