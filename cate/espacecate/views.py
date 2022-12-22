@@ -5,6 +5,7 @@ from django.views import generic
 from .forms import SubscriptionForm
 from .models import Article, Document, Page
 
+
 class PageView(generic.DetailView):
     model = Page
     context_object_name = "page"

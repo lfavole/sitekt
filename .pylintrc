@@ -1,0 +1,25 @@
+[main]
+jobs = 0
+load-plugins = pylint_quotes
+disable =
+	line-too-long,
+	bad-indentation,
+	fixme,
+	import-outside-toplevel,
+	global-statement,
+	missing-module-docstring,
+	protected-access,
+	missing-timeout,
+	no-member,
+	bare-except,
+	unspecified-encoding,
+expected-line-ending-format =
+include-naming-hint = y
+
+[basic]
+good-names = f
+
+[pylint_quotes]
+string-quote = double
+triple-quote = double
+docstring-quote = double

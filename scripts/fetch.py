@@ -1,7 +1,7 @@
 import argparse
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import App, cprint, run
@@ -10,12 +10,15 @@ FOLDER = Path(__file__).parent.parent
 if not os.path.exists(FOLDER):
     os.makedirs(FOLDER, exist_ok = True)
 
-def run_with_explanation(cmd: str | list[str], expl: str, cwd = FOLDER):
+def _run_with_explanation(cmd: str | list[str], expl: str, cwd = FOLDER):
 	print(expl[0].upper() + expl[1:])
 	if run(cmd, cwd = cwd).returncode != 0:
 		cprint("Error while " + expl, "red")
 
-def fetch(apps: list[App] = []):
+def fetch(apps: list[App] | None = None):
+	"""
+	Fetch changes with `git fetch` and migrate the projects.
+	"""
 	cprint("Fetching script", "blue")
 	print()
 
@@ -26,13 +29,13 @@ def fetch(apps: list[App] = []):
 			cprint("Can't load settings for app " + app, "red")
 			continue
 
-		run_with_explanation("git init", "creating git repo")
-		run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git", "main"], "fetching changes")
+		_run_with_explanation("git init", "creating git repo")
+		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git", "main"], "fetching changes")
 
 		manage_py_args = [sys.executable, str(app / "manage.py")]
 
-		run_with_explanation([*manage_py_args, "migrate"], "migrating database")
-		run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "collecting static files")
+		_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
+		_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "collecting static files")
 
 		if settings.WSGI_FILE:
 			print("Touching WSGI file for app " + app)

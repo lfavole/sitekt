@@ -1,15 +1,15 @@
-from hashlib import sha1
 import hmac
+import sys
+from hashlib import sha1
 from ipaddress import ip_address, ip_network
 from pathlib import Path
-import sys
 
+import requests
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render
 from django.utils.encoding import force_bytes
 from django.views.decorators.csrf import csrf_exempt
-import requests
 
 try:
 	sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "scripts"))

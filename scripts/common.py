@@ -1,12 +1,14 @@
 import getpass
 import importlib
 import os
-from pathlib import Path
 import re
 import shlex
 import subprocess as sp
 import sys
-from typing import Self, overload
+from pathlib import Path
+from typing import TypeVar
+
+Self = TypeVar("Self")
 
 USERNAME = getpass.getuser()
 
@@ -21,7 +23,6 @@ def import_path(path: Path | str, module: str, package: str | None = None):
 	Import the `module` that is in the specified `path` by adding and removing the `path` to `sys.path`.
 	"""
 	old_path = sys.path.copy()
-	sys.path.clear()
 	sys.path.append(str(path))
 	try:
 		return importlib.import_module(module, package)
@@ -29,6 +30,9 @@ def import_path(path: Path | str, module: str, package: str | None = None):
 		sys.path = old_path
 
 class Namespace(dict):
+	"""
+	Namespace that provides access to attributes with dot syntax: `ns["key"] == ns.key`.
+	"""
 	def __getattr__(self, attr):
 		return self[attr]
 
@@ -42,7 +46,11 @@ class Namespace(dict):
 		return "<Namespace " + super().__repr__() + ">"
 
 class Settings(Namespace):
+	"""
+	Settings object
+	"""
 	def __init__(self, *args, **kwargs):
+		# pylint: disable=C0103
 		super().__init__(*args, **kwargs)
 
 		if not self:
@@ -51,7 +59,7 @@ class Settings(Namespace):
 		self.HOST = self.HOST or (USERNAME + "." + PYTHONANYWHERE_SITE)
 
 		if PYTHONANYWHERE:
-			self.DB_NAME = USERNAME + "$" + self.DB_NAME
+			self.DB_NAME: str | None = USERNAME + "$" + self.DB_NAME if self.DB_NAME else None
 			self.DB_HOST = (USERNAME + ".mysql." + PYTHONANYWHERE_SITE.replace("pythonanywhere.com", "pythonanywhere-services.com"))
 
 			self.PYTHONANYWHERE_SITE = PYTHONANYWHERE_SITE if PYTHONANYWHERE else None
@@ -64,11 +72,19 @@ class Settings(Namespace):
 			self.WSGI_FILE = None
 
 	@classmethod
-	def create(cls) -> Self:
+	def create(cls: Self) -> Self:
+		"""
+		Create the settings with `create_settings.py` and return the created settings.
+
+		Usage: `settings = settings.create()`
+		"""
 		create = import_path(FOLDER, "create_settings").create_settings_file
 		return create()
 
 class App:
+	"""
+	Object representing an app
+	"""
 	BASE_FOLDER = BASE_FOLDER
 
 	def __init__(self, folder: str | Path):
@@ -77,6 +93,9 @@ class App:
 
 	@property
 	def settings(self):
+		"""
+		Settings of the app
+		"""
 		if self._settings is not None:
 			return self._settings
 
@@ -118,7 +137,7 @@ class App:
 	@classmethod
 	def all(cls):
 		"""
-		Get all `App`s.
+		Get all apps.
 		"""
 		return sorted(
 			cls(path) for path in cls.BASE_FOLDER.glob("*/")
@@ -171,6 +190,7 @@ def run(args: list[str] | str, pipe = False, **kwargs) -> sp.CompletedProcess[st
 	"""
 	Run the command specified by args. Return a `CompletedProcess[str]`.
 	"""
+	# pylint: disable=W1510
 	if isinstance(args, str):
 		args = shlex.split(args)
 	kwargs = {**kwargs, "encoding": "utf-8", "errors": "replace"}
@@ -189,7 +209,7 @@ def run(args: list[str] | str, pipe = False, **kwargs) -> sp.CompletedProcess[st
 COLORS = ["grey", "red", "green", "yellow", "blue", "magenta", "cyan", "white"]
 ATTRIBUTES = ["", "bold", "dark", "italic", "underline", "blink", "rapidblink", "reverse", "concealed", "strike"]
 
-colorama_inited = sys.platform != "win32"
+colorama_inited = sys.platform != "win32" # pylint: disable=C0103
 
 def colored(text: str, color: str | None = None, on_color: str | None = None, attrs: list[str] | None = None):
 	"""
@@ -203,7 +223,7 @@ def colored(text: str, color: str | None = None, on_color: str | None = None, at
 		colored("Hello world!", "red", "grey", ["bold", "blink"])
 		colored("Hello world!", "green")
 	"""
-	global colorama_inited
+	global colorama_inited # pylint: disable=C0103
 	if os.environ.get("COLORED") == "0":
 		return text
 
@@ -243,9 +263,9 @@ def colored(text: str, color: str | None = None, on_color: str | None = None, at
 			final_text += "\033[" + str(ATTRIBUTES.index(attr)) + "m"
 	return final_text + text + "\033[0m"
 
-def cprint(text: str, color: str | None = None, on_color: str | None = None, attrs: list[str] | None = None, *args, **kwargs):
+def cprint(text: str, color: str | None = None, on_color: str | None = None, attrs: list[str] | None = None, *args, **kwargs): # pylint: disable=W1113
 	"""
-	Print colored text. Shorthand for print(colored(...)).
+	Print colored text. Shorthand for `print(colored(...))`.
 	"""
 	print(colored(text, color, on_color, attrs), *args, **kwargs)
 
@@ -268,4 +288,7 @@ def install(package: str, module_name: str):
 	print()
 
 def parse_packages_list(text: str) -> list[tuple[str, str, str]]:
+	"""
+	Parse a packages list (`requirements.txt` file). Return a list of tuples (package, version, comment)
+	"""
 	return re.findall(r"(.*?)\s*?([=<>~].*?)?\s*?(#\s*?.*?)?\n", text)

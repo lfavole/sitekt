@@ -4,5 +4,22 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"pylint.args": [
+			"--rcfile",
+			".pylintrc"
+		],
+		"python.analysis.extraPaths": [
+			"./scripts"
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"ms-python.vscode-pylance",
+			"ms-python.pylint",
+			"ms-python.isort",
+			"batisteo.vscode-django"
+		]
+	}
 }

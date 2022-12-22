@@ -1,12 +1,13 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 FOLDER = Path(__file__).parent
 sys.path.insert(0, str(FOLDER))
 from common import PYTHONANYWHERE, App, cprint, import_path, run
 from fetch import fetch
 
-def serve(app: App, host = "0.0.0.0", port = 8080, dev = False):
+
+def serve(app: App, host = "0.0.0.0", port = 8080, dev = False, download = True):
 	settings = app.settings
 
 	if not settings:
@@ -17,7 +18,8 @@ def serve(app: App, host = "0.0.0.0", port = 8080, dev = False):
 		print("Your website is available on https://" + settings.HOST)
 		return
 
-	fetch()
+	if download:
+		fetch()
 
 	cprint("Serving script", "blue")
 	print()
@@ -60,6 +62,7 @@ if __name__ == "__main__":
 	parser.add_argument("--host", type = str, default = "0.0.0.0", help = "host to use for the server (default: %(default)s)")
 	parser.add_argument("--port", type = int, default = 8080, help = "port to use for the server (default: %(default)s)")
 	parser.add_argument("--dev", action = "store_true", help = "use the development server")
+	parser.add_argument("--no-fetch", action = "store_false", dest = "fetch", help = "don't fetch changes before serving")
 	args = parser.parse_args()
 
-	serve(App.get_from_argparse(args.APP), args.host, args.port, args.dev)
+	serve(App.get_from_argparse(args.APP), args.host, args.port, args.dev, args.fetch)

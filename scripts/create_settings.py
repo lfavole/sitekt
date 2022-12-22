@@ -1,20 +1,26 @@
 import argparse
 import datetime as dt
 import getpass
-from pathlib import Path
 import secrets
 import sys
-from typing import Any
+from pathlib import Path
+from typing import Any, overload
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, USERNAME, App, Settings, cprint, run
+from common import PYTHONANYWHERE, USERNAME, App, Settings, cprint, run  # pylint-ignore: C0413
 
 FILE = Path(__file__).resolve()
 
 def get_random_secret_key():
+	"""
+	Get a random Django secret key (extracted from `django.core.management.utils`).
+	"""
 	return "".join(secrets.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50))
 
 def input_default(prompt: str, default: str | None = None, show = False):
+	"""
+	Ask for a string parameter (or show it). The returned value is a `str` (the parameter).
+	"""
 	if show:
 		if default is None:
 			raise ValueError("default parameter mustn't be None when show is true")
@@ -28,12 +34,18 @@ def input_default(prompt: str, default: str | None = None, show = False):
 	return ret
 
 def input_question(prompt: str, default = False, show = False):
+	"""
+	Ask for a question (or show it without asking). The returned value is a `bool`.
+	"""
 	if show:
 		print(prompt.rstrip() + " " + ("yes" if default else "no"))
 		return default
 	return input(prompt.rstrip() + " ") in TRUE_VALUES
 
 def input_pass(prompt: str, default: str | None = None, show = False):
+	"""
+	Ask for a password (or show it). The returned value is a `str` (the password).
+	"""
 	if show:
 		if default is None:
 			raise ValueError("default parameter mustn't be None when show is true")
@@ -47,17 +59,29 @@ apps = App.all()
 DEFAULT_APP_NAME = str(apps[0])
 DEFAULT_GITHUB_REPO = run("git remote get-url origin", True).stdout.strip().removesuffix(".git")
 
-def create_settings_file(app_or_apps: list[App] | App = [], settings: Settings | dict[str, Any] = {}, interactive = True):
+@overload
+def create_settings_file(app_or_apps: list[App], settings: Settings | dict[str, Any] | None = None, interactive = True) -> list[Settings]:
+	...
+
+@overload
+def create_settings_file(app_or_apps: App | None = None, settings: Settings | dict[str, Any] | None = None, interactive = True) -> Settings:
+	...
+
+def create_settings_file(app_or_apps: list[App] | App | None = None, settings: Settings | dict[str, Any] | None = None, interactive = True):
 	"""
 	Create the `settings.py` file interactively or not. Return the corresponding `Settings` object.
 	"""
 	cprint("Settings file creator", "blue")
 	print()
 
+	if settings is None:
+		settings = {}
+
 	if isinstance(app_or_apps, list):
+		ret: list[Settings] = []
 		for app in app_or_apps:
-			create_settings_file(app, settings, interactive)
-		return
+			ret.append(create_settings_file(app, settings, interactive))
+		return ret
 
 	def get_key(key: str):
 		ret = settings.get(key)
@@ -80,7 +104,7 @@ def create_settings_file(app_or_apps: list[App] | App = [], settings: Settings |
 	if not app.folder.exists():
 		cprint("The app folder " + str(app.folder) + " doesn't exist.", "red")
 		print()
-		return
+		return Settings()
 
 	SETTINGS_FILE = app.folder / "settings.py"
 
@@ -120,18 +144,18 @@ def create_settings_file(app_or_apps: list[App] | App = [], settings: Settings |
 
 	add_setting("GITHUB_REPO", ask("GitHub repo URL (without .git)", "GITHUB_REPO"))
 
-	ret = {}
+	params: dict[str, Any] = {}
 
 	with open(SETTINGS_FILE, "w") as f:
 		for line in file:
 			if isinstance(line, tuple):
-				ret[line[0]] = line[1]
+				params[line[0]] = line[1]
 				f.write(line[0] + " = " + repr(line[1]) + "\n")
 			else:
 				f.write(line + "\n")
 
 	cprint("Settings file created", "green")
-	return Settings(ret)
+	return Settings(params)
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
