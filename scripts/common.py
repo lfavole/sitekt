@@ -38,12 +38,13 @@ def is_sensitive(key_name: str):
 
 	return False
 
-def run(args: list[str] | str, pipe = False, **kwargs):
+def run(args: list[str] | str, pipe = False, **kwargs) -> sp.CompletedProcess[str]:
 	"""
-	Run the command specified by args and show
+	Run the command specified by args. Return a `CompletedProcess[str]`.
 	"""
 	if isinstance(args, str):
 		args = shlex.split(args)
+	kwargs = {**kwargs, "encoding": "utf-8", "errors": "replace"}
 	if pipe:
 		kwargs = {**kwargs, "stdin": sp.PIPE, "stdout": sp.PIPE, "stderr": sp.PIPE}
 	if not pipe:

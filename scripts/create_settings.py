@@ -34,14 +34,7 @@ def input_pass(prompt: str, default = None, show = False):
 
 TRUE_VALUES = ("y", "yes", "true", "1")
 
-folders = sorted(
-	path for path in FOLDER.parent.glob("*/")
-	if not path.name.startswith(".")
-	and path.name != "scripts"
-	and not path.name.startswith("_")
-)
-DEFAULT_APP_NAME = folders[0].name
-DEFAULT_GITHUB_REPO = run("git remote get-url origin", True).stdout.decode("utf-8", "replace").strip().removesuffix(".git")
+DEFAULT_GITHUB_REPO = run("git remote get-url origin", True).stdout.strip().removesuffix(".git")
 
 def create_settings_file(settings: dict[str, Any] = {}, interactive = True):
 	"""
