@@ -90,6 +90,7 @@ def colored(text: str, color: str | None = None, on_color: str | None = None, at
 			from colorama import init
 		except ImportError:
 			os.putenv("COLORED", "0")
+			return text
 		init()
 		colorama_inited = True
 
