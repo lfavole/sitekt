@@ -6,11 +6,9 @@ import sys
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, USERNAME, cprint, run
+from common import PYTHONANYWHERE, USERNAME, App, Settings, cprint, run
 
 FILE = Path(__file__).resolve()
-FOLDER = FILE.parent
-SETTINGS_FILE = FOLDER / "settings.py"
 
 def get_random_secret_key():
 	return "".join(secrets.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50))
@@ -44,60 +42,86 @@ def input_pass(prompt: str, default: str | None = None, show = False):
 
 TRUE_VALUES = ("y", "yes", "true", "1")
 
+apps = App.all()
+DEFAULT_APP_NAME = str(apps[0])
 DEFAULT_GITHUB_REPO = run("git remote get-url origin", True).stdout.strip().removesuffix(".git")
 
-def create_settings_file(settings: dict[str, Any] = {}, interactive = True):
+def create_settings_file(settings: Settings | dict[str, Any] = {}, interactive = True):
 	"""
-	Create the `settings.py` file interactively or not.
+	Create the `settings.py` file interactively or not. Return the corresponding `Settings` object.
 	"""
 	def get_key(key: str):
 		ret = settings.get(key)
-		if not interactive:
+		if not interactive and ret is None:
 			raise ValueError(f"Setting {key} not provided")
 		return ret
 
-	APP_NAME = ""
+	def ask(prompt: str, variable: str, default: str | None = None, password = False):
+		return (input_pass if password else input_default)(prompt, get_key(variable) or default, not interactive)
 
 	cprint("Settings file creator", "blue")
 	print()
+
+	now = dt.datetime.now()
+
+	APP_NAME = ask("App name", "APP_NAME", DEFAULT_APP_NAME)
+	app = App(APP_NAME)
+
+	if not app.folder.exists():
+		cprint("The app folder " + str(app.folder) + " doesn't exist.", "red")
+		print()
+		return
+
+	SETTINGS_FILE = app.folder / "settings.py"
 
 	if SETTINGS_FILE.exists():
 		cprint("The settings file " + str(SETTINGS_FILE) + " already exists; this program will replace it.", "red")
 		print()
 
-	settings_content = f"""\
-# Settings (auto-generated on {dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} by scripts/{FILE.name})
+	file: list[str | tuple[str, Any]] = []
 
-APP_NAME = {(APP_NAME := input_default("App name", get_key("APP_NAME") or DEFAULT_APP_NAME, not interactive))!r}
-HOST = {(None if PYTHONANYWHERE else input_default("Host", get_key("HOST"), not interactive))!r}
-DEBUG = {(input_default("Debug mode", get_key("DEBUG"), not interactive) if not PYTHONANYWHERE else False)!r}
-SECRET_KEY = {input_default("Secret key", get_key("SECRET_KEY") or get_random_secret_key(), not interactive)!r}
-"""
+	file.append("# Settings (auto-generated on " + now.strftime("%Y-%m-%d %H:%M:%S") + " by scripts/" + FILE.name + ")")
+	file.append("")
 
-	if get_key("USE_SQLITE") is True or input_default("Use SQLite").lower() in TRUE_VALUES:
-		settings_content += f"""\
+	def add_setting(name: str, value: Any = None):
+		file.append((name, value))
 
-USE_SQLITE = True
-"""
+	add_setting("APP_NAME", APP_NAME)
+	add_setting("HOST", None if PYTHONANYWHERE else ask("Host", "HOST"))
+	add_setting("DEBUG", ask("Debug mode", "DEBUG"))
+	add_setting("SECRET_KEY", ask("Secret key", "SECRET_KEY", get_random_secret_key(), True))
+	file.append("")
+
+	USE_SQLITE = ask("Use SQLite", "USE_SQLITE").lower() in TRUE_VALUES
+	add_setting("USE_SQLITE", USE_SQLITE)
+
+	if not USE_SQLITE:
+		add_setting("DB_HOST", None if PYTHONANYWHERE else ask("Database host", "DB_HOST"))
+		add_setting("DB_NAME", ask("Database name" + (" (without " + USERNAME + "$ prefix)" if PYTHONANYWHERE else ""), "DB_NAME"))
+		add_setting("DB_USER", ("Database username", "DB_USER"))
+		add_setting("DB_PASSWORD", ask("Database password", "DB_PASSWORD", None, True))
 	else:
-		settings_content += f"""\
+		add_setting("DB_HOST")
+		add_setting("DB_NAME")
+		add_setting("DB_USER")
+		add_setting("DB_PASSWORD")
 
-USE_SQLITE = False
-DB_HOST = {(None if PYTHONANYWHERE else input_default("Database host", get_key("DB_HOST"), not interactive))!r}
-DB_NAME = {input_default("Database name", get_key("DB_NAME") or APP_NAME, not interactive)!r}
-DB_USER = {(None if PYTHONANYWHERE else input_default("Database user", get_key("DB_USER"), not interactive))!r}
-DB_PASSWORD = {input_pass("Database password", get_key("DB_PASSWORD"), not interactive)!r}
-"""
+	file.append("")
 
-	settings_content += f"""\
+	add_setting("GITHUB_REPO", ask("GitHub repo URL (without .git)", "GITHUB_REPO"))
 
-GITHUB_REPO = {input_default("GitHub repo URL (without .git)", get_key("GITHUB_REPO") or DEFAULT_GITHUB_REPO)!r}
-"""
+	ret = {}
 
 	with open(SETTINGS_FILE, "w") as f:
-		f.write(settings_content)
+		for line in file:
+			if isinstance(line, tuple):
+				ret[line[0]] = line[1]
+				f.write(line[0] + " = " + repr(line[1]) + "\n")
+			else:
+				f.write(line + "\n")
 
 	cprint("Settings file created", "green")
+	return Settings(ret)
 
 if __name__ == "__main__":
 	create_settings_file()

@@ -1,12 +1,12 @@
 import argparse
-import getpass
 from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import BASE_FOLDER, PYTHONANYWHERE, cprint, install, parse_packages_list
+from common import BASE_FOLDER, PYTHONANYWHERE, App, cprint, install, parse_packages_list
+from create_settings import input_question
 
-def setup(interactive = False):
+def setup(apps: list[App], interactive = False):
 	cprint("Configuration du site du caté Django", "blue")
 	print()
 
@@ -17,8 +17,6 @@ def setup(interactive = False):
 		else:
 			from create_settings import create_settings_file
 			create_settings_file()
-
-	import settings
 
 	print("Installing modules (if they are not already installed)")
 
@@ -42,23 +40,29 @@ def setup(interactive = False):
 			continue
 		install(package + version, comment.removeprefix("#").strip())
 
-	if PYTHONANYWHERE:
-		USERNAME = getpass.getuser()
-		PREFIX = settings.APP_NAME.upper()
+	for app in apps:
+		settings = app.settings
+		if not settings:
+			cprint("The app " + app + "doesn't have a settings.py file" + ("." if interactive else ", skipping it."), "red")
+			if not interactive:
+				continue
+			answer = input_question("Do you want to create it?")
+			if answer:
+				settings = settings.create()
+			else:
+				cprint("Skipping app " + app, "red")
+				continue
+		print("Setting up app " + app)
+		if PYTHONANYWHERE:
+			if settings.HOST is None:
+				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
+				return
 
-		HOST = get_host(settings)
-		if HOST is None:
-			cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
-			return
-
-		BASE_FOLDER = Path(__file__).resolve().parent.parent / settings.APP_NAME
-
-		wsgi_file = get_wsgi_file(settings)
-		print("Creating WSGI file " + wsgi_file)
-		with open(wsgi_file, "w") as f:
-			f.write(f"""\
+			print("Creating WSGI file " + str(settings.WSGI_FILE))
+			with open(settings.WSGI_FILE, "w") as f:
+				f.write(f"""\
 import sys
-sys.path.insert(0, {repr(str(BASE_FOLDER))})
+sys.path.insert(0, {repr(str(app.folder))})
 
 from {settings.APP_NAME}.wsgi import application
 """)
@@ -67,8 +71,9 @@ from {settings.APP_NAME}.wsgi import application
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
+	parser.add_argument("APPS", nargs = "*", help = "App names (folders directly in the git repository)")
 	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
 	args = parser.parse_args()
 	interactive: bool = args.interactive
 
-	setup(interactive)
+	setup(App.get_from_argparse(args.apps), interactive)

@@ -1,5 +1,5 @@
-scripts/settings.py
 cate/db.sqlite3
+cate/settings.py
 **/__pycache__/**
 cate/media/**
 cate/static/**

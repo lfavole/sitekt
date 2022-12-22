@@ -10,19 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-import getpass
-import os
-import sys
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 sys.path.insert(0, str(BASE_DIR.parent / "scripts"))
-from common import PYTHONANYWHERE, PYTHONANYWHERE_SITE
-import settings
+from common import PYTHONANYWHERE, PYTHONANYWHERE_SITE, USERNAME, App
 
-USERNAME = getpass.getuser()
+settings = App(BASE_DIR.name).settings
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -37,7 +34,7 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     CONN_MAX_AGE = 600
-    ALLOWED_HOSTS = [settings.HOST if not PYTHONANYWHERE else (USERNAME + "." + PYTHONANYWHERE_SITE)]
+    ALLOWED_HOSTS = [settings.HOST]
 else:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.43.206"]
 
@@ -104,7 +101,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "NAME": settings.DB_NAME,
-        "USER": USERNAME if PYTHONANYWHERE else settings.DB_USER,
+        "USER": settings.DB_USER,
         "PASSWORD": settings.DB_PASSWORD,
         "HOST": (USERNAME + ".mysql." + PYTHONANYWHERE_SITE.replace("pythonanywhere.com", "pythonanywhere-services.com")) if PYTHONANYWHERE else settings.DB_HOST,
         "OPTIONS": {

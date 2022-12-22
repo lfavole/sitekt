@@ -1,10 +1,12 @@
 import getpass
 import importlib
 import os
+from pathlib import Path
 import re
 import shlex
 import subprocess as sp
 import sys
+from typing import Self
 
 USERNAME = getpass.getuser()
 
@@ -26,13 +28,122 @@ def import_path(path, module, package = None):
 	finally:
 		sys.path = old_path
 
-def get_wsgi_file(settings):
-	"""
-	Get the path to the WSGI file.
-	"""
-	if not PYTHONANYWHERE:
-		return
-	return "/var/www/" + get_host(settings).replace(".", "_").lower().strip() + "_wsgi.py"
+class Namespace(dict):
+	def __getattr__(self, attr):
+		return self[attr]
+
+	def __setattr__(self, attr, value):
+		self[attr] = value
+
+	def __delattr__(self, attr):
+		del self[attr]
+
+	def __repr__(self):
+		return "<Namespace " + super().__repr__() + ">"
+
+class Settings(Namespace):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+
+		if not self:
+			return
+
+		self.HOST = self.HOST or (USERNAME + "." + PYTHONANYWHERE_SITE)
+
+		if PYTHONANYWHERE:
+			self.DB_NAME = USERNAME + "$" + self.DB_NAME
+			self.DB_HOST = (USERNAME + ".mysql." + PYTHONANYWHERE_SITE.replace("pythonanywhere.com", "pythonanywhere-services.com"))
+
+			self.PYTHONANYWHERE_SITE = PYTHONANYWHERE_SITE if PYTHONANYWHERE else None
+			self.WSGI_FILE = None if not self.HOST else Path("/var/www") / (self.HOST.replace(".", "_").lower().strip() + "_wsgi.py")
+
+	@classmethod
+	def create(cls) -> Self:
+		create = import_path(FOLDER, "create_settings").create_settings_file
+		return create()
+
+class App:
+	BASE_FOLDER = BASE_FOLDER
+
+	def __init__(self, folder: str | Path):
+		self.folder = BASE_FOLDER / folder if isinstance(folder, str) else folder
+		self._settings = None
+
+	@property
+	def settings(self):
+		if self._settings is not None:
+			return self._settings
+
+		try:
+			settings_module = import_path(BASE_FOLDER, str(self) + ".settings")
+		except ImportError:
+			self._settings = Settings()
+		else:
+			self._settings = Settings(vars(settings_module))
+		return self._settings
+
+	def __str__(self):
+		return self.folder.name
+
+	def __repr__(self):
+		return "<App " + repr(str(self)) + ">"
+
+	# Methods for comparing Apps with sorted() in App.all()
+	def __lt__(self, other):
+		return str(self) < str(other)
+
+	def __gt__(self, other):
+		return str(self) > str(other)
+
+	def __eq__(self, other):
+		return str(self) == str(other)
+
+	# Shorthand for addition: print("Deleting app " + app + "...")
+	def __add__(self, other):
+		return str(self) + other
+
+	def __radd__(self, other):
+		return other + str(self)
+
+	# Implementation of the slash: app / "manage.py"
+	def __truediv__(self, other):
+		return self.folder / other
+
+	@classmethod
+	def all(cls):
+		"""
+		Get all `App`s.
+		"""
+		return sorted(
+			cls(path) for path in cls.BASE_FOLDER.glob("*/")
+			if not path.name.startswith(".") # Don't include hidden folders like .vscode
+			and path.name != "scripts" # Don't include scripts folder
+			and not path.name.startswith("_") # Don't include __pycache__
+		)
+
+	@classmethod
+	def get_from_argparse(cls, argument: list[str] | str | None):
+		"""
+		Get the `App` object from an `argparse` argument.
+		"""
+		if isinstance(argument, list):
+			return [cls(app) for app in argument]
+
+		if argument:
+			return cls(argument)
+
+		apps = cls.all()
+		if not apps:
+			cprint("No app could be found", "red")
+			sys.exit()
+
+		if len(apps) > 2:
+			cprint("Multiple apps have been found:", "red")
+			for app in apps:
+				print("- " + app)
+			cprint("Please choose an app from this list and provide it as the first argument.", "red")
+			sys.exit()
+		return apps[0]
 
 def is_sensitive(key_name: str):
 	"""
