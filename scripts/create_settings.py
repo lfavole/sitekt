@@ -6,7 +6,7 @@ import sys
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, cprint, run
+from common import PYTHONANYWHERE, USERNAME, cprint, run
 
 FILE = Path(__file__).resolve()
 FOLDER = FILE.parent

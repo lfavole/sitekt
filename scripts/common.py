@@ -6,10 +6,13 @@ import shlex
 import subprocess as sp
 import sys
 
+USERNAME = getpass.getuser()
+
 PYTHONANYWHERE_SITE = os.environ.get("PYTHONANYWHERE_SITE", "")
 PYTHONANYWHERE = PYTHONANYWHERE_SITE != ""
 
-def get_host(settings):
+FOLDER = Path(__file__).resolve().parent
+BASE_FOLDER = FOLDER.parent
 	"""
 	Get the host name from a settings module.
 	"""
