@@ -13,13 +13,18 @@ PYTHONANYWHERE = PYTHONANYWHERE_SITE != ""
 
 FOLDER = Path(__file__).resolve().parent
 BASE_FOLDER = FOLDER.parent
+
+def import_path(path, module, package = None):
 	"""
-	Get the host name from a settings module.
+	Import the `module` that is in the specified `path` by adding and removing the `path` to `sys.path`.
 	"""
-	if settings.HOST is not None:
-		return settings.HOST
-	if PYTHONANYWHERE:
-		return getpass.getuser() + "." + PYTHONANYWHERE_SITE
+	old_path = sys.path.copy()
+	sys.path.clear()
+	sys.path.append(path)
+	try:
+		return importlib.import_module(module, package)
+	finally:
+		sys.path = old_path
 
 def get_wsgi_file(settings):
 	"""
