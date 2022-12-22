@@ -1,31 +1,29 @@
-import hmac
 from hashlib import sha1
+import hmac
+from ipaddress import ip_address, ip_network
 from pathlib import Path
 import sys
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
+from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
 from django.utils.encoding import force_bytes
-
+from django.views.decorators.csrf import csrf_exempt
 import requests
-from ipaddress import ip_address, ip_network
 
 try:
-	sys.path.insert(0, Path(__file__).resolve().parent.parent.parent / "scripts")
-	from fetch import fetch
+	sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "scripts"))
+	from fetch import fetch  # type: ignore
 except ImportError:
 	fetch = None
 
-def home(request):
+def home(request: HttpRequest):
     return render(request, "home.html")
 
 @csrf_exempt
-def reload_website(request):
+def reload_website(request: HttpRequest):
 	if not fetch:
-		return HttpResponseForbidden("Permission denied (fetch).")
+		return HttpResponseForbidden("Permission denied.")
 
 	if request.user.is_superuser:
 		fetch()
@@ -46,7 +44,7 @@ def reload_website(request):
 		return HttpResponseForbidden("Permission denied.")
 
 	# Verify the request signature
-	header_signature = request.hraders.get("X-Hub-Signature")
+	header_signature = request.headers.get("X-Hub-Signature")
 	if header_signature is None:
 		return HttpResponseForbidden("Permission denied.")
 
@@ -65,7 +63,10 @@ def reload_website(request):
 	if event == "ping":
 		return HttpResponse("pong")
 	elif event == "push":
-		fetch()
+		try:
+			fetch()
+		except:
+			return HttpResponseServerError("Failed to fetch changes")
 		return HttpResponse("success")
 
 	# In case we receive an event that's not ping or push
