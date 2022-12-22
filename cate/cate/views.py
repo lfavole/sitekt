@@ -35,9 +35,9 @@ def reload_website(request: HttpRequest):
 
 	# Verify if request came from GitHub
 	forwarded_for = request.headers.get("X-Forwarded-For")
-	client_ip_address = ip_address(forwarded_for)
-	if not client_ip_address:
+	if not forwarded_for:
 		return forbidden
+	client_ip_address = ip_address(forwarded_for)
 	whitelist = requests.get("https://api.github.com/meta").json()["hooks"]
 
 	for valid_ip in whitelist:
