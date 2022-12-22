@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import get_host, PYTHONANYWHERE, PYTHONANYWHERE_SITE, cprint, get_wsgi_file, install, parse_packages_list
+from common import BASE_FOLDER, PYTHONANYWHERE, cprint, install, parse_packages_list
 
 def setup(interactive = False):
 	cprint("Configuration du site du caté Django", "blue")
@@ -22,7 +22,7 @@ def setup(interactive = False):
 
 	print("Installing modules (if they are not already installed)")
 
-	with open(Path(__file__).resolve().parent.parent / "requirements.txt") as f:
+	with open(BASE_FOLDER / "requirements.txt") as f:
 		requirements = f.read()
 
 	# TODO: venv
