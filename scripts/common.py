@@ -122,13 +122,17 @@ class App:
 		)
 
 	@classmethod
-	def get_from_argparse(cls, argument: list[str] | str | None):
+	def get_list_from_argparse(cls, argument: list[str]):
+		"""
+		Get the `App` objects from an `argparse` list argument.
+		"""
+		return [cls(app) for app in argument]
+
+	@classmethod
+	def get_from_argparse(cls, argument: str | None):
 		"""
 		Get the `App` object from an `argparse` argument.
 		"""
-		if isinstance(argument, list):
-			return [cls(app) for app in argument]
-
 		if argument:
 			return cls(argument)
 

@@ -76,4 +76,4 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	interactive: bool = args.interactive
 
-	setup(App.get_from_argparse(args.apps), interactive)
+	setup(App.get_list_from_argparse(args.apps), interactive)
