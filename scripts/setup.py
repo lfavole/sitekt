@@ -25,18 +25,19 @@ def setup(interactive = False):
 	with open(Path(__file__).resolve().parent.parent / "requirements.txt") as f:
 		requirements = f.read()
 
+	# TODO: venv
 	for package, version, comment in parse_packages_list(requirements):
-		# Don't install Colorama on non-Windows platforms
+		# Install Colorama only on Windows
 		if sys.platform != "win32" and package == "colorama":
 			continue
 		# Don't install servers on PythonAnywhere
 		if PYTHONANYWHERE:
 			if package == "waitress" or package == "gunicorn":
 				continue
-		# Don't install Gunicorn (but install Waitress) on Windows and Android (Termux)
+		# Install Waitress (not Gunicorn) on Windows and Android (Termux)
 		if (sys.platform == "win32" or hasattr(sys, "getandroidapilevel")) and package == "gunicorn":
 			continue
-		# Don't install Waitress (but install Gunicorn) on non-Windows platforms
+		# Install Gunicorn (not Waitress) on non-Windows platforms
 		if sys.platform != "win32" and package == "waitress":
 			continue
 		install(package + version, comment.removeprefix("#").strip())
