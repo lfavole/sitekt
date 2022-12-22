@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import PYTHONANYWHERE, App, cprint, run
+from common import App, cprint, run
 
 FOLDER = Path(__file__).parent.parent
 if not os.path.exists(FOLDER):
@@ -15,11 +15,11 @@ def run_with_explanation(cmd: str | list[str], expl: str, cwd = FOLDER):
 	if run(cmd, cwd = cwd).returncode != 0:
 		cprint("Error while " + expl, "red")
 
-def fetch():
+def fetch(apps: list[App] = []):
 	cprint("Fetching script", "blue")
 	print()
 
-	for app in App.all():
+	for app in apps or App.all():
 		print("App " + app)
 		settings = app.settings
 		if not settings:
@@ -34,7 +34,7 @@ def fetch():
 		run_with_explanation([*manage_py_args, "migrate"], "migrating database")
 		run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "collecting static files")
 
-		if PYTHONANYWHERE:
+		if settings.WSGI_FILE:
 			print("Touching WSGI file for app " + app)
 			Path(settings.WSGI_FILE).touch()
 

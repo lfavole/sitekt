@@ -58,9 +58,10 @@ def setup(apps: list[App], interactive = False):
 				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
 				return
 
-			print("Creating WSGI file " + str(settings.WSGI_FILE))
-			with open(settings.WSGI_FILE, "w") as f:
-				f.write(f"""\
+			if settings.WSGI_FILE:
+				print("Creating WSGI file " + str(settings.WSGI_FILE))
+				with open(settings.WSGI_FILE, "w") as f:
+					f.write(f"""\
 import sys
 sys.path.insert(0, {repr(str(app.folder))})
 

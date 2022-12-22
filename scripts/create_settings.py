@@ -72,6 +72,7 @@ def create_settings_file(app_or_apps: list[App] | App = [], settings: Settings |
 
 	if app_or_apps:
 		app = app_or_apps
+		APP_NAME = str(app)
 	else:
 		APP_NAME = ask("App name", "APP_NAME", DEFAULT_APP_NAME)
 		app = App(APP_NAME)

@@ -6,7 +6,7 @@ import re
 import shlex
 import subprocess as sp
 import sys
-from typing import Self
+from typing import Self, overload
 
 USERNAME = getpass.getuser()
 
@@ -16,13 +16,13 @@ PYTHONANYWHERE = PYTHONANYWHERE_SITE != ""
 FOLDER = Path(__file__).resolve().parent
 BASE_FOLDER = FOLDER.parent
 
-def import_path(path, module, package = None):
+def import_path(path: Path | str, module: str, package: str | None = None):
 	"""
 	Import the `module` that is in the specified `path` by adding and removing the `path` to `sys.path`.
 	"""
 	old_path = sys.path.copy()
 	sys.path.clear()
-	sys.path.append(path)
+	sys.path.append(str(path))
 	try:
 		return importlib.import_module(module, package)
 	finally:
@@ -56,6 +56,12 @@ class Settings(Namespace):
 
 			self.PYTHONANYWHERE_SITE = PYTHONANYWHERE_SITE if PYTHONANYWHERE else None
 			self.WSGI_FILE = None if not self.HOST else Path("/var/www") / (self.HOST.replace(".", "_").lower().strip() + "_wsgi.py")
+		else:
+			self.DB_NAME = None
+			self.DB_HOST = None
+
+			self.PYTHONANYWHERE_SITE = None
+			self.WSGI_FILE = None
 
 	@classmethod
 	def create(cls) -> Self:
