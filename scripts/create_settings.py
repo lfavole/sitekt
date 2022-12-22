@@ -47,10 +47,18 @@ apps = App.all()
 DEFAULT_APP_NAME = str(apps[0])
 DEFAULT_GITHUB_REPO = run("git remote get-url origin", True).stdout.strip().removesuffix(".git")
 
-def create_settings_file(settings: Settings | dict[str, Any] = {}, interactive = True):
+def create_settings_file(app_or_apps: list[App] | App = [], settings: Settings | dict[str, Any] = {}, interactive = True):
 	"""
 	Create the `settings.py` file interactively or not. Return the corresponding `Settings` object.
 	"""
+	cprint("Settings file creator", "blue")
+	print()
+
+	if isinstance(app_or_apps, list):
+		for app in app_or_apps:
+			create_settings_file(app, settings, interactive)
+		return
+
 	def get_key(key: str):
 		ret = settings.get(key)
 		if not interactive and ret is None:
@@ -60,13 +68,13 @@ def create_settings_file(settings: Settings | dict[str, Any] = {}, interactive =
 	def ask(prompt: str, variable: str, default: str | None = None, password = False):
 		return (input_pass if password else input_default)(prompt, get_key(variable) or default, not interactive)
 
-	cprint("Settings file creator", "blue")
-	print()
-
 	now = dt.datetime.now()
 
-	APP_NAME = ask("App name", "APP_NAME", DEFAULT_APP_NAME)
-	app = App(APP_NAME)
+	if app_or_apps:
+		app = app_or_apps
+	else:
+		APP_NAME = ask("App name", "APP_NAME", DEFAULT_APP_NAME)
+		app = App(APP_NAME)
 
 	if not app.folder.exists():
 		cprint("The app folder " + str(app.folder) + " doesn't exist.", "red")
