@@ -22,8 +22,9 @@ def home(request: HttpRequest):
 
 @csrf_exempt
 def reload_website(request: HttpRequest):
+	forbidden = HttpResponseForbidden("Permission denied.")
 	if not fetch:
-		return HttpResponseForbidden("Permission denied.")
+		return forbidden
 
 	if request.user.is_superuser:
 		fetch()
@@ -35,18 +36,20 @@ def reload_website(request: HttpRequest):
 	# Verify if request came from GitHub
 	forwarded_for = request.headers.get("X-Forwarded-For")
 	client_ip_address = ip_address(forwarded_for)
+	if not client_ip_address:
+		return forbidden
 	whitelist = requests.get("https://api.github.com/meta").json()["hooks"]
 
 	for valid_ip in whitelist:
 		if client_ip_address in ip_network(valid_ip):
 			break
 	else:
-		return HttpResponseForbidden("Permission denied.")
+		return forbidden
 
 	# Verify the request signature
 	header_signature = request.headers.get("X-Hub-Signature")
 	if header_signature is None:
-		return HttpResponseForbidden("Permission denied.")
+		return forbidden
 
 	sha_name, signature = header_signature.split("=")
 	if sha_name != "sha1":
@@ -54,7 +57,7 @@ def reload_website(request: HttpRequest):
 
 	mac = hmac.new(force_bytes(settings.GITHUB_WEBHOOK_KEY), msg = force_bytes(request.body), digestmod = sha1)
 	if not hmac.compare_digest(force_bytes(mac.hexdigest()), force_bytes(signature)):
-		return HttpResponseForbidden("Permission denied.")
+		return forbidden
 
 	# If request reached this point we are in a good shape
 	# Process the GitHub events
