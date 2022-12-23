@@ -6,7 +6,7 @@ import shlex
 import subprocess as sp
 import sys
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 
 Self = TypeVar("Self")
 
@@ -82,6 +82,12 @@ class Settings(Namespace):
 		create = import_path(FOLDER, "create_settings").create_settings_file
 		return create()
 
+def get_vars(obj: Any) -> dict[str, Any]:
+	"""
+	Return a `dict` (name, value) containing all the variables defined in the object (for example a module).
+	"""
+	return {name: getattr(obj, name) for name in dir(obj) if not name.startswith("__") and not name.endswith("__")}
+
 class App:
 	"""
 	Object representing an app
@@ -101,11 +107,11 @@ class App:
 			return self._settings
 
 		try:
-			settings_module = import_path(BASE_FOLDER, str(self) + ".settings")
+			settings_module = import_path(self.folder, "settings")
 		except ImportError:
 			self._settings = Settings()
 		else:
-			self._settings = Settings(vars(settings_module))
+			self._settings = Settings(get_vars(settings_module))
 		return self._settings
 
 	def __str__(self):
