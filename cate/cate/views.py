@@ -26,7 +26,7 @@ def reload_website(request: HttpRequest):
 	if not fetch:
 		return forbidden
 
-	if request.user.is_superuser:
+	if request.user.is_superuser: # type: ignore
 		fetch()
 		return HttpResponse("success")
 
