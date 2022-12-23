@@ -61,6 +61,7 @@ class Settings(Namespace):
 		if PYTHONANYWHERE:
 			self.DB_NAME: str | None = USERNAME + "$" + self.DB_NAME if self.DB_NAME else None
 			self.DB_HOST = (USERNAME + ".mysql." + PYTHONANYWHERE_SITE.replace("pythonanywhere.com", "pythonanywhere-services.com"))
+			self.DB_USER = self.DB_USER or USERNAME
 
 			self.PYTHONANYWHERE_SITE = PYTHONANYWHERE_SITE if PYTHONANYWHERE else None
 			self.WSGI_FILE = None if not self.HOST else Path("/var/www") / (self.HOST.replace(".", "_").lower().strip() + "_wsgi.py")
