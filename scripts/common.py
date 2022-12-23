@@ -6,7 +6,7 @@ import shlex
 import subprocess as sp
 import sys
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, Type, TypeVar
 
 Self = TypeVar("Self")
 
@@ -73,7 +73,7 @@ class Settings(Namespace):
 			self.WSGI_FILE = None
 
 	@classmethod
-	def create(cls: Self) -> Self:
+	def create(cls: Type[Self]) -> Self:
 		"""
 		Create the settings with `create_settings.py` and return the created settings.
 
