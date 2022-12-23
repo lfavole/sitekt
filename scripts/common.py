@@ -147,8 +147,9 @@ class App:
 		Get all apps.
 		"""
 		return sorted(
-			cls(path) for path in cls.BASE_FOLDER.glob("*/")
-			if not path.name.startswith(".") # Don't include hidden folders like .vscode
+			cls(path) for path in cls.BASE_FOLDER.iterdir()
+			if path.is_dir()
+			and not path.name.startswith(".") # Don't include hidden folders like .vscode
 			and path.name != "scripts" # Don't include scripts folder
 			and not path.name.startswith("_") # Don't include __pycache__
 		)
