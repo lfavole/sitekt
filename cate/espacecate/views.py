@@ -9,24 +9,24 @@ from .models import Article, Document, Page
 class PageView(generic.DetailView):
     model = Page
     context_object_name = "page"
-    template_name = "page.html"
+    template_name = "espacecate/page.html"
     queryset = Page.objects.filter(~Q(content__exact = ""))
 
 def subscription(request):
-    return render(request, "subscription.html", {"form": SubscriptionForm()})
+    return render(request, "espacecate/subscription.html", {"form": SubscriptionForm()})
 
 class ArticleListView(generic.ListView):
     model = Article
     context_object_name = "articles"
-    template_name = "articles.html"
+    template_name = "espacecate/articles.html"
 
 class ArticleView(generic.DetailView):
     model = Article
     context_object_name = "article"
-    template_name = "article.html"
+    template_name = "espacecate/article.html"
     queryset = Article.objects.filter(~Q(content__exact = ""))
 
 class DocumentListView(generic.ListView):
     model = Document
     context_object_name = "docs"
-    template_name = "docs.html"
+    template_name = "espacecate/docs.html"
