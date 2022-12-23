@@ -88,7 +88,7 @@ class App:
 	BASE_FOLDER = BASE_FOLDER
 
 	def __init__(self, folder: str | Path):
-		self.folder = BASE_FOLDER / folder if isinstance(folder, str) else folder
+		self.folder = (self.BASE_FOLDER / folder) if isinstance(folder, str) else folder
 		self._settings = None
 
 	@property

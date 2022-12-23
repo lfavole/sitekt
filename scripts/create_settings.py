@@ -132,7 +132,7 @@ def create_settings_file(app_or_apps: list[App] | App | None = None, settings: S
 	if not USE_SQLITE:
 		add_setting("DB_HOST", None if PYTHONANYWHERE else ask("Database host", "DB_HOST"))
 		add_setting("DB_NAME", ask("Database name" + (" (without " + USERNAME + "$ prefix)" if PYTHONANYWHERE else ""), "DB_NAME"))
-		add_setting("DB_USER", ("Database username", "DB_USER"))
+		add_setting("DB_USER", ask("Database username", "DB_USER"))
 		add_setting("DB_PASSWORD", ask("Database password", "DB_PASSWORD", None, True))
 	else:
 		add_setting("DB_HOST")
