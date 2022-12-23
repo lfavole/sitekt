@@ -30,7 +30,7 @@ def fetch(apps: list[App] | None = None):
 			continue
 
 		_run_with_explanation("git init", "creating git repo")
-		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git", "main"], "fetching changes")
+		_run_with_explanation(["git", "pull", "--depth=1", settings.GITHUB_REPO + ".git", "main"], "fetching changes")
 
 		manage_py_args = [sys.executable, str(app / "manage.py")]
 
