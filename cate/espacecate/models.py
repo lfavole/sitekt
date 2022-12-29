@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from uservisit.models import UserVisit, UserVisitManager
 
+
 class EspacecateUserVisit(UserVisit):
 	pass
 
@@ -59,7 +60,7 @@ class Article(PageBase):
 	def get_absolute_url(self):
 		return reverse("espacecate:article", args = [self.slug])
 
-class Enfant(models.Model):
+class Child(models.Model):
 	nom = models.CharField("Nom de famille", max_length = 100)
 	prenom = models.CharField("Prénom", max_length = 100)
 	date_naissance = models.DateField("Date de naissance")
@@ -126,6 +127,9 @@ class Enfant(models.Model):
 
 	photos = models.BooleanField("Publication des photos")
 	frais = models.fields.IntegerField("Participation aux frais", validators = [MinValueValidator(0)])
+
+	class Meta:
+		verbose_name = "Enfant"
 
 	fieldsets = (
 		("Informations", {
