@@ -1,13 +1,14 @@
 import datetime
 import hashlib
-from typing import Any, Type
 import uuid
+from typing import Any
 
+import user_agents
 from django.db import models
 from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _lazy
-import user_agents
+
 
 def parse_remote_addr(request: HttpRequest) -> str:
 	"""Extract client IP from request."""
@@ -24,14 +25,10 @@ def parse_ua_string(request: HttpRequest) -> str:
 
 class UserVisitManager(models.Manager):
 	"""Custom model manager for UserVisit objects."""
-	klass: Type["UserVisit"] = None # type: ignore
-
 	def create(self, request: HttpRequest, timestamp: datetime.datetime) -> "UserVisit":
 		"""Build a new UserVisit object from a request, without saving it."""
-		if self.klass is None:
-			raise ValueError("self.klass n'a pas été défini")
 		rm = request.resolver_match
-		uv = self.klass(
+		uv = self.model(
 			timestamp = timestamp,
 			session_key = request.session.session_key or "",
 			remote_addr = parse_remote_addr(request),
@@ -98,7 +95,7 @@ class UserVisit(models.Model):
 		return f"Site visit on {self.timestamp}"
 
 	def __repr__(self) -> str:
-		return f"<UserVisit date = '{self.date}'>"
+		return f"<{self.__class__.__qualname__} date = '{self.date}'>"
 
 	def save(self, *args: Any, **kwargs: Any) -> None:
 		"""Set hash property and save object."""

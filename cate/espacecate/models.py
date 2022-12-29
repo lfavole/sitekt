@@ -7,9 +7,7 @@ from django.utils.text import slugify
 from uservisit.models import UserVisit, UserVisitManager
 
 class EspacecateUserVisit(UserVisit):
-	objects = UserVisitManager()
-
-EspacecateUserVisit.objects.klass = EspacecateUserVisit
+	pass
 
 class PageBase(models.Model):
 	slug = models.fields.SlugField("ID", max_length = 100, editable = False, primary_key = True)
