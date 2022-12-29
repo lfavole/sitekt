@@ -143,6 +143,7 @@ def create_settings_file(app_or_apps: list[App] | App | None = None, settings: S
 	file.append("")
 
 	add_setting("GITHUB_REPO", ask("GitHub repo URL (without .git)", "GITHUB_REPO"))
+	add_setting("GITHUB_WEBHOOK_KEY", ask("GitHub webhook key", "GITHUB_WEBHOOK_KEY", None, True))
 
 	params: dict[str, Any] = {}
 

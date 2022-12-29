@@ -39,6 +39,8 @@ if not DEBUG:
 else:
 	ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.43.206"]
 
+GITHUB_WEBHOOK_KEY = settings.GITHUB_WEBHOOK_KEY
+
 # Application definition
 
 INSTALLED_APPS = [
