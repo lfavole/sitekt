@@ -5,14 +5,16 @@ import re
 from typing import Optional
 from urllib.parse import urlparse
 
+import markdown as md
+from django import template
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
-from django import template
 from django.template.defaultfilters import stringfilter
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.safestring import mark_safe
-import markdown as md
 from markdown.inlinepatterns import LINK_RE, LinkInlineProcessor
+from pyembed.markdown import PyEmbedMarkdown
+
 
 class Error(Exception):
     pass
@@ -97,4 +99,4 @@ register = template.Library()
 @register.filter(name = "markdown")
 @stringfilter
 def markdown(value):
-	return mark_safe(md.markdown(value, extensions = ["extra"]))
+	return mark_safe(md.markdown(value, extensions = ["extra", PyEmbedMarkdown()]))
