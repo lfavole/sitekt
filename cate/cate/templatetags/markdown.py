@@ -7,13 +7,17 @@ from urllib.parse import urlparse
 
 import markdown as md
 from django import template
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.template.defaultfilters import stringfilter
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.safestring import mark_safe
 from markdown.inlinepatterns import LINK_RE, LinkInlineProcessor
+from pyembed.core import PyEmbed
+from pyembed.core.discovery import FileDiscoverer, DefaultDiscoverer
 from pyembed.markdown import PyEmbedMarkdown
+from pyembed.markdown import pattern
 
 
 class Error(Exception):
@@ -94,9 +98,20 @@ class DjangoUrlExtension(md.Extension):
     def extendMarkdown(self, md, *args, **kwrags):
         md.inlinePatterns.register(DjangoLinkInlineProcessor(LINK_RE, md), "link", 160)
 
+class CustomPyEmbedMarkdown(PyEmbedMarkdown):
+    def __init__(self, pyembed = None):
+        super().__init__()
+        self.pyembed = pyembed
+
+    def extendMarkdown(self, md, md_globals):
+        md.inlinePatterns.add("pyembed", pattern.PyEmbedPattern(self.pyembed, md), "_begin")
+
+discoverer = FileDiscoverer(settings.BASE_DIR / "oembed_providers.json") if settings.PYTHONANYWHERE else DefaultDiscoverer()
+pyembed = CustomPyEmbedMarkdown(PyEmbed(discoverer))
+
 register = template.Library()
 
 @register.filter(name = "markdown")
 @stringfilter
 def markdown(value):
-	return mark_safe(md.markdown(value, extensions = ["extra", PyEmbedMarkdown()]))
+	return mark_safe(md.markdown(value, extensions = ["extra", pyembed]))

@@ -1,5 +1,6 @@
 cate/db.sqlite3
 cate/settings.py
+cate/oembed_providers.json
 **/__pycache__/**
 cate/media/**
 cate/static/**
