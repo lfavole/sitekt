@@ -1,7 +1,6 @@
 import datetime
 import hashlib
 import uuid
-from typing import Any
 
 import user_agents
 from django.db import models
@@ -27,17 +26,15 @@ class UserVisitManager(models.Manager):
 	"""Custom model manager for UserVisit objects."""
 	def create(self, request: HttpRequest, timestamp: datetime.datetime) -> "UserVisit":
 		"""Build a new UserVisit object from a request, without saving it."""
-		rm = request.resolver_match
-		uv = self.model(
+		rmatch = request.resolver_match
+		return self.model(
 			timestamp = timestamp,
 			session_key = request.session.session_key or "",
 			remote_addr = parse_remote_addr(request),
 			ua_string = parse_ua_string(request),
-			namespace = rm.namespace,
-			view = rm.view_name.removeprefix(rm.namespace + ":"),
+			namespace = rmatch.namespace,
+			view = rmatch.view_name.removeprefix(rmatch.namespace + ":"),
 		)
-		uv.hash = uv.md5().hexdigest()
-		return uv
 
 
 class UserVisit(models.Model):
@@ -68,10 +65,6 @@ class UserVisit(models.Model):
 		help_text = _lazy("Client User-Agent HTTP header"),
 		blank = True,
 	)
-	hash = models.CharField(
-		max_length = 32,
-		help_text = _lazy("MD5 hash generated from request properties"),
-	)
 	namespace = models.CharField(
 		max_length = 32,
 		help_text = _lazy("View namespace"),
@@ -97,11 +90,6 @@ class UserVisit(models.Model):
 	def __repr__(self) -> str:
 		return f"<{self.__class__.__qualname__} date = '{self.date}'>"
 
-	def save(self, *args: Any, **kwargs: Any) -> None:
-		"""Set hash property and save object."""
-		self.hash = self.md5().hexdigest()
-		super().save(*args, **kwargs)
-
 	@property
 	def user_agent(self):
 		"""Return UserAgent object from the raw user_agent string."""
@@ -113,11 +101,12 @@ class UserVisit(models.Model):
 		return self.timestamp.date()
 
 	# see https://github.com/python/typeshed/issues/2928 re. return type
-	def md5(self):
+	@property
+	def hash(self):
 		"""Generate MD5 hash used to identify duplicate visits."""
 		h = hashlib.md5(b"")
 		h.update(self.date.isoformat().encode())
 		h.update(self.session_key.encode())
 		h.update(self.remote_addr.encode())
 		h.update(self.ua_string.encode())
-		return h
+		return h.hexdigest()
