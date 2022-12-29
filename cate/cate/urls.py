@@ -16,20 +16,22 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 
 from . import views
 
-def add_website(name):
-    return path(name + "/", include(name + ".urls", namespace = name))
+def add_website(name: str):
+    return path(name.replace("_", "-") + "/", include(name + ".urls", namespace = name))
 
 urlpatterns = [
     path("admin/docs/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
+    add_website("calendrier_avent_2022"),
     add_website("espacecate"),
     # add_website("aumonerie"),
     path("", views.home, name = "home"),
     path("reload-website/", views.reload_website),
+    re_path(r'^', include('filer.server.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,8 +1,8 @@
 from django import forms
 
-from .models import Enfant
+from .models import Child
 
 class SubscriptionForm(forms.ModelForm):
 	class Meta:
-		model = Enfant
+		model = Child
 		exclude = []

@@ -4,7 +4,7 @@ from django.contrib import admin
 from django import forms
 from uservisit.admin import UserVisitAdmin
 
-from .models import Article, Document, Enfant, EspacecateUserVisit, Page
+from .models import Article, Document, Child, EspacecateUserVisit, Page
 
 @admin.register(EspacecateUserVisit)
 class EspacecateUserVisitAdmin(UserVisitAdmin):
@@ -36,7 +36,7 @@ class ArticleAdmin(admin.ModelAdmin):
 	form = ArticleAdminForm
 
 
-@admin.register(Enfant)
+@admin.register(Child)
 class EnfantAdmin(admin.ModelAdmin):
 	fieldsets = (
 		("Informations de l'enfant", {

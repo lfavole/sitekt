@@ -4,7 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-from uservisit.models import UserVisit, UserVisitManager
+from uservisit.models import UserVisit
 
 
 class EspacecateUserVisit(UserVisit):

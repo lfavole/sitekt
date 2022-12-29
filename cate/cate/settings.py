@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import sys
 from pathlib import Path
+from filer.utils.files import get_valid_filename
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -142,6 +143,7 @@ LANGUAGE_CODE = "fr-FR"
 TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
+USE_L10N = True
 
 USE_TZ = True
 
@@ -149,12 +151,68 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "src/"]
 STATIC_ROOT = BASE_DIR / "static/"
 
-MEDIA_URL = "media/"
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media/"
+
+PRIVATE_MEDIA_URL = "private/"
+PRIVATE_MEDIA_ROOT = BASE_DIR / "private/"
+
+FILER_STORAGES = {
+	"public": {
+		"main": {
+			"ENGINE": "filer.storage.PublicFileSystemStorage",
+			"OPTIONS": {
+				"location": MEDIA_ROOT,
+				"base_url": MEDIA_URL,
+			},
+			"UPLOAD_TO": "cate.settings.generate_filename",
+			"UPLOAD_TO_PREFIX": "",
+		},
+		"thumbnails": {
+			"ENGINE": "filer.storage.PublicFileSystemStorage",
+			"OPTIONS": {
+				"location": MEDIA_ROOT,
+				"base_url": MEDIA_URL,
+			},
+			"THUMBNAIL_OPTIONS": {
+				"base_dir": "thumbs",
+			},
+		},
+	},
+	"private": {
+		"main": {
+			"ENGINE": "filer.storage.PrivateFileSystemStorage",
+			"OPTIONS": {
+				"location": PRIVATE_MEDIA_ROOT,
+				"base_url": PRIVATE_MEDIA_URL,
+			},
+			"UPLOAD_TO": "cate.settings.generate_filename",
+			"UPLOAD_TO_PREFIX": "",
+		},
+		"thumbnails": {
+			"ENGINE": "filer.storage.PrivateFileSystemStorage",
+			"OPTIONS": {
+				"location": PRIVATE_MEDIA_ROOT,
+				"base_url": PRIVATE_MEDIA_URL,
+			},
+			"THUMBNAIL_OPTIONS": {
+				"base_dir": "thumbs",
+			},
+		},
+	},
+}
+
+FILER_ENABLE_PERMISSIONS = True
+
+def generate_filename(_instance, filename: str):
+	ret = get_valid_filename(filename).replace("_", "-")
+	while "--" in ret:
+		ret = ret.replace("--", "-")
+	return ret
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
