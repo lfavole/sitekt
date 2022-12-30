@@ -1,7 +1,6 @@
 colorama # colorama
 Django # django
 Markdown # markdown
-pyembed-markdown # pyembed.markdown
 django-admin-sortable2 # adminsortable2
 user-agents # user_agents
 waitress # waitress
