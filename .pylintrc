@@ -17,7 +17,7 @@ expected-line-ending-format =
 include-naming-hint = y
 
 [basic]
-good-names = f
+good-names = f, id, md
 
 [pylint_quotes]
 string-quote = double

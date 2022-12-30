@@ -5,15 +5,14 @@ import re
 from typing import Callable, Optional
 from urllib.parse import parse_qs, urlparse
 
-import markdown as md
-from markdown.inlinepatterns import Pattern
 from django import template
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.template.defaultfilters import stringfilter
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.safestring import mark_safe
-from markdown.inlinepatterns import LINK_RE, LinkInlineProcessor
+from markdown import Extension, Markdown
+from markdown.inlinepatterns import LINK_RE, LinkInlineProcessor, Pattern
 
 
 class Error(Exception):
@@ -27,7 +26,7 @@ class InvalidMarkdown(Error):
     def __str__(self) -> str:
         if self.value is None:
             return self.error
-        return f'{self.error} "{self.value}"';
+        return f"{self.error} \"{self.value}\""
 
 
 def clean_link(href: str) -> str:
@@ -40,8 +39,8 @@ def clean_link(href: str) -> str:
         if email:
             try:
                 EmailValidator()(email)
-            except ValidationError:
-                raise InvalidMarkdown("Invalid email address", value = email)
+            except ValidationError as exc:
+                raise InvalidMarkdown("Invalid email address", value = email) from exc
 
         return href
 
@@ -65,12 +64,12 @@ def clean_link(href: str) -> str:
     if parsed_url.netloc == "":
         try:
             resolver_match = resolve(parsed_url.path)
-        except Resolver404:
+        except Resolver404 as exc:
             raise InvalidMarkdown(
                 "Should not use absolute links to the current site.\n"
                 "We couldn't find a match to this URL. Are you sure it exists?",
                 value = href,
-            )
+            ) from exc
         else:
             raise InvalidMarkdown(
                 f"Should not use absolute links to the current site.\n"
@@ -90,18 +89,18 @@ class DjangoLinkInlineProcessor(LinkInlineProcessor):
         href = clean_link(href)
         return href, title, index, handled
 
-class DjangoUrlExtension(md.Extension):
-    def extendMarkdown(self, md, *args, **kwargs):
+class DjangoUrlExtension(Extension):
+    def extendMarkdown(self, md, *_args, **_kwargs):
         md.inlinePatterns.register(DjangoLinkInlineProcessor(LINK_RE, md), "link", 160)
 
 
 EMBED_PATTERN = r"\[!embed(\?(.*))?\]\((.*)\)"
 
 class PyEmbedPattern(Pattern):
-    def __init__(self, pyembed: "PyEmbed", md: md.Markdown):
+    def __init__(self, pyembed_i: "PyEmbed", md_i: Markdown):
         super().__init__(EMBED_PATTERN)
-        self.pyembed = pyembed
-        self.md = md
+        self.pyembed = pyembed_i
+        self.md = md_i
 
     def handleMatch(self, m):
         url = m.group(4)
@@ -128,7 +127,7 @@ class PyEmbedPattern(Pattern):
             return int(query_params[name][0])
         return 0
 
-class PyEmbed(md.Extension):
+class PyEmbed(Extension):
     def __init__(self):
         super().__init__()
         self.providers: list[tuple[list[str], Callable[[str, int, int], str]]] = []
@@ -136,13 +135,13 @@ class PyEmbed(md.Extension):
     def add_provider(self, urls: list[str], callback: Callable[[str, int, int], str]):
         self.providers.append((urls, callback))
 
-    def extendMarkdown(self, md: md.Markdown, _md_globals = None):
+    def extendMarkdown(self, md: Markdown):
         md.inlinePatterns.register(PyEmbedPattern(self, md), "pyembed", 161)
 
 pyembed = PyEmbed()
 
 
-def video_id(value):
+def get_video_id(value):
     """
     Get the video ID from an URL.
     """
@@ -160,12 +159,12 @@ def video_id(value):
     return None
 
 def _youtube(url, width, height):
-    id = video_id(url)
-    return f"""<iframe width="{width}" height="{height}" src="https://www.youtube-nocookie.com/embed/{id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="YouTube video player"></iframe>"""
+    video_id = get_video_id(url)
+    return f"""<iframe width="{width}" height="{height}" src="https://www.youtube-nocookie.com/embed/{video_id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="YouTube video player"></iframe>"""
 
 pyembed.add_provider([r"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$"], _youtube)
 
-md_instance = md.Markdown(extensions = ["nl2br", "extra", pyembed])
+md_instance = Markdown(extensions = ["nl2br", "extra", pyembed])
 
 register = template.Library()
 
