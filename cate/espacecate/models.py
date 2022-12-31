@@ -132,12 +132,24 @@ class Child(models.Model):
 		verbose_name = "Enfant"
 
 	fieldsets = (
-		("Informations", {
-			"fields": ("first_name", "last_name", "date_of_birth", "place_of_birth", "address")
+		("Informations de l'enfant", {
+			"fields": ("nom", "prenom", "date_naissance", "lieu_naissance", "adresse")
 		}),
-		# ('Availability', {
-		# 	'fields': ('status', 'due_back')
-		# }),
+		("École", {
+			"fields": ("ecole", "classe", "redoublement")
+		}),
+		("Caté", {
+			"fields": ("annees_evf", "annees_kt", "bapteme", "date_bapteme", "lieu_bapteme", "pardon", "annee_pardon", "premiere_communion", "date_premiere_communion", "lieu_premiere_communion")
+		}),
+		("Coordonnées", {
+			"fields": ("nom_mere", "adresse_mere", "tel_mere", "email_mere", "nom_mere", "adresse_mere", "tel_mere", "email_mere", "freres_soeurs")
+		}),
+		("Autres informations", {
+			"fields": ("autres_infos",)
+		}),
+		("Autorisation", {
+			"fields": ("photos", "frais")
+		}),
 	)
 
 	def __str__(self):
