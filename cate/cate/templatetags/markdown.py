@@ -12,7 +12,7 @@ from django.template.defaultfilters import stringfilter
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.safestring import mark_safe
 from markdown import Extension, Markdown
-from markdown.inlinepatterns import LINK_RE, LinkInlineProcessor, Pattern
+from markdown.inlinepatterns import AUTOLINK_RE, LINK_RE, AutolinkInlineProcessor, LinkInlineProcessor, Pattern
 
 
 class Error(Exception):
@@ -96,20 +96,63 @@ class DjangoUrlExtension(Extension):
 
 EMBED_PATTERN = r"\[!embed(\?(.*))?\]\((.*)\)"
 
-class PyEmbedPattern(Pattern):
-    def __init__(self, pyembed_i: "PyEmbed", md_i: Markdown):
-        super().__init__(EMBED_PATTERN)
-        self.pyembed = pyembed_i
+class EmbedBase:
+    def __init__(self, embed_i: "EmbedExtension", md_i: Markdown, *args, **kwargs):
+        self.embed = embed_i
+        super().__init__(*args, **kwargs)
         self.md = md_i
 
-    def handleMatch(self, m):
-        url = m.group(4)
-        (max_width, max_height) = self._parse_params(m.group(3))
-        for provider in self.pyembed.providers:
+    def match_provider(self, url, width = 0, height = 0) -> tuple[bool, str]:
+        """
+        Check an URL against the providers list. Return a tuple `(matched, html_code)`.
+        """
+        for provider in self.embed.providers:
             for pattern in provider[0]:
                 if re.search(pattern, url) is not None:
-                    return self.md.htmlStash.store(provider[1](url, max_width, max_height))
-        return f"""<iframe width="{max_width}" height="{max_height}" src="{url}" frameborder="0" allowfullscreen></iframe>"""
+                    return (True, self.md.htmlStash.store(provider[1](url, width, height)))
+        return (False, f"""<iframe width="{width}" height="{height}" src="{url}" frameborder="0" allowfullscreen></iframe>""")
+
+    def _parse_params(self, query_string):
+        if not query_string:
+            query_params = {}
+        else:
+            query_params = parse_qs(query_string)
+        return (
+            self._get_query_param(query_params, "width") or 400,
+            self._get_query_param(query_params, "height") or 225,
+        )
+
+    @staticmethod
+    def _get_query_param(query_params, name):
+        if name in query_params:
+            return int(query_params[name][0])
+        return 0
+
+class EmbedPattern(EmbedBase, Pattern):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, EMBED_PATTERN, **kwargs)
+
+    def handleMatch(self, m: re.Match):
+        url = m.group(4)
+        (width, height) = self._parse_params(m.group(3))
+        return self.match_provider(url, width, height)[1]
+
+class BareURLPattern(EmbedBase, AutolinkInlineProcessor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, AUTOLINK_RE[1:-1], **kwargs)
+
+    def handleMatch(self, *args, **kwargs):
+        ret = super().handleMatch(*args, **kwargs)
+        if ret[0] is None:
+            return ret
+
+        url = ret[0].attrib["href"]
+        (width, height) = self._parse_params("")
+
+        match = self.match_provider(url, width, height)
+        if match[0]:
+            return (match[1], *ret[1:])
+        return ret
 
     def _parse_params(self, query_string):
         if not query_string:
@@ -127,7 +170,7 @@ class PyEmbedPattern(Pattern):
             return int(query_params[name][0])
         return 0
 
-class PyEmbed(Extension):
+class EmbedExtension(Extension):
     def __init__(self):
         super().__init__()
         self.providers: list[tuple[list[str], Callable[[str, int, int], str]]] = []
@@ -136,9 +179,10 @@ class PyEmbed(Extension):
         self.providers.append((urls, callback))
 
     def extendMarkdown(self, md: Markdown):
-        md.inlinePatterns.register(PyEmbedPattern(self, md), "pyembed", 161)
+        md.inlinePatterns.register(EmbedPattern(self, md), "embed", 161)
+        md.inlinePatterns.register(BareURLPattern(self, md), "bare_url", 111)
 
-pyembed = PyEmbed()
+embed = EmbedExtension()
 
 
 def get_video_id(value):
@@ -162,13 +206,13 @@ def _youtube(url, width, height):
     video_id = get_video_id(url)
     return f"""<iframe width="{width}" height="{height}" src="https://www.youtube-nocookie.com/embed/{video_id}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="YouTube video player"></iframe>"""
 
-pyembed.add_provider([r"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$"], _youtube)
+embed.add_provider([r"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$"], _youtube)
 
-md_instance = Markdown(extensions = ["nl2br", "extra", pyembed])
+md_instance = Markdown(extensions = ["nl2br", "extra", embed])
 
 register = template.Library()
 
-@register.filter(name = "markdown")
+@register.filter
 @stringfilter
 def markdown(value):
     return mark_safe(md_instance.convert(value))

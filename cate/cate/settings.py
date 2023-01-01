@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 	"mptt",
 	"cate",
 	"uservisit",
+	"utils",
 	"espacecate",
 	# "aumonerie",
 	"calendrier_avent_2022",
@@ -87,7 +88,7 @@ TEMPLATES = [
 				"django.contrib.auth.context_processors.auth",
 				"django.contrib.messages.context_processors.messages",
 				"cate.context_processors.app_name",
-				"espacecate.context_processors.navbar_processor",
+				"cate.context_processors.navbar_processor",
 			],
 		},
 	},
@@ -146,6 +147,7 @@ TIME_ZONE = "Europe/Paris"
 
 USE_I18N = True
 USE_L10N = True
+LOCALE_PATHS = [BASE_DIR / "locale"]
 
 USE_TZ = True
 

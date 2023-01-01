@@ -1,43 +1,33 @@
-from adminsortable2.admin import SortableAdminMixin
-from cate.widgets import MarkdownEditor
 from django.contrib import admin
-from django import forms
-from uservisit.admin import UserVisitAdmin
+from uservisit.admin import CommonUserVisitAdmin
+from utils.admin import CommonArticleAdmin, CommonPageAdmin
 
-from .models import Article, Document, Child, EspacecateUserVisit, Page
+from .models import Child, Document, Article, Page, UserVisit
 
-@admin.register(EspacecateUserVisit)
-class EspacecateUserVisitAdmin(UserVisitAdmin):
-	pass
 
-class PageAdminForm(forms.ModelForm):
-	model = Page
-	class Meta:
-		fields = "__all__"
-		widgets = {
-			"content": MarkdownEditor(attrs = {"style": "width: 90%; height: 100%;"}),
-		}
+@admin.register(UserVisit)
+class UserVisitAdmin(CommonUserVisitAdmin):
+	"""
+	Admin interface for user visits of the espacecate app.
+	"""
 
 @admin.register(Page)
-class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
-	form = PageAdminForm
-
-
-class ArticleAdminForm(PageAdminForm):
-	model = Article
-	class Meta:
-		fields = "__all__"
-		widgets = {
-			"content": MarkdownEditor(attrs = {"style": "width: 90%; height: 100%;"}),
-		}
+class PageAdmin(CommonPageAdmin):
+	"""
+	Admin interface for pages of the espacecate app.
+	"""
 
 @admin.register(Article)
-class ArticleAdmin(admin.ModelAdmin):
-	form = ArticleAdminForm
-
+class ArticleAdmin(CommonArticleAdmin):
+	"""
+	Admin interface for articles of the espacecate app.
+	"""
 
 @admin.register(Child)
-class EnfantAdmin(admin.ModelAdmin):
+class ChildAdmin(admin.ModelAdmin):
+	"""
+	Admin interface for childs of the espacecate app.
+	"""
 	fieldsets = (
 		("Informations de l'enfant", {
 			"fields": ("nom", "prenom", "date_naissance", "lieu_naissance", "adresse")
@@ -61,4 +51,7 @@ class EnfantAdmin(admin.ModelAdmin):
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
+	"""
+	Admin interface for documents of the espacecate app.
+	"""
 	list_display = ["title", "file"]

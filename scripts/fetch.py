@@ -38,6 +38,7 @@ def fetch(apps: list[App] | None = None):
 		manage_py_args = [sys.executable, str(app / "manage.py")]
 
 		_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
+		_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")
 		_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "collecting static files")
 
 		if settings.WSGI_FILE:

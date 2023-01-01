@@ -25,7 +25,7 @@ def parse_ua_string(request: HttpRequest) -> str:
 
 class UserVisitManager(models.Manager):
 	"""Custom model manager for UserVisit objects."""
-	def create(self, request: HttpRequest, timestamp: datetime.datetime) -> "UserVisit":
+	def create(self, request: HttpRequest, timestamp: datetime.datetime) -> "CommonUserVisit":
 		"""Build a new UserVisit object from a request, without saving it."""
 		rmatch = request.resolver_match
 		visit = self.model(
@@ -36,11 +36,11 @@ class UserVisitManager(models.Manager):
 			namespace = rmatch.namespace,
 			view = rmatch.view_name.removeprefix(rmatch.namespace + ":"),
 		)
-		visit.hash = visit.md5().hexdigest()
+		visit.hash = visit.md5().hexdigest() # pylint: disable=W0201
 		return visit
 
 
-class UserVisit(models.Model):
+class CommonUserVisit(models.Model):
 	"""
 	Record of a user visiting the site on a given day.
 	This is used for tracking and reporting - knowing the volume of visitors

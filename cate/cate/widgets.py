@@ -1,6 +1,10 @@
 from django import forms
 
+
 class MarkdownEditor(forms.Textarea):
+    """
+    Markdown editor for pages and articles.
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.attrs["class"] = "html-editor"

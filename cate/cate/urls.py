@@ -23,6 +23,7 @@ from . import views
 def add_website(name: str):
     return path(name.replace("_", "-") + "/", include(name + ".urls", namespace = name))
 
+app_name = "home"
 urlpatterns = [
     path("admin/docs/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),

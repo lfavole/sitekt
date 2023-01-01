@@ -10,7 +10,7 @@ from django.db.transaction import atomic
 from django.http import HttpRequest, HttpResponse
 from django.utils import timezone
 
-from .models import UserVisit
+from .models import CommonUserVisit
 from .settings import DUPLICATE_LOG_LEVEL, RECORDING_BYPASS, RECORDING_DISABLED
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ class UserVisitMiddleware:
 		model_name = app_name[0].upper() + app_name[1:].lower()
 		try:
 			models = importlib.import_module(f"{app_name}.models")
-			RealUserVisit: Type[UserVisit] = getattr(models, f"{model_name}UserVisit")
+			RealUserVisit: Type[CommonUserVisit] = getattr(models, f"{model_name}UserVisit")
 		except (ModuleNotFoundError, AttributeError):
 			return resp
 		uv = RealUserVisit.objects.create(request, timezone.now())

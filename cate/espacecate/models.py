@@ -3,64 +3,35 @@ from datetime import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
-from uservisit.models import UserVisit
+from uservisit.models import CommonUserVisit
+from utils.models import CommonArticle, CommonDocument, CommonPage
 
 
-class EspacecateUserVisit(UserVisit):
-	pass
+class UserVisit(CommonUserVisit):
+	"""
+	User visit on `espacecate` app.
+	"""
 
-class PageBase(models.Model):
-	slug = models.fields.SlugField("ID", max_length = 100, editable = False, primary_key = True)
-	title = models.fields.CharField("Titre", max_length = 100)
-	content = models.fields.TextField("Contenu", blank = True)
-	hidden = models.fields.BooleanField("Page cachée", default = False)
-
-	class Meta:
-		abstract = True
-
-	def _generate_slug(self):
-		max_length = self._meta.get_field("slug").max_length # type: ignore
-		value = self.title
-		slug_candidate = slug_original = slugify(value, allow_unicode = False)
-		i = 0
-		while True:
-			i += 1
-			if not Page.objects.filter(slug = slug_candidate).exists():
-				break
-			slug_candidate = slug_original + "-" + str(i)
-
-		return slug_candidate
-
-	def save(self, *args, **kwargs):
-		if self._state.adding:
-			self.slug = self._generate_slug()
-
-		super().save(*args, **kwargs)
-
-	def __str__(self):
-		return f"{self.title}"
-
+class Page(CommonPage):
+	"""
+	Page on `espacecate` app.
+	"""
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
 	def get_absolute_url(self):
 		return reverse("espacecate:page", args = [self.slug])
 
-class Page(PageBase):
-	order = models.PositiveIntegerField("Ordre", default = 0, null = False)
-	parent_page = models.ForeignKey("self", blank = True, null = True, on_delete = models.SET_NULL, verbose_name = "Page précédente")
-
-	class Meta:
-		ordering = ["order"]
-
-	def get_absolute_url(self):
-		return reverse("espacecate:page", args = [self.slug])
-
-class Article(PageBase):
-	hidden = models.fields.BooleanField("Article caché", default = False)
-
+class Article(CommonArticle):
+	"""
+	Article on `espacecate` app.
+	"""
 	def get_absolute_url(self):
 		return reverse("espacecate:article", args = [self.slug])
 
 class Child(models.Model):
+	"""
+	A subscribed child.
+	"""
 	nom = models.CharField("Nom de famille", max_length = 100)
 	prenom = models.CharField("Prénom", max_length = 100)
 	date_naissance = models.DateField("Date de naissance")
@@ -69,7 +40,7 @@ class Child(models.Model):
 
 	ECOLES = [
 		("FARANDOLE", "École La Farandole"),
-		("SOLDANELLE", "École La Soldanellle"),
+		("SOLDANELLE", "École La Soldanelle"),
 		("PASTEUR", "École Pasteur"),
 		("CEZANNE", "École Cézanne"),
 		("BARATIER", "École de Baratier"),
@@ -107,7 +78,7 @@ class Child(models.Model):
 	pardon = models.fields.BooleanField("Sacrement du Pardon")
 	annee_pardon = models.fields.IntegerField("Année du Sacrement du Pardon", validators = [MinValueValidator(1970), MaxValueValidator(datetime.now().year)])
 
-	premiere_communion = models.fields.BooleanField("première communion")
+	premiere_communion = models.fields.BooleanField("Première communion")
 	date_premiere_communion = models.fields.DateField("Date de la première communion")
 	lieu_premiere_communion = models.CharField("Lieu de la première communion", max_length = 100)
 
@@ -155,9 +126,7 @@ class Child(models.Model):
 	def __str__(self):
 		return self.prenom + " " + self.nom
 
-class Document(models.Model):
-	title = models.fields.CharField("Titre du document", max_length = 100)
-	file = models.FileField("Document", upload_to = "docs/")
-
-	def __str__(self):
-		return self.title
+class Document(CommonDocument):
+	"""
+	Document on `espacecate` app.
+	"""
