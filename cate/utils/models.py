@@ -72,9 +72,9 @@ class CommonDocument(models.Model):
 	title = models.fields.CharField(_("Document title"), max_length = 100)
 	file = FilerFileField(verbose_name = _("File"), null = True, on_delete = models.SET_NULL) # type: ignore
 
-	def __str__(self): # pylint: disable=E0307
-		return self.title
-
 	class Meta:
 		verbose_name = _("document")
 		abstract = True
+
+	def __str__(self): # pylint: disable=E0307
+		return self.title
