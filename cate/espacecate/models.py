@@ -28,6 +28,9 @@ class Article(CommonArticle):
 	def get_absolute_url(self):
 		return reverse("espacecate:article", args = [self.slug])
 
+def get_current_year():
+	return datetime.now().year
+
 class Child(models.Model):
 	"""
 	A subscribed child.
@@ -76,7 +79,7 @@ class Child(models.Model):
 	lieu_bapteme = models.CharField("Lieu du baptême", max_length = 100)
 
 	pardon = models.fields.BooleanField("Sacrement du Pardon")
-	annee_pardon = models.fields.IntegerField("Année du Sacrement du Pardon", validators = [MinValueValidator(1970), MaxValueValidator(datetime.now().year)])
+	annee_pardon = models.fields.IntegerField("Année du Sacrement du Pardon", validators = [MinValueValidator(1970), MaxValueValidator(get_current_year)])
 
 	premiere_communion = models.fields.BooleanField("Première communion")
 	date_premiere_communion = models.fields.DateField("Date de la première communion")
