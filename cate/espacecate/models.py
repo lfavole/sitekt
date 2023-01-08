@@ -1,10 +1,12 @@
-from datetime import datetime
+from datetime import date, datetime
+from typing import Any, Callable, TypeVar
 
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from uservisit.models import CommonUserVisit
-from utils.models import CommonArticle, CommonDocument, CommonPage
+from utils.models import CommonArticle, CommonDate, CommonDocument, CommonPage
 
 
 class UserVisit(CommonUserVisit):
@@ -128,6 +130,44 @@ class Child(models.Model):
 
 	def __str__(self):
 		return self.prenom + " " + self.nom
+
+	def clean(self):
+		DateOrYear = TypeVar("DateOrYear", date, int)
+		def check_date(operator: Callable[[DateOrYear, DateOrYear], bool], base_value: DateOrYear, name: str, msg: str):
+			value: DateOrYear = getattr(self, name)
+			if isinstance(value, int):
+				base_value = base_value.year # type: ignore
+			if not operator(value, base_value):
+				raise ValidationError({name: msg})
+
+		def before(a, b):
+			return a <= b
+		def after(a, b):
+			return a >= b
+
+		now = datetime.now()
+		def check_not_future(name: str, msg: str):
+			check_date(before, now, name, msg)
+
+		def check_after_birth(name: str, msg: str):
+			check_date(after, self.date_naissance, name, msg)
+
+		template_not_future = "%s ne peut pas être dans le futur."
+		template_after_birth = "%s doit être après la date de naissance."
+
+		check_not_future("date_naissance", template_not_future % ("La date de naissance",))
+		check_not_future("date_bapteme", template_not_future % ("La date du baptême",))
+		check_not_future("annee_pardon", template_not_future % ("La date du Sacrement du Pardon",))
+		check_not_future("date_premiere_communion", template_not_future % ("La date de la première communion",))
+
+		check_after_birth("date_bapteme", template_after_birth % ("La date du baptême",))
+		check_after_birth("annee_pardon",  template_after_birth % ("La date du Sacrement du Pardon",))
+		check_after_birth("date_premiere_communion",  template_after_birth % ("La date de la première communion",))
+
+class Date(CommonDate):
+	"""
+	Date on `espacecate` app.
+	"""
 
 class Document(CommonDocument):
 	"""

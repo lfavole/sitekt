@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-01 18:28+0100\n"
+"POT-Creation-Date: 2023-01-07 18:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,58 +26,125 @@ msgstr ", "
 msgid "and"
 msgstr "et"
 
-#: .\utils\models.py:13
+#: .\utils\models.py:16
 msgid "Slug"
 msgstr "ID"
 
-#: .\utils\models.py:14
+#: .\utils\models.py:17
 msgid "Title"
 msgstr "Titre"
 
-#: .\utils\models.py:15
+#: .\utils\models.py:18
 msgid "Content"
 msgstr "Contenu"
 
-#: .\utils\models.py:16
+#: .\utils\models.py:19
 #, fuzzy
 #| msgid "Hidden article"
 msgid "Hidden page"
 msgstr "Page cachée"
 
-#: .\utils\models.py:46
+#: .\utils\models.py:49
 msgid "Order"
 msgstr "Ordre"
 
-#: .\utils\models.py:47
+#: .\utils\models.py:50
 msgid "Previous page"
 msgstr "Page précédente"
 
-#: .\utils\models.py:50
+#: .\utils\models.py:53
 msgid "page"
 msgstr "page"
 
-#: .\utils\models.py:61
+#: .\utils\models.py:64
 msgid "Date"
 msgstr "Date"
 
-#: .\utils\models.py:62
+#: .\utils\models.py:65
 msgid "Hidden article"
 msgstr "Article caché"
 
-#: .\utils\models.py:65
+#: .\utils\models.py:68
 msgid "article"
 msgstr "article"
 
 #: .\utils\models.py:72
+msgid "Start date"
+msgstr "Date de début"
+
+#: .\utils\models.py:73
+msgid "End date"
+msgstr "Date de fin"
+
+#: .\utils\models.py:74
+msgid "Start time"
+msgstr "Heure de début"
+
+#: .\utils\models.py:75
+msgid "End time"
+msgstr "Heure de fin"
+
+#: .\utils\models.py:78
+msgid "Time (as text)"
+msgstr "Heure (en tant que texte)"
+
+#: .\utils\models.py:79
+msgid "Name"
+msgstr "Nom"
+
+#: .\utils\models.py:80
+msgid "Short name"
+msgstr "Nom abrégé"
+
+#: .\utils\models.py:81
+msgid "Place"
+msgstr "Lieu"
+
+#: .\utils\models.py:82
+msgid "Cancelled"
+msgstr "Annulé"
+
+#: .\utils\models.py:85
+msgid "date"
+msgstr "date"
+
+#: .\utils\models.py:90
+msgid "The end date must be after the start date."
+msgstr "La date de fin doit être avant la date de début."
+
+#: .\utils\models.py:93
+msgid "The end time must be after the start time."
+msgstr "L'heure de fin doit être avant l'heure de début."
+
+#: .\utils\models.py:96
+msgid "The start time must be specified when the end time is specified."
+msgstr ""
+"L'heure de début doit être spécifiée quand l'heure de fin est spécifiée."
+
+#: .\utils\models.py:100
+msgid "The time as text or the start time must be specified."
+msgstr "L'heure en tant que texte ou l'heure de début doivent être spécifiées."
+
+#: .\utils\models.py:104
+msgid "The start time, the end time or the time as text must be specified."
+msgstr ""
+"L'heure de début, l'heure de fin ou l'heure en tant que texte doivent être "
+"spécifiées."
+
+#: .\utils\models.py:108
+msgid "The start time / end time or the time as text must be specified, not both."
+msgstr ""
+"L'heure de début / de fin ou l'heure en tant que texte doivent être "
+"spécifiées, pas les deux."
+
+#: .\utils\models.py:118
 msgid "Document title"
 msgstr "Titre du document"
 
-#: .\utils\models.py:73
+#: .\utils\models.py:119
 msgid "File"
 msgstr "Fichier"
 
-#: .\utils\models.py:79
-#, fuzzy
-#| msgid "Document title"
+#: .\utils\models.py:122
 msgid "document"
-msgstr "Titre du document"
+msgstr "document"

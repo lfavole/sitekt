@@ -1,8 +1,8 @@
 from django.contrib import admin
 from uservisit.admin import CommonUserVisitAdmin
-from utils.admin import CommonArticleAdmin, CommonPageAdmin
+from utils.admin import CommonArticleAdmin, CommonDateAdmin, CommonPageAdmin
 
-from .models import Child, Document, Article, Page, UserVisit
+from .models import Child, Date, Document, Article, Page, UserVisit
 
 
 @admin.register(UserVisit)
@@ -55,3 +55,9 @@ class DocumentAdmin(admin.ModelAdmin):
 	Admin interface for documents of the espacecate app.
 	"""
 	list_display = ["title", "file"]
+
+@admin.register(Date)
+class DateAdmin(CommonDateAdmin):
+	"""
+	Admin interface for dates of the espacecate app.
+	"""

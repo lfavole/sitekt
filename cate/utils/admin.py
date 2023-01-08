@@ -37,3 +37,11 @@ class CommonArticleAdmin(admin.ModelAdmin):
 	form = CommonArticleAdminForm
 	list_display = ("title", "date")
 	ordering = ("-date",)
+
+class CommonDateAdmin(admin.ModelAdmin):
+	"""
+	Admin interface for dates.
+	"""
+	list_display = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
+	fields = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
+	ordering = ("-start_date",)
