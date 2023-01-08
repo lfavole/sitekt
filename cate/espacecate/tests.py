@@ -3,12 +3,12 @@ import datetime
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.test import TestCase
-from django.utils import timezone
+from django.urls import reverse
 from utils.tests import REMOVED, DefaultArgs
 
-from .models import Date
+from .models import Article, Date
 
-now = timezone.now()
+now = datetime.datetime(2023, 1, 1, 12, 0, 0)
 one_day = datetime.timedelta(days = 1)
 one_hour = datetime.timedelta(hours = 1)
 
@@ -16,9 +16,9 @@ def_args = DefaultArgs({
 	"name": "Test date",
 	"place": "Test place",
 	"start_date": now.date(),
-	"end_date": now + one_day,
-	"start_time": now.date(),
-	"end_time": now + one_hour,
+	"end_date": now.date() + one_day,
+	"start_time": now.time(),
+	"end_time": (now + one_hour).time(),
 	"time_text": "",
 	"cancelled": False,
 })
@@ -68,7 +68,7 @@ class DateModelTests(TestCase):
 		"""
 		end_time < start_time
 		"""
-		date = Date(**def_args(start_time = now, end_time = now - one_hour))
+		date = Date(**def_args(start_time = now.time(), end_time = (now - one_hour).time()))
 		with self.assertRaises(ValidationError):
 			clean(date)
 
@@ -77,7 +77,7 @@ class DateModelTests(TestCase):
 		start_time = ?
 		end_time = ...
 		"""
-		date = Date(**def_args(start_time = REMOVED, end_time = now))
+		date = Date(**def_args(start_time = REMOVED, end_time = now.time()))
 		with self.assertRaises(ValidationError):
 			clean(date)
 
@@ -100,3 +100,46 @@ class DateModelTests(TestCase):
 		date = Date(**def_args(time_text = "..."))
 		with self.assertRaises(ValidationError):
 			clean(date)
+
+class ArticlesListTests(TestCase):
+	"""
+	Tests on the articles list page.
+	"""
+	def test_no_articles(self):
+		"""
+		No articles => "Aucun article" in the page
+		"""
+		response = self.client.get(reverse("espacecate:articles"))
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Aucun article")
+		self.assertQuerysetEqual(response.context["articles"], [])
+
+	def test_one_article(self):
+		"""
+		An article is shown in the list
+		"""
+		article = Article.objects.create(title = "Test article", content = "The content of the article...", date = now)
+		response = self.client.get(reverse("espacecate:articles"))
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, article.title)
+		self.assertQuerysetEqual(response.context["articles"], [article])
+
+	def test_hidden_article(self):
+		"""
+		A hidden article isn't shown in the list
+		"""
+		_article = Article.objects.create(title = "Test article", content = "The content of the article...", date = now, hidden = True)
+		response = self.client.get(reverse("espacecate:articles"))
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Aucun article")
+		self.assertQuerysetEqual(response.context["articles"], [])
+
+	def test_future_article(self):
+		"""
+		A future article isn't shown in the list
+		"""
+		_article = Article.objects.create(title = "Test article", content = "The content of the article...", date = datetime.datetime.now() + one_day)
+		response = self.client.get(reverse("espacecate:articles"))
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Aucun article")
+		self.assertQuerysetEqual(response.context["articles"], [])

@@ -67,6 +67,7 @@ class CommonArticle(PageBase):
 	class Meta:
 		verbose_name = _("article")
 		abstract = True
+		ordering = ["-date"]
 
 class CommonDate(models.Model):
 	start_date = models.fields.DateField(_("Start date"))

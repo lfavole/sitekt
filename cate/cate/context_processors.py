@@ -2,12 +2,16 @@ import importlib
 from typing import Any, Type
 
 from django.http import HttpRequest
+from django.utils.timezone import now
 from utils.models import CommonPage
 from utils.views import CommonPageView
 
 
 def app_name(request: HttpRequest):
     return {"app": request.resolver_match.app_name}
+
+def now_variable(_request: HttpRequest):
+    return {"now": now()}
 
 def navbar_processor(request):
     app = app_name(request)["app"]
