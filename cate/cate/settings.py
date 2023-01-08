@@ -71,6 +71,7 @@ MIDDLEWARE = [
 	"django.contrib.auth.middleware.AuthenticationMiddleware",
 	"django.contrib.messages.middleware.MessageMiddleware",
 	"django.middleware.clickjacking.XFrameOptionsMiddleware",
+	"cate.middleware.SpacelessMiddleware",
 	"uservisit.middleware.UserVisitMiddleware",
 ]
 
@@ -89,6 +90,7 @@ TEMPLATES = [
 				"django.contrib.messages.context_processors.messages",
 				"cate.context_processors.app_name",
 				"cate.context_processors.navbar_processor",
+				"cate.context_processors.now_variable",
 			],
 		},
 	},
