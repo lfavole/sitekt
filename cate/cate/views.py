@@ -18,7 +18,7 @@ except ImportError:
 	fetch = None
 
 def home(request: HttpRequest):
-    return render(request, "cate/home.html")
+    return render(request, "cate/home.html", {"app": "home"})
 
 @csrf_exempt
 def reload_website(request: HttpRequest):
