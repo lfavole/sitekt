@@ -30,10 +30,8 @@ def fetch(apps: list[App] | None = None):
 			continue
 
 		_run_with_explanation("git init", "creating git repo")
-		_run_with_explanation(["git", "pull", "--depth=1", "--rebase", settings.GITHUB_REPO + ".git", "main"], "fetching changes")
-		# we must abort the rebase because of the depth of 1 when pulling changes
-		_run_with_explanation(["git", "rebase", "--abort"], "aborting the rebase")
-		_run_with_explanation(["git", "pull", "--depth=1", "--rebase", settings.GITHUB_REPO + ".git", "main"], "fetching changes for the second time")
+		_run_with_explanation(["git", "fetch", "--depth=1", settings.GITHUB_REPO + ".git"], "fetching changes")
+		_run_with_explanation(["git", "merge", "FETCH_HEAD", "main", "--allow-unrelated-histories", "--strategy-option", "theirs", "-m", "Merging remote changes"], "merging changes")
 
 		manage_py_args = [sys.executable, str(app / "manage.py")]
 
