@@ -36,6 +36,7 @@ if not DEBUG:
 	SESSION_COOKIE_SECURE = True
 	CONN_MAX_AGE = 600
 	ALLOWED_HOSTS = [settings.HOST]
+	SECURE_SSL_REDIRECT = True
 else:
 	ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.43.206"]
 
@@ -65,13 +66,15 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
 	"django.middleware.security.SecurityMiddleware",
+	"django.middleware.gzip.GZipMiddleware",
 	"django.contrib.sessions.middleware.SessionMiddleware",
+	"django.middleware.http.ConditionalGetMiddleware",
+	"cate.middleware.SpacelessMiddleware",
 	"django.middleware.common.CommonMiddleware",
 	"django.middleware.csrf.CsrfViewMiddleware",
 	"django.contrib.auth.middleware.AuthenticationMiddleware",
 	"django.contrib.messages.middleware.MessageMiddleware",
 	"django.middleware.clickjacking.XFrameOptionsMiddleware",
-	"cate.middleware.SpacelessMiddleware",
 	"uservisit.middleware.UserVisitMiddleware",
 ]
 
