@@ -6,7 +6,9 @@
 <div class="titre">{% block title-header %}{% endblock %}</div>
 </header>
 <nav>
+<div class="ouvrir-menu" onclick="menu_ouvrir()">Menu</div> {# TODO: remove onclick #}
 <div class="menu">
+<span class="fermer" onclick="menu_fermer()"></span> {# TODO: remove onclick #}
 {{ pages | nav }}
 </div>
 </nav>

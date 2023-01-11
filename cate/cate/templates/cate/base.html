@@ -6,11 +6,12 @@
 <meta name="og:icon" content="{% get_static_prefix %}{{ app }}/favicon.ico">
 <meta name="theme-color" content="#ffaa00">
 <title>{% block title %}{% endblock %}</title>
-<link rel="stylesheet" href="{% static "global/style.css" %}">
+<link rel="stylesheet" href="{% static "global/global.css" %}">
 <link rel="stylesheet" href="{% get_static_prefix %}{{ app }}/style.css">
 {% block css %}{% endblock %}
+<script src="{% static "global/jquery.js" %}"></script>
 <script src="{% static "global/global.js" %}"></script>
-<script src="{% get_static_prefix %}{{ app }}/global.js"></script>
+<script src="{% get_static_prefix %}{{ app }}/script.js"></script>
 {% block js %}{% endblock %}
 </head>
 <body class="index">{% block body %}{% endblock %}</body>
