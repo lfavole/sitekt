@@ -12,13 +12,14 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import sys
 from pathlib import Path
+
 from filer.utils.files import get_valid_filename
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 sys.path.insert(0, str(BASE_DIR.parent / "scripts"))
-from common import PYTHONANYWHERE, PYTHONANYWHERE_SITE, USERNAME, App
+from common import App
 
 settings = App(BASE_DIR.name).settings
 
@@ -116,7 +117,7 @@ DATABASES = {
 		"NAME": settings.DB_NAME,
 		"USER": settings.DB_USER,
 		"PASSWORD": settings.DB_PASSWORD,
-		"HOST": (USERNAME + ".mysql." + PYTHONANYWHERE_SITE.replace("pythonanywhere.com", "pythonanywhere-services.com")) if PYTHONANYWHERE else settings.DB_HOST,
+		"HOST": settings.DB_HOST,
 		"OPTIONS": {
 			"init_command": "SET sql_mode=\"STRICT_TRANS_TABLES\"",
 		},
