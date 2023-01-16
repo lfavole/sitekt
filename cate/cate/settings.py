@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 	"filer",
 	"mptt",
 	"cate",
+	"storage",
 	"uservisit",
 	"utils",
 	"espacecate",
@@ -170,6 +171,8 @@ MEDIA_ROOT = BASE_DIR / "media/"
 
 PRIVATE_MEDIA_URL = "private/"
 PRIVATE_MEDIA_ROOT = BASE_DIR / "private/"
+
+FILER_IMAGE_MODEL = "storage.Image"
 
 FILER_STORAGES = {
 	"public": {

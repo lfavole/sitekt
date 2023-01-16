@@ -2,6 +2,7 @@ import re
 from typing import Callable
 
 from django.conf import settings
+from django.http import HttpResponse
 
 
 class SpacelessMiddleware:
@@ -12,7 +13,9 @@ class SpacelessMiddleware:
 		self.get_response = get_response
 
 	def __call__(self, request):
-		response = self.get_response(request)
+		response: HttpResponse = self.get_response(request)
+		if response.headers.get("Content-Type", "") != "text/html": # type: ignore
+			return response
 		content = response.content
 		content = re.sub(rb"\n\s*\n", b"\n", content)
 		if not settings.DEBUG:
