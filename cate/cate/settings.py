@@ -13,8 +13,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import sys
 from pathlib import Path
 
-from filer.utils.files import get_valid_filename
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -56,7 +54,6 @@ INSTALLED_APPS = [
 	"adminsortable2",
 	"easy_thumbnails",
 	"filer",
-	"mptt",
 	"cate",
 	"storage",
 	"uservisit",
@@ -64,6 +61,7 @@ INSTALLED_APPS = [
 	"espacecate",
 	# "aumonerie",
 	"calendrier_avent_2022",
+	"django_cleanup", # must be placed last
 ]
 
 MIDDLEWARE = [
@@ -79,6 +77,8 @@ MIDDLEWARE = [
 	"django.middleware.clickjacking.XFrameOptionsMiddleware",
 	"uservisit.middleware.UserVisitMiddleware",
 ]
+
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
 ROOT_URLCONF = "cate.urls"
 
@@ -103,6 +103,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "cate.wsgi.application"
 
+
+DEFAULT_FILE_STORAGE = "storage.storages.CustomFileSystemStorage"
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -172,60 +174,6 @@ MEDIA_ROOT = BASE_DIR / "media/"
 PRIVATE_MEDIA_URL = "private/"
 PRIVATE_MEDIA_ROOT = BASE_DIR / "private/"
 
-FILER_IMAGE_MODEL = "storage.Image"
-
-FILER_STORAGES = {
-	"public": {
-		"main": {
-			"ENGINE": "filer.storage.PublicFileSystemStorage",
-			"OPTIONS": {
-				"location": MEDIA_ROOT,
-				"base_url": MEDIA_URL,
-			},
-			"UPLOAD_TO": "cate.settings.generate_filename",
-			"UPLOAD_TO_PREFIX": "",
-		},
-		"thumbnails": {
-			"ENGINE": "filer.storage.PublicFileSystemStorage",
-			"OPTIONS": {
-				"location": MEDIA_ROOT,
-				"base_url": MEDIA_URL,
-			},
-			"THUMBNAIL_OPTIONS": {
-				"base_dir": "thumbs",
-			},
-		},
-	},
-	"private": {
-		"main": {
-			"ENGINE": "filer.storage.PrivateFileSystemStorage",
-			"OPTIONS": {
-				"location": PRIVATE_MEDIA_ROOT,
-				"base_url": PRIVATE_MEDIA_URL,
-			},
-			"UPLOAD_TO": "cate.settings.generate_filename",
-			"UPLOAD_TO_PREFIX": "",
-		},
-		"thumbnails": {
-			"ENGINE": "filer.storage.PrivateFileSystemStorage",
-			"OPTIONS": {
-				"location": PRIVATE_MEDIA_ROOT,
-				"base_url": PRIVATE_MEDIA_URL,
-			},
-			"THUMBNAIL_OPTIONS": {
-				"base_dir": "thumbs",
-			},
-		},
-	},
-}
-
-FILER_ENABLE_PERMISSIONS = True
-
-def generate_filename(_instance, filename: str):
-	ret = get_valid_filename(filename).replace("_", "-")
-	while "--" in ret:
-		ret = ret.replace("--", "-")
-	return ret
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

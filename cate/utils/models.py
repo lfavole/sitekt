@@ -4,7 +4,6 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from filer.fields.file import FilerFileField
 
 from .fields import DatalistField
 
@@ -118,7 +117,7 @@ class CommonDocument(models.Model):
 	Common document class for all apps.
 	"""
 	title = models.fields.CharField(_("Document title"), max_length = 100)
-	file = FilerFileField(verbose_name = _("File"), null = True, on_delete = models.SET_NULL) # type: ignore
+	file = models.FileField(_("File"), null = True) # type: ignore
 
 	class Meta:
 		verbose_name = _("document")

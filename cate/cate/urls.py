@@ -32,7 +32,7 @@ urlpatterns = [
     # add_website("aumonerie"),
     path("", views.home, name = "home"),
     path("reload-website/", views.reload_website),
-    re_path(r'^', include('filer.server.urls')),
+    # re_path(r'^', include('filer.server.urls')),
 ]
 
 if settings.DEBUG:
