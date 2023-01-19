@@ -14,14 +14,6 @@ def setup(apps: list[App], interactive = False):
 	cprint("Configuration du site du caté Django", "blue")
 	print()
 
-	if not (Path(__file__).resolve().parent / "settings.py").exists():
-		cprint("The settings.py file doesn't exist: " + ("creating it" if interactive else "setup stopped"), "red")
-		if not interactive:
-			return
-		else:
-			from create_settings import create_settings_file
-			create_settings_file()
-
 	print("Installing modules (if they are not already installed)")
 
 	with open(BASE_FOLDER / "requirements.txt") as f:
