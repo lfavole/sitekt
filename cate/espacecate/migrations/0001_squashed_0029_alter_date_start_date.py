@@ -11,33 +11,6 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("espacecate", "0001_initial"),
-        ("espacecate", "0002_rename_titre_page_title"),
-        ("espacecate", "0003_article_alter_page_content_alter_page_id_and_more"),
-        ("espacecate", "0004_rename_id_page_slug_alter_page_content"),
-        ("espacecate", "0005_child"),
-        ("espacecate", "0006_rename_address_child_adresse_and_more"),
-        ("espacecate", "0007_rename_years_evf_child_annees_evf_and_more"),
-        ("espacecate", "0008_rename_child_enfant"),
-        ("espacecate", "0009_page_hidden_page_parent_page"),
-        ("espacecate", "0010_alter_page_options_page_order"),
-        ("espacecate", "0011_document_alter_page_order_alter_page_parent_page"),
-        ("espacecate", "0012_alter_document_file"),
-        ("espacecate", "0013_alter_document_file_delete_article"),
-        ("espacecate", "0014_article"),
-        ("espacecate", "0015_espacecateuservisit"),
-        ("espacecate", "0016_alter_enfant_annees_evf_alter_enfant_annees_kt"),
-        ("espacecate", "0017_rename_enfant_child_alter_child_options"),
-        ("espacecate", "0018_remove_espacecateuservisit_hash"),
-        ("espacecate", "0019_espacecateuservisit_hash"),
-        (
-            "espacecate",
-            "0020_rename_espacecateuservisit_uservisit_and_more_squashed_0028_alter_document_file",
-        ),
-        ("espacecate", "0029_alter_date_start_date"),
-    ]
-
     initial = True
 
     dependencies = []

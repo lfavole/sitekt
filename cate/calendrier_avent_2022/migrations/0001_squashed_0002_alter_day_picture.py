@@ -6,11 +6,6 @@ import storage.fields
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("calendrier_avent_2022", "0001_initial"),
-        ("calendrier_avent_2022", "0002_alter_day_picture"),
-    ]
-
     initial = True
 
     dependencies = [
