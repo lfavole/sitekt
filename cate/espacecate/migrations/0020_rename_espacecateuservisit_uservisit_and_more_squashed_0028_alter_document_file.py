@@ -11,18 +11,6 @@ import utils.fields
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("espacecate", "0020_rename_espacecateuservisit_uservisit_and_more"),
-        ("espacecate", "0021_article_date"),
-        ("espacecate", "0022_alter_article_options_alter_document_options_and_more"),
-        ("espacecate", "0023_date"),
-        ("espacecate", "0024_remove_date_date_date_end_date_date_start_date"),
-        ("espacecate", "0025_alter_child_annee_pardon"),
-        ("espacecate", "0026_alter_date_end_date_alter_date_time_text"),
-        ("espacecate", "0027_alter_article_options"),
-        ("espacecate", "0028_alter_document_file"),
-    ]
-
     dependencies = [
         ("espacecate", "0019_espacecateuservisit_hash"),
     ]
