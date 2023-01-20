@@ -53,8 +53,8 @@ INSTALLED_APPS = [
 	"django.contrib.staticfiles",
 	"adminsortable2",
 	"easy_thumbnails",
-	"filer",
 	"cate",
+	"users",
 	"storage",
 	"uservisit",
 	"utils",
@@ -127,6 +127,7 @@ DATABASES = {
 	}
 }
 
+AUTH_USER_MODEL = "users.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
