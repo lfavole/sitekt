@@ -3,7 +3,7 @@ from pathlib import Path
 
 FOLDER = Path(__file__).parent
 sys.path.insert(0, str(FOLDER))
-from common import PYTHONANYWHERE, App, cprint, import_path, run
+from utils import PYTHONANYWHERE, App, cprint, import_path, run
 from fetch import fetch
 
 

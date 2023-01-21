@@ -1,8 +1,8 @@
+from common.admin import CommonArticleAdmin, CommonDateAdmin, CommonPageAdmin
 from django.contrib import admin
 from uservisit.admin import CommonUserVisitAdmin
-from utils.admin import CommonArticleAdmin, CommonDateAdmin, CommonPageAdmin
 
-from .models import Child, Date, Document, Article, Page, UserVisit
+from .models import Article, Child, Date, Document, Page, UserVisit
 
 
 @admin.register(UserVisit)

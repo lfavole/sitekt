@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import BASE_FOLDER, PYTHONANYWHERE, App, cprint, install, parse_packages_list
+from utils import BASE_FOLDER, PYTHONANYWHERE, App, cprint, install, parse_packages_list
 from create_settings import input_question
 
 

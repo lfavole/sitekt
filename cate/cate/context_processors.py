@@ -3,8 +3,8 @@ from typing import Any, Type
 
 from django.http import HttpRequest
 from django.utils.timezone import now
-from utils.models import CommonPage
-from utils.views import CommonPageView
+from common.models import CommonPage
+from common.views import CommonPageView
 
 
 def app_name(request: HttpRequest):

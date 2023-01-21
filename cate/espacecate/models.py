@@ -1,12 +1,12 @@
 from datetime import date, datetime
-from typing import Any, Callable, TypeVar
+from typing import Callable, TypeVar
 
+from common.models import CommonArticle, CommonDate, CommonDocument, CommonPage
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from uservisit.models import CommonUserVisit
-from utils.models import CommonArticle, CommonDate, CommonDocument, CommonPage
 
 
 class UserVisit(CommonUserVisit):

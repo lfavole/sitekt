@@ -1,10 +1,10 @@
 import datetime
 
+from common.tests import REMOVED, DefaultArgs
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.test import TestCase
 from django.urls import reverse
-from utils.tests import REMOVED, DefaultArgs
 
 from .models import Article, Date
 

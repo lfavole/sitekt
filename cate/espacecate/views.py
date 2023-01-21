@@ -1,5 +1,5 @@
+from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView
 from django.shortcuts import render
-from utils.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView
 
 from .forms import SubscriptionForm
 from .models import Article, Date, Document, Page

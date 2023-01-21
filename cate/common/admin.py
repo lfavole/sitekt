@@ -2,9 +2,9 @@ from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
 from cate.widgets import MarkdownEditor
+from common.models import CommonArticle, CommonPage
 from django import forms
 from django.contrib import admin
-from utils.models import CommonArticle, CommonPage
 
 
 class CommonPageAdminForm(forms.ModelForm):

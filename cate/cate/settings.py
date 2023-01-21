@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 sys.path.insert(0, str(BASE_DIR.parent / "scripts"))
-from common import App
+from utils import App
 
 settings = App(BASE_DIR.name).settings
 
@@ -57,7 +57,7 @@ INSTALLED_APPS = [
 	"users",
 	"storage",
 	"uservisit",
-	"utils",
+	"common",
 	"espacecate",
 	# "aumonerie",
 	"calendrier_avent_2022",

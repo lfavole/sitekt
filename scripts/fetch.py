@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from common import App, cprint, run
+from utils import App, cprint, run
 
 FOLDER = Path(__file__).parent.parent
 if not os.path.exists(FOLDER):
