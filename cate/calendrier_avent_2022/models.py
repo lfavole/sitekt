@@ -1,4 +1,4 @@
-from calendrier_avent_2022.templatetags.format_day import format_day, format_day_html
+from cate.templatetags.format_day import format_day, format_day_html
 from django.db import models
 from django.utils.safestring import mark_safe
 from storage.fields import ImageField

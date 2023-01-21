@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from utils.views import CommonArticleListView, CommonArticleView, CommonDocumentListView, CommonPageView
+from utils.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView
 
 from .forms import SubscriptionForm
-from .models import Article, Document, Page
+from .models import Article, Date, Document, Page
 
 
 class PageView(CommonPageView):
@@ -19,6 +19,9 @@ class ArticleListView(CommonArticleListView):
 class ArticleView(CommonArticleView):
     model = Article
 
+
+class DateListView(CommonDateListView):
+    model = Date
 
 class DocumentListView(CommonDocumentListView):
     model = Document

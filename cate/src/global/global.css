@@ -492,6 +492,17 @@ li.soustitre {
 	margin:20px 0px 5px 0px;
 }
 
+table {
+	border-collapse:collapse;
+}
+th, td {
+	border:1px solid black;
+	padding:4px 8px;
+}
+th {
+	text-align:center;
+}
+
 input, button, select, .r-select, textarea {
 	border:1px solid black;
 	cursor:pointer;

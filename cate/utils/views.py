@@ -6,7 +6,7 @@ from django.db.models.query_utils import Q
 from django.utils.timezone import now
 from django.views import generic
 
-from .models import CommonArticle, CommonDocument, CommonPage
+from .models import CommonArticle, CommonDate, CommonDocument, CommonPage
 
 
 def has_permission(view: generic.View, permission = "view"):
@@ -66,6 +66,14 @@ class CommonArticleView(BaseView, generic.DetailView):
     context_object_name = "article"
     template_filename = "article.html"
     is_article = True
+
+class CommonDateListView(BaseView, generic.ListView):
+    """
+    View for a date list.
+    """
+    model: Type[CommonDate]
+    context_object_name = "dates"
+    template_filename = "dates.html"
 
 class CommonDocumentListView(BaseView, generic.ListView):
     """

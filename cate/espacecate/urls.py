@@ -21,6 +21,7 @@ app_name = "espacecate"
 urlpatterns = [
     path("articles/<slug:slug>", views.ArticleView.as_view(), name = "article"),
     path("articles/", views.ArticleListView.as_view(), name = "articles"),
+    path("dates/", views.DateListView.as_view(), name = "dates"),
     path("docs/", views.DocumentListView.as_view(), name = "documents"),
     path("inscription", views.subscription, name = "inscription"),
     path("index", views.PageView.as_view(), kwargs = {"slug": "accueil"}),
