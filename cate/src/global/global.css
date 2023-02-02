@@ -386,7 +386,7 @@ main .progress::after {
 }
 
 main {
-	margin:8px;
+	padding:8px;
 }
 
 h1 {
