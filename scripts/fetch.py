@@ -3,8 +3,7 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-from utils import App, cprint, run
+from .utils import App, cprint, run
 
 FOLDER = Path(__file__).parent.parent
 if not os.path.exists(FOLDER):
@@ -45,9 +44,8 @@ def fetch(apps: list[App] | None = None):
 
 	cprint("OK", "green")
 
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument("APPS", nargs = "*", help = "App names (folders directly in the git repository)")
-	args = parser.parse_args()
+def main(args):
+	fetch(App.get_list_from_argparse(args.APP))
 
-	fetch(App.get_list_from_argparse(args.APPS))
+def contribute_to_argparse(parser: argparse.ArgumentParser):
+	parser.add_argument("APP", nargs = "*", help = "App name (folders directly in the git repository)")

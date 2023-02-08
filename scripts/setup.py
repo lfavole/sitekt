@@ -1,10 +1,8 @@
 import argparse
 import sys
-from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-from utils import BASE_FOLDER, PYTHONANYWHERE, App, cprint, install, parse_packages_list
-from create_settings import input_question
+from .create_settings import input_question
+from .utils import BASE_FOLDER, PYTHONANYWHERE, App, cprint, install, parse_packages_list
 
 
 def setup(apps: list[App], interactive = False):
@@ -66,10 +64,9 @@ from {settings.APP_NAME}.wsgi import application
 
 	cprint("OK", "green")
 
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument("APPS", nargs = "*", help = "App names (folders directly in the git repository)")
-	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
-	args = parser.parse_args()
+def main(args):
+	setup(App.get_list_from_argparse(args.APP), args.interactive)
 
-	setup(App.get_list_from_argparse(args.APPS), args.interactive)
+def contribute_to_argparse(parser: argparse.ArgumentParser):
+	parser.add_argument("APP", nargs = "*", help = "App name (folder directly in the git repository)")
+	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")

@@ -2,12 +2,10 @@ import argparse
 import datetime as dt
 import getpass
 import secrets
-import sys
 from pathlib import Path
 from typing import Any, overload
 
-sys.path.insert(0, str(Path(__file__).parent))
-from utils import PYTHONANYWHERE, USERNAME, App, Settings, cprint, run  # pylint-ignore: C0413
+from .utils import PYTHONANYWHERE, USERNAME, App, Settings, cprint, run
 
 FILE = Path(__file__).resolve()
 
@@ -78,6 +76,8 @@ def create_settings_file(app_or_apps: list[App] | App | None = None, settings: S
 		settings = {}
 
 	if isinstance(app_or_apps, list):
+		if not app_or_apps:
+			app_or_apps = App.all()
 		ret: list[Settings] = []
 		for app in app_or_apps:
 			ret.append(create_settings_file(app, settings, interactive))
@@ -158,10 +158,9 @@ def create_settings_file(app_or_apps: list[App] | App | None = None, settings: S
 	cprint("Settings file created", "green")
 	return Settings(params)
 
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument("APPS", nargs = "*", help = "App names (folders directly in the git repository)")
-	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
-	args = parser.parse_args()
+def main(args):
+	create_settings_file(App.get_list_from_argparse(args.APP), {}, args.interactive)
 
-	create_settings_file(App.get_list_from_argparse(args.APPS), {}, args.interactive)
+def contribute_to_argparse(parser: argparse.ArgumentParser):
+	parser.add_argument("APP", nargs = "*", help = "App name (folder directly in the git repository)")
+	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
