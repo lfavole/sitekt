@@ -6,6 +6,12 @@ from common.models import CommonArticle, CommonPage
 from django import forms
 from django.contrib import admin
 
+from .models import Year
+
+
+@admin.register(Year)
+class YearAdmin(admin.ModelAdmin):
+	list_display = ("formatted_year", "is_active")
 
 class CommonPageAdminForm(forms.ModelForm):
 	"""

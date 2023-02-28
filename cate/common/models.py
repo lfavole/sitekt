@@ -8,6 +8,70 @@ from django.utils.translation import gettext_lazy as _
 from .fields import DatalistField
 
 
+class Year(models.Model):
+	"""
+	A school year to be linked to childs, etc.
+
+	It can be active (or not).
+	"""
+	start_year = models.fields.IntegerField(_("Start year"), unique = True)
+	is_active = models.fields.BooleanField(_("Active year"))
+
+	class Meta:
+		verbose_name = _("school year")
+		ordering = ["-start_year"]
+
+	def _get_end_year(self):
+		return self.start_year + 1
+	_get_end_year.short_description = _("End year")
+	end_year = property(_get_end_year)
+
+	def _get_formatted_year(self):
+		return f"{self.start_year}-{self.end_year}"
+	_get_formatted_year.short_description = _("School year") # type: ignore
+	formatted_year = property(_get_formatted_year)
+
+	def __str__(self):
+		return _("School year %s") % (self.formatted_year,)
+
+	def save(self):
+		# Note: we avoid saving the objects to avoid recursion error
+		obj = type(self).objects.all()
+		if self.is_active:
+			# this year becomes an active year => deactivate the other years
+			for year in obj.filter(is_active = True):
+				if year == self:
+					continue
+				if not year.is_active:
+					continue
+				year.is_active = False
+				year.save()
+		elif not obj.filter(is_active = True):
+			# no active years => activate the first year or this year
+			first = obj.first()
+			if first and not first.is_active: # activate the first year
+				first.is_active = True
+				first.save()
+			else: # one year => this year is active
+				self.is_active = True
+
+		super().save()
+
+	def delete(self, *args, **kwargs):
+		# Note: we avoid saving the objects to avoid recursion error
+		obj = type(self).objects.all()
+		first = obj.first()
+		if first is self:
+			first = obj.get(1)
+		if first and not first.is_active: # activate the first year
+			first.is_active = True
+			first.save()
+		else:
+			pass
+			# we are deleting the only active year
+			# there will be bugs...
+		return super().delete(*args, **kwargs)
+
 class PageBase(models.Model):
 	"""
 	Base class for pages and articles.

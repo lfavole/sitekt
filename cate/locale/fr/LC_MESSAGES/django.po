@@ -1,14 +1,10 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# This file is distributed under the same license as the django-cate package.
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 18:29+0100\n"
+"POT-Creation-Date: 2023-02-09 14:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,133 +14,165 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\cate\templatetags\join_last.py:9
+#: .\cate\templatetags\join_last.py:8
 msgid ", "
 msgstr ", "
 
-#: .\cate\templatetags\join_last.py:9
+#: .\cate\templatetags\join_last.py:8
 msgid "and"
 msgstr "et"
 
-#: .\utils\models.py:16
+#: .\common\models.py:17
+msgid "Start year"
+msgstr "Année de début"
+
+#: .\common\models.py:18
+msgid "Active year"
+msgstr "Année active"
+
+#: .\common\models.py:21
+msgid "school year"
+msgstr "année scolaire"
+
+#: .\common\models.py:25
+msgid "End year"
+msgstr "Année de fin"
+
+#: .\common\models.py:30
+msgid "School year"
+msgstr "Année scolaire"
+
+#: .\common\models.py:34
+#, python-format
+msgid "School year %s"
+msgstr "Année scolaire %s"
+
+#: .\common\models.py:49
 msgid "Slug"
 msgstr "ID"
 
-#: .\utils\models.py:17
+#: .\common\models.py:50
 msgid "Title"
 msgstr "Titre"
 
-#: .\utils\models.py:18
+#: .\common\models.py:51
 msgid "Content"
 msgstr "Contenu"
 
-#: .\utils\models.py:19
-#, fuzzy
-#| msgid "Hidden article"
+#: .\common\models.py:52
 msgid "Hidden page"
 msgstr "Page cachée"
 
-#: .\utils\models.py:49
+#: .\common\models.py:82
 msgid "Order"
 msgstr "Ordre"
 
-#: .\utils\models.py:50
+#: .\common\models.py:83
 msgid "Previous page"
 msgstr "Page précédente"
 
-#: .\utils\models.py:53
+#: .\common\models.py:86
 msgid "page"
 msgstr "page"
 
-#: .\utils\models.py:64
+#: .\common\models.py:97 .\espacecate\templates\espacecate\dates.html:13
 msgid "Date"
 msgstr "Date"
 
-#: .\utils\models.py:65
+#: .\common\models.py:98
 msgid "Hidden article"
 msgstr "Article caché"
 
-#: .\utils\models.py:68
+#: .\common\models.py:101
 msgid "article"
 msgstr "article"
 
-#: .\utils\models.py:72
+#: .\common\models.py:106
 msgid "Start date"
 msgstr "Date de début"
 
-#: .\utils\models.py:73
+#: .\common\models.py:107
 msgid "End date"
 msgstr "Date de fin"
 
-#: .\utils\models.py:74
+#: .\common\models.py:108
 msgid "Start time"
 msgstr "Heure de début"
 
-#: .\utils\models.py:75
+#: .\common\models.py:109
 msgid "End time"
 msgstr "Heure de fin"
 
-#: .\utils\models.py:78
+#: .\common\models.py:112
 msgid "Time (as text)"
 msgstr "Heure (en tant que texte)"
 
-#: .\utils\models.py:79
+#: .\common\models.py:113 .\espacecate\templates\espacecate\dates.html:15
 msgid "Name"
 msgstr "Nom"
 
-#: .\utils\models.py:80
+#: .\common\models.py:114
 msgid "Short name"
 msgstr "Nom abrégé"
 
-#: .\utils\models.py:81
+#: .\common\models.py:115 .\espacecate\templates\espacecate\dates.html:16
 msgid "Place"
 msgstr "Lieu"
 
-#: .\utils\models.py:82
+#: .\common\models.py:116
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: .\utils\models.py:85
+#: .\common\models.py:119
 msgid "date"
 msgstr "date"
 
-#: .\utils\models.py:90
+#: .\common\models.py:124
 msgid "The end date must be after the start date."
 msgstr "La date de fin doit être avant la date de début."
 
-#: .\utils\models.py:93
-msgid "The end time must be after the start time."
-msgstr "L'heure de fin doit être avant l'heure de début."
-
-#: .\utils\models.py:96
+#: .\common\models.py:127
 msgid "The start time must be specified when the end time is specified."
 msgstr ""
 "L'heure de début doit être spécifiée quand l'heure de fin est spécifiée."
 
-#: .\utils\models.py:100
+#: .\common\models.py:131
 msgid "The time as text or the start time must be specified."
 msgstr "L'heure en tant que texte ou l'heure de début doivent être spécifiées."
 
-#: .\utils\models.py:104
+#: .\common\models.py:136
+msgid "The end time must be after the start time."
+msgstr "L'heure de fin doit être avant l'heure de début."
+
+#: .\common\models.py:139
 msgid "The start time, the end time or the time as text must be specified."
 msgstr ""
 "L'heure de début, l'heure de fin ou l'heure en tant que texte doivent être "
 "spécifiées."
 
-#: .\utils\models.py:108
-msgid "The start time / end time or the time as text must be specified, not both."
+#: .\common\models.py:143
+msgid ""
+"The start time / end time or the time as text must be specified, not both."
 msgstr ""
 "L'heure de début / de fin ou l'heure en tant que texte doivent être "
 "spécifiées, pas les deux."
 
-#: .\utils\models.py:118
+#: .\common\models.py:153
 msgid "Document title"
 msgstr "Titre du document"
 
-#: .\utils\models.py:119
+#: .\common\models.py:154
 msgid "File"
 msgstr "Fichier"
 
-#: .\utils\models.py:122
+#: .\common\models.py:157
 msgid "document"
 msgstr "document"
+
+#: .\espacecate\templates\espacecate\dates.html:14
+msgid "Time"
+msgstr ""
+
+#, python-format
+#~ msgid "School year %d-%d"
+#~ msgstr "Année scolaire %d-%d"
