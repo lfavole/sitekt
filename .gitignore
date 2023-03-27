@@ -4,3 +4,4 @@ cate/locale/*/LC_MESSAGES/django.mo
 **/__pycache__/**
 cate/media/**
 cate/static/**
+data/**

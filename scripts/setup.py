@@ -2,6 +2,7 @@ import argparse
 import sys
 
 from .create_settings import input_question
+from .get_fonts import get_fonts
 from .utils import BASE_FOLDER, PYTHONANYWHERE, App, cprint, install, parse_packages_list
 
 
@@ -61,6 +62,9 @@ sys.path.insert(0, {repr(str(app.folder))})
 
 from {settings.APP_NAME}.wsgi import application
 """)
+
+	print("Getting fonts")
+	get_fonts()
 
 	cprint("OK", "green")
 

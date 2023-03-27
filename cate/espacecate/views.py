@@ -1,4 +1,6 @@
+from common.pdfs.calendar import calendar_pdf
 from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from .forms import SubscriptionForm
@@ -25,3 +27,6 @@ class DateListView(CommonDateListView):
 
 class DocumentListView(CommonDocumentListView):
     model = Document
+
+def calendar(request):
+    return HttpResponse(calendar_pdf("espacecate"), "application/pdf")

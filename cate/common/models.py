@@ -43,10 +43,11 @@ class Year(models.Model):
 				if year == self:
 					continue
 				if not year.is_active:
-					continue
+					continue # avoid hitting the database
 				year.is_active = False
 				year.save()
-		elif not obj.filter(is_active = True):
+
+		elif not obj.filter(is_active = True).exists():
 			# no active years => activate the first year or this year
 			first = obj.first()
 			if first and not first.is_active: # activate the first year
@@ -58,18 +59,18 @@ class Year(models.Model):
 		super().save()
 
 	def delete(self, *args, **kwargs):
-		# Note: we avoid saving the objects to avoid recursion error
 		obj = type(self).objects.all()
-		first = obj.first()
-		if first is self:
-			first = obj.get(1)
-		if first and not first.is_active: # activate the first year
-			first.is_active = True
-			first.save()
-		else:
-			pass
+		if not obj.filter(is_active = True).exists():
+			years = obj.filter(is_active = False)
+			if years.exists():
+				el = years[0]
+				if not el.is_active: # activate the first year
+					# we avoid saving the objects to avoid recursion error
+					el.is_active = True
+					el.save()
 			# we are deleting the only active year
 			# there will be bugs...
+
 		return super().delete(*args, **kwargs)
 
 class PageBase(models.Model):
