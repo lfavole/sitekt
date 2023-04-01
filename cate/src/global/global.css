@@ -758,6 +758,11 @@ input[type=submit], input[type=button], button:not(.swal-button) {
 	background-color:#b2ff59;
 	height:1.5em;
 }
+label:has(+ textarea)::after {
+	content:"";
+	display:block;
+	height:0.5em;
+}
 
 form p.flex {
 	display:flex;

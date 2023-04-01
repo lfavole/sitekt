@@ -1,7 +1,7 @@
 from common.pdfs.calendar import calendar_pdf
 from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from .forms import SubscriptionForm
 from .models import Article, Date, Document, Page
@@ -12,7 +12,13 @@ class PageView(CommonPageView):
 
 
 def subscription(request):
-    return render(request, "espacecate/subscription.html", {"form": SubscriptionForm()})
+    form = SubscriptionForm()
+    if request.method == "POST":
+        form = SubscriptionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("espacecate:inscription_ok")
+    return render(request, "espacecate/subscription.html", {"form": form})
 
 
 class ArticleListView(CommonArticleListView):
