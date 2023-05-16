@@ -34,7 +34,7 @@ class Year(models.Model):
 	def __str__(self):
 		return _("School year %s") % (self.formatted_year,)
 
-	def save(self):
+	def save(self, *args, **kwargs):
 		# Note: we avoid saving the objects to avoid recursion error
 		obj = type(self).objects.all()
 		if self.is_active:
@@ -56,7 +56,7 @@ class Year(models.Model):
 			else: # one year => this year is active
 				self.is_active = True
 
-		super().save()
+		super().save(*args, **kwargs)
 
 	def delete(self, *args, **kwargs):
 		obj = type(self).objects.all()

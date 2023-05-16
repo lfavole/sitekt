@@ -92,8 +92,6 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 			)
 
 	special_dates.add_event("Toussaint", datetime.date(start_year, 11, 1))
-	special_dates.add_ferie("Toussaint", datetime.date(start_year, 11, 1))
-	special_dates.add_event("Noël", datetime.date(start_year, 12, 25))
 	special_dates.add_ferie("Noël", datetime.date(start_year, 12, 25))
 
 	special_dates.add_easter_date("Merc. Cendres", -46)
