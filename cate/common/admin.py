@@ -51,3 +51,15 @@ class CommonDateAdmin(admin.ModelAdmin):
 	list_display = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
 	fields = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
 	ordering = ("-start_date",)
+
+class CommonDocumentAdmin(admin.ModelAdmin):
+	"""
+	Admin interface for documents.
+	"""
+	list_display = ("title", "file")
+
+class CommonDocumentCategoryAdmin(admin.ModelAdmin):
+	"""
+	Admin interface for document categories.
+	"""
+	list_display = ("title",)

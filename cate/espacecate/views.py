@@ -1,7 +1,7 @@
 from common.pdfs.calendar import calendar_pdf
-from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView, serve
+from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import SubscriptionForm
 from .models import Article, Date, Document, Page
@@ -33,6 +33,9 @@ class DateListView(CommonDateListView):
 
 class DocumentListView(CommonDocumentListView):
     model = Document
+
+def serve_document(request, pk):
+    return serve(request, get_object_or_404(Document, pk = pk))
 
 def calendar(request):
     return HttpResponse(calendar_pdf("espacecate"), "application/pdf")

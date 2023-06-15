@@ -1,12 +1,18 @@
-from typing import Type
+import mimetypes
+from pathlib import Path
+from typing import Literal, Type
 
 from django.contrib.auth import get_permission_codename
 from django.db.models import Model
+from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
+from django.http.response import FileResponse, HttpResponseNotModified
+from django.utils.http import http_date
 from django.utils.timezone import now
 from django.views import generic
+from django.views.static import was_modified_since
 
-from .models import CommonArticle, CommonDate, CommonDocument, CommonPage
+from .models import CommonArticle, CommonDate, CommonDocument, CommonDocumentCategory, CommonPage
 
 
 def has_permission(view: generic.View, permission = "view"):
@@ -22,8 +28,6 @@ class BaseView(generic.View):
     template_filename: str
     model: Type[Model]
 
-    is_article = False
-
     def get_template_names(self): # pylint: disable=C0116
         app_name = self.request.resolver_match.app_name
         if not app_name:
@@ -34,8 +38,11 @@ class BaseView(generic.View):
         admin = has_permission(self, "view")
         ret = self.model.objects.all()
         if not admin:
-            ret = ret.filter(~Q(content__exact = "")).filter(hidden = False)
-            if self.is_article:
+            if hasattr(self.model, "content"):
+                ret = ret.filter(~Q(content__exact = ""))
+            if hasattr(self.model, "hidden"):
+                ret = ret.filter(hidden = False)
+            if hasattr(self.model, "date"):
                 ret = ret.filter(date__lte = now())
         return ret
 
@@ -56,7 +63,6 @@ class CommonArticleListView(BaseView, generic.ListView):
     model: Type[CommonArticle]
     context_object_name = "articles"
     template_filename = "articles.html"
-    is_article = True
 
 class CommonArticleView(BaseView, generic.DetailView):
     """
@@ -65,7 +71,6 @@ class CommonArticleView(BaseView, generic.DetailView):
     model: Type[CommonArticle]
     context_object_name = "article"
     template_filename = "article.html"
-    is_article = True
 
 class CommonDateListView(BaseView, generic.ListView):
     """
@@ -82,3 +87,51 @@ class CommonDocumentListView(BaseView, generic.ListView):
     model: Type[CommonDocument]
     context_object_name = "docs"
     template_filename = "docs.html"
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("categories")
+
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        ret: dict[Literal[""] | CommonDocumentCategory, list[CommonDocument]] = {"": []}
+
+        obj: CommonDocument
+        cat: CommonDocumentCategory
+        for obj in self.object_list:  # type: ignore
+            added = False
+            for cat in obj.categories.all():
+                if cat not in ret:
+                    ret[cat] = []
+                ret[cat].append(obj)
+                added = True
+
+            if not added:
+                ret[""].append(obj)
+
+        kwargs["docs_ordered"] = ret
+
+        return kwargs
+
+def serve(request, obj: CommonDocument | FieldFile | Path | str):
+    """
+    Return a response that serves a file.
+    """
+    if isinstance(obj, CommonDocument):
+        obj = obj.file
+    if isinstance(obj, FieldFile):
+        obj = obj.path
+    fullpath = Path(obj)
+
+    # Respect the If-Modified-Since header.
+    statobj = fullpath.stat()
+    if not was_modified_since(
+        request.META.get("HTTP_IF_MODIFIED_SINCE"), statobj.st_mtime
+    ):
+        return HttpResponseNotModified()
+    content_type, encoding = mimetypes.guess_type(str(fullpath))
+    content_type = content_type or "application/octet-stream"
+    response = FileResponse(fullpath.open("rb"), as_attachment = True, content_type = content_type)
+    response.headers["Last-Modified"] = http_date(statobj.st_mtime)
+    if encoding:
+        response.headers["Content-Encoding"] = encoding
+    return response

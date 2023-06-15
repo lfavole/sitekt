@@ -23,6 +23,7 @@ urlpatterns = [
     path("articles/", views.ArticleListView.as_view(), name = "articles"),
     path("calendrier", views.calendar, name = "calendrier"),
     path("dates/", views.DateListView.as_view(), name = "dates"),
+    path("docs/<int:pk>", views.serve_document, name = "document"),
     path("docs/", views.DocumentListView.as_view(), name = "documents"),
     path("inscription", views.subscription, name = "inscription"),
     path("index", views.PageView.as_view(), kwargs = {"slug": "accueil"}),

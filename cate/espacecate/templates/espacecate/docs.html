@@ -5,10 +5,15 @@
 {% block content %}
 <h1>Documents téléchargeables</h1>
 {% if docs %}
-<ul>{% for doc in docs %}
-<li><a href="{{ doc.file }}" target="_blank">{{ doc.title }}</a></li>{% endfor %}
-</ul>
+    <ul>
+    {% for cat, docs in docs_ordered.items %}
+        {% if cat %}<li class="soustitre">{{ cat }}</li>{% endif %}
+        {% for doc in docs %}
+            <li><a href="{% url "espacecate:document" doc.pk %}" target="_blank">{{ doc.title }}</a></li>
+        {% endfor %}
+    {% endfor %}
+    </ul>
 {% else %}
-<p>Aucun document téléchargeable</p>
+    <p>Aucun document téléchargeable</p>
 {% endif %}
 {% endblock %}
