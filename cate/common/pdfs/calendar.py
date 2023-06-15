@@ -7,16 +7,17 @@ from dateutil.easter import easter
 from fpdf import FPDF
 from fpdf.enums import Align, XPos, YPos
 
+from ..models import Year
+
 HERE = Path(__file__).resolve()
 DATA = HERE.parent.parent.parent.parent / "data"
 
 fr_months = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
 fr_weekdays = "LMMJVSD"
-start_year = 2023
-
-easter_date = easter(start_year + 1)
 
 class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], str, datetime.date, datetime.date]]):
+	easter_date: datetime.date
+
 	def add_date(self, name: str, start_date: datetime.date, end_date: datetime.date):
 		self.append(("date", name, start_date, end_date))
 
@@ -30,11 +31,11 @@ class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], st
 		self.append(("ferie", name, date, date))
 
 	def add_easter_date(self, name: str, days_number: int):
-		date = easter_date + datetime.timedelta(days = days_number)
+		date = self.easter_date + datetime.timedelta(days = days_number)
 		self.append(("date", name, date, date))
 
 	def add_easter_ferie(self, name: str, days_number: int):
-		date = easter_date + datetime.timedelta(days = days_number)
+		date = self.easter_date + datetime.timedelta(days = days_number)
 		self.append(("ferie", name, date, date))
 
 	def __contains__(self, value):
@@ -65,6 +66,8 @@ class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], st
 		return ret
 
 def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
+	start_year = Year.get_current().start_year
+
 	pdf = FPDF("L")
 	pdf.add_font("Montserrat", "", str(DATA / "fonts/Montserrat-Regular.ttf"))
 	pdf.add_font("Montserrat", "B", str(DATA / "fonts/Montserrat-Bold.ttf"))
@@ -81,6 +84,7 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 	from_iso = datetime.date.fromisoformat
 
 	special_dates = DateContainer()
+	special_dates.easter_date = easter(start_year + 1)
 
 	with open(DATA / "fr_holidays.json") as f:
 		holidays_list: list[tuple[str, str, str]] = json.load(f)

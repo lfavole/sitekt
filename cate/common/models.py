@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
@@ -72,6 +73,18 @@ class Year(models.Model):
 			# there will be bugs...
 
 		return super().delete(*args, **kwargs)
+
+	@classmethod
+	def get_current(cls):
+		"""
+		Return the current year.
+		"""
+		year = cache.get("current_year")
+		if not year:
+			year = cls.objects.get(is_active = True)
+			cache.set("current_year", year)
+		return year
+
 
 class PageBase(models.Model):
 	"""
