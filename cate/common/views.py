@@ -28,12 +28,6 @@ class BaseView(generic.View):
     template_filename: str
     model: Type[Model]
 
-    def get_template_names(self): # pylint: disable=C0116
-        app_name = self.request.resolver_match.app_name
-        if not app_name:
-            raise RuntimeError("No app name")
-        return [app_name + "/" + self.template_filename]
-
     def get_queryset(self): # pylint: disable=C0116
         admin = has_permission(self, "view")
         ret = self.model.objects.all()
@@ -46,6 +40,10 @@ class BaseView(generic.View):
                 ret = ret.filter(date__lte = now())
         return ret
 
+    @property
+    def extra_context(self):  # pylint: disable=C0116
+        return {"app": self.request.resolver_match.app_name}
+
 
 class CommonPageView(BaseView, generic.DetailView):
     """
@@ -53,7 +51,7 @@ class CommonPageView(BaseView, generic.DetailView):
     """
     model: Type[CommonPage]
     context_object_name = "page"
-    template_filename = "page.html"
+    template_name = "common/page.html"
 
 
 class CommonArticleListView(BaseView, generic.ListView):
@@ -62,7 +60,7 @@ class CommonArticleListView(BaseView, generic.ListView):
     """
     model: Type[CommonArticle]
     context_object_name = "articles"
-    template_filename = "articles.html"
+    template_name = "common/articles.html"
 
 class CommonArticleView(BaseView, generic.DetailView):
     """
@@ -70,7 +68,7 @@ class CommonArticleView(BaseView, generic.DetailView):
     """
     model: Type[CommonArticle]
     context_object_name = "article"
-    template_filename = "article.html"
+    template_name = "common/article.html"
 
 class CommonDateListView(BaseView, generic.ListView):
     """
@@ -78,7 +76,7 @@ class CommonDateListView(BaseView, generic.ListView):
     """
     model: Type[CommonDate]
     context_object_name = "dates"
-    template_filename = "dates.html"
+    template_name = "common/dates.html"
 
 class CommonDocumentListView(BaseView, generic.ListView):
     """
@@ -86,7 +84,7 @@ class CommonDocumentListView(BaseView, generic.ListView):
     """
     model: Type[CommonDocument]
     context_object_name = "docs"
-    template_filename = "docs.html"
+    template_name = "common/docs.html"
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related("categories")

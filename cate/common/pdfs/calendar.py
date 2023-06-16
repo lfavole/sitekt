@@ -74,7 +74,10 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 
 	pdf.set_auto_page_break(False, margin = 10)
 
-	title = "Calendrier KT et EVF"
+	title = {
+		"espacecate": "Calendrier KT et EVF",
+		"aumonerie": "Calendrier aumônerie",
+	}.get(app, "Calendrier")
 	title_height = 10
 	month_height = 8
 	day_height = (pdf.eph - title_height - month_height) / 31

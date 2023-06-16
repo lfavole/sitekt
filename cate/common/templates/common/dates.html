@@ -1,0 +1,44 @@
+{% extends app|add:"/page_base.html" %}
+{% load define %}
+{% load format_date %}
+{% load i18n %}
+
+{% block page-title %}Dates importantes{% endblock %}
+
+{% block content %}
+<h1>Dates importantes</h1>
+{% if dates %}
+<table cellspacing="0">
+	<tr>
+		<th>{% translate "Date" %}</th>
+		<th>{% translate "Time" %}</th>
+		<th>{% translate "Name" %}</th>
+		<th>{% translate "Place" %}</th>
+	</tr>
+	{% for date in dates %}
+	{% define_addable as classes %}
+	{% if now.date == date.start_date and now.time >= date.start_time %}
+		{% define classes|add:"past" as classes %}
+	{% elif now.date > date.start_date %}
+		{% define classes|add:"past" as classes %}
+	{% endif %}
+	{% if date.cancelled %}
+		{% define classes|add:"cancelled" as classes %}
+	{% endif %}
+	<tr class="{{ classes|join:" " }}">
+		<td>
+			{{ date.start_date|format_date:date.end_date }}
+		</td>
+		<td>
+			{{ date.start_time|date:"G:i" }}
+			{% if date.end_time %} – {{ date.end_time|date:"G:i" }}{% endif %}
+		</td>
+		<td>{{ date.name }}</td>
+		<td>{{ date.place }}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+	<p>Aucune date pour le moment...</p>
+{% endif %}
+{% endblock %}

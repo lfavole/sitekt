@@ -1,0 +1,12 @@
+{% extends app|add:"/page_base.html" %}
+{% load markdown %}
+
+{% block page-title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+<h1>
+	{# no spaces here, otherwise there is too much space between the arrow and the title #}
+	<a href="{% url app|add:":articles" %}"><span class="fleche fl-gauche"></span></a>{{ article.title }}
+</h1>
+{{ article.content | markdown }}
+{% endblock %}

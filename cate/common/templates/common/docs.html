@@ -1,0 +1,19 @@
+{% extends app|add:"/page_base.html" %}
+
+{% block page-title %}Documents téléchargeables{% endblock %}
+
+{% block content %}
+<h1>Documents téléchargeables</h1>
+{% if docs %}
+    <ul>
+    {% for cat, docs in docs_ordered.items %}
+        {% if cat %}<li class="soustitre">{{ cat }}</li>{% endif %}
+        {% for doc in docs %}
+            <li><a href="{% url app|add:":document" doc.pk %}" target="_blank">{{ doc.title }}</a></li>
+        {% endfor %}
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Aucun document téléchargeable</p>
+{% endif %}
+{% endblock %}
