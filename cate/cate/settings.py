@@ -57,9 +57,9 @@ INSTALLED_APPS = [
 	"users",
 	"storage",
 	"uservisit",
+	"aumonerie",
 	"common",
 	"espacecate",
-	# "aumonerie",
 	"calendrier_avent_2022",
 	"django_cleanup", # must be placed last
 ]

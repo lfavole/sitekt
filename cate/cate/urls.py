@@ -27,9 +27,9 @@ def add_website(name: str):
 urlpatterns = [
     path("admin/docs/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
+    add_website("aumonerie"),
     add_website("calendrier_avent_2022"),
     add_website("espacecate"),
-    # add_website("aumonerie"),
     path("", views.home, name = "home"),
     path("reload-website/", views.reload_website),
     # re_path(r'^', include('filer.server.urls')),

@@ -1,8 +1,0 @@
-{% extends "espacecate/page_base.html" %}
-{% load markdown %}
-
-{% block page-title %}{{ page.title }}{% endblock %}
-
-{% block content %}
-{{ page.content | markdown }}
-{% endblock %}
