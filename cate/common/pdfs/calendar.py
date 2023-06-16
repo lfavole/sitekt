@@ -15,7 +15,7 @@ DATA = HERE.parent.parent.parent.parent / "data"
 fr_months = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
 fr_weekdays = "LMMJVSD"
 
-class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], str, datetime.date, datetime.date]]):
+class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], str, datetime.date, datetime.date | None]]):
 	easter_date: datetime.date
 
 	def add_date(self, name: str, start_date: datetime.date, end_date: datetime.date):
@@ -40,7 +40,7 @@ class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], st
 
 	def __contains__(self, value):
 		for date in self:
-			if date[2] <= value <= date[3]:
+			if date[2] <= value <= (date[3] or date[2]):
 				return True
 		return False
 
@@ -60,7 +60,7 @@ class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], st
 
 		dates = self.filter("event", "date")
 		for date in dates:
-			if date[2] <= value <= date[3]:
+			if date[2] <= value <= (date[3] or date[2]):
 				ret.append(date[1])
 
 		return ret

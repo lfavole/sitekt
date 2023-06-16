@@ -1,3 +1,5 @@
+import argparse
+from datetime import date
 import json
 from pathlib import Path
 
@@ -6,17 +8,16 @@ import requests
 BASE_URL = "https://data.education.gouv.fr/api/v2/catalog/datasets/fr-en-calendrier-scolaire/exports/json"
 DATA = Path(__file__).resolve().parent.parent / "data"
 
-start_year = 2023
 
-def main(_args):
+def main(args):
 	req = requests.get(
 		BASE_URL,
 		{
 			"select": "description,start_date,end_date",
 			"where": (
 				"location='Aix-Marseille' "
-				f"AND start_date>=date'{start_year}-01-07' "
-				f"AND start_date<date'{start_year + 1}-01-07' "
+				f"AND start_date>=date'{args.START_YEAR}-07-01' "
+				f"AND start_date<date'{args.START_YEAR + 1}-07-01' "
 				"AND (population='-' OR population='Élèves')"
 			),
 			"limit": -1,
@@ -41,5 +42,6 @@ def main(_args):
 	with open(DATA / "fr_holidays.json", "w") as f:
 		json.dump(result, f)
 
-def contribute_to_argparse(_parser):
-	pass
+
+def contribute_to_argparse(parser: argparse.ArgumentParser):
+	parser.add_argument("START_YEAR", nargs="?", default=date.today().year, type=int, help="start year")

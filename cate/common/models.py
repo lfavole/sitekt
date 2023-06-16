@@ -148,11 +148,9 @@ class CommonArticle(PageBase):
 
 class CommonDate(models.Model):
 	start_date = models.fields.DateField(_("Start date"))
-	end_date = models.fields.DateField(_("End date"), blank = True)
-	start_time = models.fields.TimeField(_("Start time"), blank = True)
-	end_time = models.fields.TimeField(_("End time"), blank = True)
-	# time_text = models.fields.CharField(_("Time (as text)"), max_length = 50, blank = True)
-	# time_text = DatalistField(_("Time (as text)"), max_length = 50, blank = True, choices = (("J", "Journée"), ("W", "Week-end"), ("S", "Séjour")))
+	end_date = models.fields.DateField(_("End date"), blank = True, null = True)
+	start_time = models.fields.TimeField(_("Start time"), blank = True, null = True)
+	end_time = models.fields.TimeField(_("End time"), blank = True, null = True)
 	time_text = DatalistField(_("Time (as text)"), max_length = 50, blank = True, form_choices = ("Journée", "Week-end", "Séjour"))
 	name = models.fields.CharField(_("Name"), max_length = 100)
 	short_name = models.fields.CharField(_("Short name"), max_length = 50, blank = True)
@@ -164,24 +162,15 @@ class CommonDate(models.Model):
 		abstract = True
 
 	def clean(self):
-		if self.start_date > self.end_date:
+		if self.end_date and self.start_date > self.end_date:
 			raise ValidationError({"end_date": _("The end date must be after the start date.")})
 
 		if self.end_time and not self.start_time:
 			msg = _("The start time must be specified when the end time is specified.")
 			raise ValidationError({"start_time": msg})
 
-		if not self.time_text and not self.start_time:
-			msg = _("The time as text or the start time must be specified.")
-			raise ValidationError({"start_time": msg, "time_text": msg})
-
-		# do this after because start_time can be None
-		if self.start_time > self.end_time:
+		if self.end_time and self.start_time > self.end_time:
 			raise ValidationError({"end_time": _("The end time must be after the start time.")})
-
-		if not self.start_time and not self.end_time and not self.time_text:
-			msg = _("The start time, the end time or the time as text must be specified.")
-			raise ValidationError({"start_time": msg, "end_time": msg, "time_text": msg})
 
 		if self.start_time and self.end_time and self.time_text:
 			msg = _("The start time / end time or the time as text must be specified, not both.")

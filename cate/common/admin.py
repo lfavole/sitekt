@@ -49,7 +49,7 @@ class CommonDateAdmin(admin.ModelAdmin):
 	Admin interface for dates.
 	"""
 	list_display = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
-	fields = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
+	fields = ("name", "short_name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
 	ordering = ("-start_date",)
 
 class CommonDocumentAdmin(admin.ModelAdmin):

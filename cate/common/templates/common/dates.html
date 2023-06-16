@@ -30,8 +30,12 @@
 			{{ date.start_date|format_date:date.end_date }}
 		</td>
 		<td>
-			{{ date.start_time|date:"G:i" }}
-			{% if date.end_time %} – {{ date.end_time|date:"G:i" }}{% endif %}
+			{% if date.time_text %}
+				{{ date.time_text }}
+			{% else %}
+				{{ date.start_time|date:"G:i" }}
+				{% if date.end_time %} – {{ date.end_time|date:"G:i" }}{% endif %}
+			{% endif %}
 		</td>
 		<td>{{ date.name }}</td>
 		<td>{{ date.place }}</td>

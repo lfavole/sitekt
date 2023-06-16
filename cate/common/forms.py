@@ -7,13 +7,6 @@ class DatalistWidget(forms.widgets.Select):
     """
     template_name = "widgets/datalist.html"
 
-    def optgroups(self, *args, **kwargs):
-        print(f"optgroups {args=}")
-        print(f"optgroups {kwargs=}")
-        ret = super().optgroups(*args, **kwargs)
-        print(f"optgroups {ret=}")
-        return ret
-
 class DatalistFormField(forms.ChoiceField, forms.CharField):
     """
     Text field with `<datalist>`.
