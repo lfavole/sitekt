@@ -1,6 +1,8 @@
 colorama # colorama
 Django # django
 Markdown # markdown
+django_betterforms # betterforms
+django-crispy-forms # crispy_forms
 django-admin-sortable2 # adminsortable2
 easy-thumbnails # easy_thumbnails
 django-cleanup # django_cleanup

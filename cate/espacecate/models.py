@@ -1,12 +1,12 @@
-from datetime import date, datetime
-from typing import Callable, TypeVar
+from datetime import datetime
 
-from common.models import CommonArticle, CommonDate, CommonDocument, CommonDocumentCategory, CommonPage
-from django.core.exceptions import ValidationError
+from common.fields import PriceField
+from common.models import CommonArticle, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonPage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from easy_thumbnails.fields import ThumbnailerImageField
 from uservisit.models import CommonUserVisit
 
 
@@ -34,16 +34,15 @@ class Article(CommonArticle):
 def get_current_year():
 	return datetime.now().year
 
-class Child(models.Model):
+class Group(CommonGroup):
+	"""
+	Group on `espacecate` app.
+	"""
+
+class Child(CommonChild):
 	"""
 	A subscribed child.
 	"""
-	nom = models.CharField("Nom de famille", max_length = 100)
-	prenom = models.CharField("Prénom", max_length = 100)
-	date_naissance = models.DateField("Date de naissance")
-	lieu_naissance = models.CharField("Lieu de naissance", max_length = 100)
-	adresse = models.TextField("Adresse")
-
 	ECOLES = [
 		("FARANDOLE", "École La Farandole"),
 		("SOLDANELLE", "École La Soldanelle"),
@@ -78,37 +77,39 @@ class Child(models.Model):
 	annees_kt = models.fields.IntegerField("Années de caté", validators = [MinValueValidator(0), MaxValueValidator(3)])
 
 	bapteme = models.fields.BooleanField("Baptême")
-	date_bapteme = models.fields.DateField("Date du baptême")
-	lieu_bapteme = models.CharField("Lieu du baptême", max_length = 100)
+	date_bapteme = models.fields.DateField("Date du Baptême", blank = True, null = True)
+	lieu_bapteme = models.CharField("Lieu du Baptême", max_length = 100, blank = True, null = True)
 
 	pardon = models.fields.BooleanField("Sacrement du Pardon")
-	annee_pardon = models.fields.IntegerField("Année du Sacrement du Pardon", validators = [MinValueValidator(1970), MaxValueValidator(get_current_year)])
+	annee_pardon = models.fields.IntegerField("Année du Sacrement du Pardon", blank = True, null = True, validators = [MaxValueValidator(get_current_year)])
 
-	premiere_communion = models.fields.BooleanField("Première communion")
-	date_premiere_communion = models.fields.DateField("Date de la première communion")
-	lieu_premiere_communion = models.CharField("Lieu de la première communion", max_length = 100)
+	premiere_communion = models.fields.BooleanField("Première Communion")
+	date_premiere_communion = models.fields.DateField("Date de la Première Communion", blank = True, null = True)
+	lieu_premiere_communion = models.CharField("Lieu de la Première Communion", max_length = 100, blank = True, null = True)
 
 	nom_pere = models.CharField("Nom et prénom du père", blank = True, max_length = 100)
-	adresse_pere = models.TextField("Adresse du père")
-	tel_pere = models.CharField("Téléphone du père", max_length = 10)
-	email_pere = models.EmailField("Email du père", max_length = 100)
+	adresse_pere = models.TextField("Adresse du père", blank = True)
+	tel_pere = models.CharField("Téléphone du père", blank = True, max_length = 10)
+	email_pere = models.EmailField("Email du père", blank = True, max_length = 100)
 
 	nom_mere = models.CharField("Nom et prénom de la mère", blank = True, max_length = 100)
-	adresse_mere = models.TextField("Adresse de la mère")
-	tel_mere = models.CharField("Téléphone de la mère", max_length = 10)
-	email_mere = models.EmailField("Email de la mère", max_length = 100)
+	adresse_mere = models.TextField("Adresse de la mère", blank = True)
+	tel_mere = models.CharField("Téléphone de la mère", blank = True, max_length = 10)
+	email_mere = models.EmailField("Email de la mère", blank = True, max_length = 100)
 
-	freres_soeurs = models.TextField("Frères et soeurs")
+	freres_soeurs = models.TextField("Frères et soeurs", blank = True)
 
 	autres_infos = models.TextField("Autres informations")
 
 	photos = models.BooleanField("Publication des photos")
-	frais = models.fields.IntegerField("Participation aux frais", validators = [MinValueValidator(0)])
+	frais = PriceField("Participation aux frais")
 
-	class Meta:
-		verbose_name = "Enfant"
+	paye = models.BooleanField("Payé")
+	signe = models.BooleanField("Signé")
+	groupe = models.ForeignKey(Group, on_delete = models.SET_NULL, verbose_name = "Groupe", null = True)
+	photo = ThumbnailerImageField("Photo", null = True)
 
-	fieldsets = (
+	fieldsets = [
 		("Informations de l'enfant", {
 			"fields": ("nom", "prenom", "date_naissance", "lieu_naissance", "adresse")
 		}),
@@ -119,7 +120,7 @@ class Child(models.Model):
 			"fields": ("annees_evf", "annees_kt", "bapteme", "date_bapteme", "lieu_bapteme", "pardon", "annee_pardon", "premiere_communion", "date_premiere_communion", "lieu_premiere_communion")
 		}),
 		("Coordonnées", {
-			"fields": ("nom_mere", "adresse_mere", "tel_mere", "email_mere", "nom_mere", "adresse_mere", "tel_mere", "email_mere", "freres_soeurs")
+			"fields": ("nom_mere", "adresse_mere", "tel_mere", "email_mere", "nom_pere", "adresse_pere", "tel_pere", "email_pere", "freres_soeurs")
 		}),
 		("Autres informations", {
 			"fields": ("autres_infos",)
@@ -127,43 +128,16 @@ class Child(models.Model):
 		("Autorisation", {
 			"fields": ("photos", "frais")
 		}),
-	)
+		("Espace administrateur", {
+			"fields": ("paye", "signe", "groupe", "photo")
+		}),
+	]
 
-	def __str__(self):
-		return self.prenom + " " + self.nom
-
-	def clean(self):
-		DateOrYear = TypeVar("DateOrYear", date, int)
-		def check_date(operator: Callable[[DateOrYear, DateOrYear], bool], base_value: DateOrYear, name: str, msg: str):
-			value: DateOrYear = getattr(self, name)
-			if isinstance(value, int):
-				base_value = base_value.year # type: ignore
-			if not operator(value, base_value):
-				raise ValidationError({name: msg})
-
-		def before(a, b):
-			return a <= b
-		def after(a, b):
-			return a >= b
-
-		now = datetime.now()
-		def check_not_future(name: str, msg: str):
-			check_date(before, now, name, msg)
-
-		def check_after_birth(name: str, msg: str):
-			check_date(after, self.date_naissance, name, msg)
-
-		template_not_future = "%s ne peut pas être dans le futur."
-		template_after_birth = "%s doit être après la date de naissance."
-
-		check_not_future("date_naissance", template_not_future % ("La date de naissance",))
-		check_not_future("date_bapteme", template_not_future % ("La date du baptême",))
-		check_not_future("annee_pardon", template_not_future % ("La date du Sacrement du Pardon",))
-		check_not_future("date_premiere_communion", template_not_future % ("La date de la première communion",))
-
-		check_after_birth("date_bapteme", template_after_birth % ("La date du baptême",))
-		check_after_birth("annee_pardon",  template_after_birth % ("La date du Sacrement du Pardon",))
-		check_after_birth("date_premiere_communion",  template_after_birth % ("La date de la première communion",))
+	sacraments_checks = {
+		"bapteme": "du baptême",
+		"pardon": "du Sacrement du Pardon",
+		"premiere_communion": "de la première communion",
+	}
 
 class Date(CommonDate):
 	"""

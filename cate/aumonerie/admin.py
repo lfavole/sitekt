@@ -28,26 +28,9 @@ class ChildAdmin(admin.ModelAdmin):
 	"""
 	Admin interface for childs of the aumonerie app.
 	"""
-	fieldsets = (
-		("Informations de l'enfant", {
-			"fields": ("nom", "prenom", "date_naissance", "lieu_naissance", "adresse")
-		}),
-		("École", {
-			"fields": ("ecole", "classe")
-		}),
-		("Caté", {
-			"fields": ("bapteme", "date_bapteme", "lieu_bapteme", "premiere_communion", "date_premiere_communion", "lieu_premiere_communion", "profession", "date_profession", "lieu_profession", "confirmation", "date_confirmation", "lieu_confirmation")
-		}),
-		("Coordonnées", {
-			"fields": ("nom_mere", "adresse_mere", "tel_mere", "email_mere", "nom_pere", "adresse_pere", "tel_pere", "email_pere", "freres_soeurs")
-		}),
-		("Autres informations", {
-			"fields": ("autres_infos",)
-		}),
-		("Autorisation", {
-			"fields": ("photos", "frais")
-		}),
-	)
+	@property
+	def fieldsets(self):
+		return self.model.fieldsets
 
 @admin.register(Document)
 class DocumentAdmin(CommonDocumentAdmin):

@@ -16,6 +16,7 @@ Including another URLconf
 from django.urls import path
 
 from . import views
+from common.views import subscription_ok
 
 app_name = "espacecate"
 urlpatterns = [
@@ -25,6 +26,7 @@ urlpatterns = [
     path("dates/", views.DateListView.as_view(), name = "dates"),
     path("docs/<int:pk>", views.serve_document, name = "document"),
     path("docs/", views.DocumentListView.as_view(), name = "documents"),
+    path("inscription/ok", subscription_ok, name = "inscription_ok"),
     path("inscription", views.subscription, name = "inscription"),
     path("index", views.PageView.as_view(), kwargs = {"slug": "accueil"}),
     path("", views.PageView.as_view(), name = "accueil", kwargs = {"slug": "accueil"}),

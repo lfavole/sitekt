@@ -12,12 +12,13 @@ class PageView(CommonPageView):
 
 
 def subscription(request):
-    form = SubscriptionForm()
     if request.method == "POST":
         form = SubscriptionForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("espacecate:inscription_ok")
+            return redirect("espacecate:subscription_ok")
+    else:
+        form = SubscriptionForm()
     return render(request, "espacecate/subscription.html", {"form": form})
 
 

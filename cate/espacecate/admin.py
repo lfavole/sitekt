@@ -1,8 +1,8 @@
-from common.admin import CommonArticleAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonPageAdmin
+from common.admin import CommonArticleAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonPageAdmin
 from django.contrib import admin
 from uservisit.admin import CommonUserVisitAdmin
 
-from .models import Article, Child, Date, Document, DocumentCategory, Page, UserVisit
+from .models import Article, Child, Date, Document, DocumentCategory, Group, Page, UserVisit
 
 
 @admin.register(UserVisit)
@@ -23,31 +23,20 @@ class ArticleAdmin(CommonArticleAdmin):
 	Admin interface for articles of the espacecate app.
 	"""
 
+@admin.register(Group)
+class GroupAdmin(CommonGroupAdmin):
+	"""
+	Admin interface for groups of the espacecate app.
+	"""
+
 @admin.register(Child)
 class ChildAdmin(admin.ModelAdmin):
 	"""
 	Admin interface for childs of the espacecate app.
 	"""
-	fieldsets = (
-		("Informations de l'enfant", {
-			"fields": ("nom", "prenom", "date_naissance", "lieu_naissance", "adresse")
-		}),
-		("École", {
-			"fields": ("ecole", "classe", "redoublement")
-		}),
-		("Caté", {
-			"fields": ("annees_evf", "annees_kt", "bapteme", "date_bapteme", "lieu_bapteme", "pardon", "annee_pardon", "premiere_communion", "date_premiere_communion", "lieu_premiere_communion")
-		}),
-		("Coordonnées", {
-			"fields": ("nom_pere", "adresse_pere", "tel_pere", "email_pere", "nom_mere", "adresse_mere", "tel_mere", "email_mere", "freres_soeurs")
-		}),
-		("Autres informations", {
-			"fields": ("autres_infos",)
-		}),
-		("Autorisation", {
-			"fields": ("photos", "frais")
-		}),
-	)
+	@property
+	def fieldsets(self):
+		return self.model.fieldsets
 
 @admin.register(Document)
 class DocumentAdmin(CommonDocumentAdmin):

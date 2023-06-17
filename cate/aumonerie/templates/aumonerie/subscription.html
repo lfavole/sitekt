@@ -1,10 +1,11 @@
 {% extends "aumonerie/page_base.html" %}
 
-{% block page-title %}Inscription{% endblock %}
+{% block page-title %}Inscription à l'aumônerie{% endblock %}
 
 {% block content %}
 <h1>Inscription à l'aumônerie</h1>
-<form>
+<form action="{% url "aumonerie:inscription" %}" method="post">
+	{% csrf_token %}
 	{{ form.as_p }}
 	<input type="submit" value="Valider">
 </form>

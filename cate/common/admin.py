@@ -44,6 +44,12 @@ class CommonArticleAdmin(admin.ModelAdmin):
 	list_display = ("title", "date")
 	ordering = ("-date",)
 
+class CommonGroupAdmin(admin.ModelAdmin):
+	"""
+	Admin interface for groups.
+	"""
+	list_display = ("name",)
+
 class CommonDateAdmin(admin.ModelAdmin):
 	"""
 	Admin interface for dates.

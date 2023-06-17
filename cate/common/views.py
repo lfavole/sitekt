@@ -7,6 +7,7 @@ from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
 from django.http.response import FileResponse, HttpResponseNotModified
+from django.shortcuts import render
 from django.utils.http import http_date
 from django.utils.timezone import now
 from django.views import generic
@@ -14,6 +15,9 @@ from django.views.static import was_modified_since
 
 from .models import CommonArticle, CommonDate, CommonDocument, CommonDocumentCategory, CommonPage
 
+
+def subscription_ok(request):
+    return render(request, "common/subscription_ok.html")
 
 def has_permission(view: generic.View, permission = "view"):
     model: Type[Model] = view.model # type: ignore

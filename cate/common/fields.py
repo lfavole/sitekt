@@ -1,6 +1,6 @@
 from django.db import models
 
-from .forms import DatalistFormField
+from .forms import DatalistFormField, PriceInput
 
 
 class DatalistField(models.fields.CharField):
@@ -13,3 +13,8 @@ class DatalistField(models.fields.CharField):
 
     def formfield(self, *args, **kwargs):
         return super().formfield(*args, form_class = DatalistFormField, choices = self._choices, **kwargs)
+
+class PriceField(models.PositiveIntegerField):
+    def formfield(self, *args, **kwargs):
+        kwargs["widget"] = PriceInput
+        return super().formfield(*args, **kwargs)

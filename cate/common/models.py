@@ -1,3 +1,4 @@
+from datetime import date
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -146,6 +147,64 @@ class CommonArticle(PageBase):
 		abstract = True
 		ordering = ["-date"]
 
+class CommonGroup(models.Model):
+	"""
+	Common group class for all apps.
+	"""
+	name = models.fields.CharField(_("Name"), max_length = 100)
+
+	class Meta:
+		verbose_name = _("group")
+		abstract = True
+
+class CommonChild(models.Model):
+	"""
+	Common child class for all apps.
+	"""
+	nom = models.CharField("Nom de famille", max_length = 100)
+	prenom = models.CharField("Prénom", max_length = 100)
+	date_naissance = models.DateField("Date de naissance")
+	lieu_naissance = models.CharField("Lieu de naissance", max_length = 100)
+	adresse = models.TextField("Adresse")
+
+	class Meta:
+		verbose_name = _("child")
+		abstract = True
+
+	def __str__(self):
+		return f"{self.prenom} {self.nom}"
+
+	sacraments_checks: dict[str, str] = {}
+
+	def clean(self):
+		today = date.today()
+
+		def check_not_future(name: str, msg: str):
+			if getattr(self, name) > today:
+				raise ValidationError({name: f"{msg} ne doit pas être dans le futur."})
+
+		def check_after_birth(name: str, msg: str):
+			if getattr(self, name) < self.date_naissance:
+				raise ValidationError({name: f"{msg} doit être après la date de naissance."})
+
+		def check_sacrament(name: str, msg: str):
+			if not getattr(self, name):
+				return  # the sacrament hasn't been done
+
+			if name == "pardon":
+				# special case
+				if self.annee_pardon > today.year:  # type: ignore
+					raise ValidationError({f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur."})
+
+			check_not_future(f"date_{name}", f"La date {msg}")
+			check_after_birth(f"date_{name}", f"La date {msg}")
+			if getattr(self, f"lieu_{name}").strip() == "":
+				raise ValidationError({f"lieu_{name}": f"Le lieu {msg} ne doit pas être vide."})
+
+		check_not_future("date_naissance", "La date de naissance")
+		for name, msg in self.sacraments_checks.items():
+			check_sacrament(name, msg)
+
 class CommonDate(models.Model):
 	start_date = models.fields.DateField(_("Start date"))
 	end_date = models.fields.DateField(_("End date"), blank = True, null = True)
@@ -183,7 +242,7 @@ class CommonDocumentCategory(models.Model):
 	"""
 	Common document category class for all apps.
 	"""
-	title = models.CharField(_("Title"), unique=True, blank=True, max_length = 100)
+	title = models.CharField(_("Title"), unique=True, max_length = 100)
 
 	def __str__(self):  # pylint: disable=E0307
 		return self.title

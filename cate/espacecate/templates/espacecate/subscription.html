@@ -4,7 +4,8 @@
 
 {% block content %}
 <h1>Inscription caté et éveil à la foi</h1>
-<form>
+<form action="{% url "espacecate:inscription" %}" method="post">
+	{% csrf_token %}
 	{{ form.as_p }}
 	<input type="submit" value="Valider">
 </form>
