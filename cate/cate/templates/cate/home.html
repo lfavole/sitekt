@@ -7,7 +7,7 @@
 <h1>Bienvenue sur le site du caté !</h1>
 <ul>
 	<li><a href="{% url "espacecate:page" "index" %}">Espace caté</a></li>
-	<li><a href="aumonerie/">Aumônerie</a></li>
+	<li><a href="{% url "aumonerie:page" "index" %}">Aumônerie</a></li>
 </ul>
 </main>
 {% endblock %}
