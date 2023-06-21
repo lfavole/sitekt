@@ -1,4 +1,5 @@
 import hmac
+import importlib
 import sys
 from hashlib import sha1
 from ipaddress import ip_address, ip_network
@@ -11,11 +12,21 @@ from django.shortcuts import render
 from django.utils.encoding import force_bytes
 from django.views.decorators.csrf import csrf_exempt
 
-try:
-	sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "scripts"))
-	from fetch import fetch  # type: ignore
-except ImportError:
-	fetch = None
+fetch_cache = None
+
+def get_fetch_function():
+	global fetch_cache
+
+	if fetch_cache is not None:
+		return fetch_cache
+
+	try:
+		sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+		fetch_cache = importlib.import_module("scripts.fetch", "scripts").fetch
+	except ImportError:
+		fetch_cache = None
+
+	return fetch_cache
 
 def home(request: HttpRequest):
     return render(request, "cate/home.html", {"app": "home"})
@@ -23,7 +34,9 @@ def home(request: HttpRequest):
 @csrf_exempt
 def reload_website(request: HttpRequest):
 	forbidden = HttpResponseForbidden("Permission denied.")
+	fetch = get_fetch_function()
 	if not fetch:
+		print("xxx")
 		return forbidden
 
 	if request.user.is_superuser: # type: ignore
