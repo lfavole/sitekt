@@ -19,7 +19,7 @@ def subscription(request):
             return redirect("espacecate:subscription_ok")
     else:
         form = SubscriptionForm()
-    return render(request, "espacecate/subscription.html", {"form": form})
+    return render(request, "common/subscription.html", {"title": "Inscription caté et éveil à la foi", "form": form})
 
 
 class ArticleListView(CommonArticleListView):

@@ -19,7 +19,7 @@ def subscription(request):
             return redirect("aumonerie:subscription_ok")
     else:
         form = SubscriptionForm()
-    return render(request, "aumonerie/subscription.html", {"form": form})
+    return render(request, "common/subscription.html", {"title": "Inscription à l'aumônerie", "form": form})
 
 
 class ArticleListView(CommonArticleListView):
