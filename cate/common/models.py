@@ -1,7 +1,7 @@
 from datetime import date
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import DatabaseError, models
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import now
@@ -82,7 +82,10 @@ class Year(models.Model):
 		"""
 		year = cache.get("current_year")
 		if not year:
-			year = cls.objects.get(is_active = True)
+			try:
+				year = cls.objects.get(is_active = True)
+			except (cls.DoesNotExist, DatabaseError):
+				return Year(start_year = date.today().year, is_active = True)
 			cache.set("current_year", year)
 		return year
 
