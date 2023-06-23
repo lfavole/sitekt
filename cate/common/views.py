@@ -6,7 +6,7 @@ from django.contrib.auth import get_permission_codename
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
-from django.http.response import FileResponse, HttpResponseNotModified
+from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseNotModified
 from django.shortcuts import render
 from django.utils.http import http_date
 from django.utils.timezone import now
@@ -15,6 +15,15 @@ from django.views.static import was_modified_since
 
 from .models import CommonArticle, CommonDate, CommonDocument, CommonDocumentCategory, CommonPage
 
+
+def pdf_response(request: HttpRequest, content: bytes | bytearray, filename = "document"):
+    if isinstance(content, bytearray):
+        content = bytes(content)
+
+    disposition = "attachment" if bool(request.GET.get("dl")) else "inline"
+    return HttpResponse(content, "application/pdf", headers={
+        "Content-Disposition": f"{disposition}; filename={filename.removesuffix('.pdf')}.pdf",
+    })
 
 def subscription_ok(request):
     return render(request, "common/subscription_ok.html")

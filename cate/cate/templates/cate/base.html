@@ -6,12 +6,22 @@
 <meta name="og:icon" content="{% get_static_prefix %}{{ app }}/favicon.ico">
 <meta name="theme-color" content="#ffaa00">
 <title>{% block title %}{% endblock %}</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="{% static "global/global.css" %}">
 <link rel="stylesheet" href="{% get_static_prefix %}{{ app }}/style.css">
+{% block app_css %}{% endblock %}
 {% block css %}{% endblock %}
-<script src="{% static "global/jquery.js" %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert@2/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2/moment.min.js"></script>
 <script src="{% static "global/global.js" %}"></script>
 <script src="{% get_static_prefix %}{{ app }}/script.js"></script>
+{% block app_js %}{% endblock %}
 {% block js %}{% endblock %}
 </head>
 <body class="index">{% block body %}{% endblock %}</body>

@@ -2,9 +2,68 @@
 
 {% block page-title %}{{ title }}{% endblock %}
 
+{% block js %}
+<script>
+$(function() {
+	var f = document.subscription;
+	function autorisation() {
+		var url = "";
+		function ouvrir() {
+			window.open("{% url app|add:":autorisation" %}?dl=1" + url);
+		}
+
+		var nom = f.nom.value.trim();
+		var prenom = f.prenom.value.trim();
+		if(nom != "" && prenom != "")
+			url = "&child_name=" + encodeURIComponent(nom + " " + prenom);
+
+		var photos = f.photos.value.trim();
+		if(photos != "")
+			url += "&photos=" + photos;
+
+		var mother = f.nom_mere.value.trim();
+		var father = f.nom_pere.value.trim();
+
+		// number of elements that are filled
+		var score = (mother != "") + (father != "");
+		if(score < 2) {
+			if(mother != "")
+				url += "&parent_name=" + encodeURIComponent(mother) + "&parent_type=mother";
+			if(father != "")
+				url += "&parent_name=" + encodeURIComponent(father) + "&parent_type=father";
+			ouvrir();
+		} else {
+			swal({
+				title: "Qui complète l'autorisation ?",
+				buttons: {
+					mother: {
+						text: "La mère",
+						value: mother + "&parent_type=mother"
+					},
+					father: {
+						text: "Le père",
+						value: father + "&parent_type=father"
+					}
+				},
+				dangerMode: true
+			}).then(function(e) {
+				if(!e) return;
+				url += "&parent_name=" + e;
+				ouvrir();
+			});
+		}
+	}
+	$(".autorisation", f).click(function(e) {
+		e.preventDefault();
+		autorisation();
+	});
+});
+</script>
+{% endblock js %}
+
 {% block content %}
 <h1>{{ title }}</h1>
-<form action="{% url app|add:":inscription" %}" method="post">
+<form name="subscription" action="{% url app|add:":inscription" %}" method="post">
 	{% csrf_token %}
 	{{ form.as_p }}
 	<input type="submit" value="Valider">

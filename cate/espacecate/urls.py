@@ -22,6 +22,7 @@ app_name = "espacecate"
 urlpatterns = [
     path("articles/<slug:slug>", views.ArticleView.as_view(), name = "article"),
     path("articles/", views.ArticleListView.as_view(), name = "articles"),
+    path("autorisation", views.authorization, name = "autorisation"),
     path("calendrier", views.calendar, name = "calendrier"),
     path("dates/", views.DateListView.as_view(), name = "dates"),
     path("docs/<int:pk>", views.serve_document, name = "document"),
