@@ -148,4 +148,3 @@ class Document(CommonDocument):
 	"""
 	Document on `aumonerie` app.
 	"""
-	categories = models.ManyToManyField(DocumentCategory, verbose_name=_("Categories"), blank=True)

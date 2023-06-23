@@ -153,4 +153,3 @@ class Document(CommonDocument):
 	"""
 	Document on `espacecate` app.
 	"""
-	categories = models.ManyToManyField(DocumentCategory, verbose_name=_("Categories"), blank=True)

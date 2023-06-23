@@ -260,10 +260,8 @@ class CommonDocument(models.Model):
 	Common document class for all apps.
 	"""
 	title = models.fields.CharField(_("Document title"), max_length = 100)
-	file = models.FileField(_("File"), null = True) # type: ignore
-	categories: models.ManyToManyField
-	# categories = models.ManyToManyField(CommonDocumentCategory, verbose_name=_("Categories"), blank=True)
-	# this must be added to each submodel
+	file = models.FileField(_("File"), null = True)
+	categories = models.ManyToManyField("DocumentCategory", verbose_name=_("Categories"), blank=True)
 
 	class Meta:
 		verbose_name = _("document")
