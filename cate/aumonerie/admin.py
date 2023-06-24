@@ -1,4 +1,4 @@
-from common.admin import CommonArticleAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonPageAdmin
+from common.admin import CommonArticleAdmin, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonPageAdmin
 from django.contrib import admin
 from uservisit.admin import CommonUserVisitAdmin
 
@@ -24,13 +24,10 @@ class ArticleAdmin(CommonArticleAdmin):
 	"""
 
 @admin.register(Child)
-class ChildAdmin(admin.ModelAdmin):
+class ChildAdmin(CommonChildAdmin):
 	"""
 	Admin interface for childs of the aumonerie app.
 	"""
-	@property
-	def fieldsets(self):
-		return self.model.fieldsets
 
 @admin.register(Document)
 class DocumentAdmin(CommonDocumentAdmin):

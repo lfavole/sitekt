@@ -37,7 +37,7 @@ if not DEBUG:
 	ALLOWED_HOSTS = [settings.HOST]
 	SECURE_SSL_REDIRECT = True
 else:
-	ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.43.206"]
+	ALLOWED_HOSTS = ["*"]
 
 GITHUB_WEBHOOK_KEY = settings.GITHUB_WEBHOOK_KEY
 

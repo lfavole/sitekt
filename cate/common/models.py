@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from easy_thumbnails.fields import ThumbnailerImageField
 
 from .fields import DatalistField
 
@@ -172,6 +173,16 @@ class CommonChild(models.Model):
 	lieu_naissance = models.CharField("Lieu de naissance", max_length = 100)
 	adresse = models.TextField("Adresse")
 
+	paye = models.CharField("Payé", max_length = 10, default = "non", choices = [
+		("non", "Non"),
+		("attente", "En attente"),
+		("oui", "Oui"),
+	])
+	signe = models.BooleanField("Signé")
+	groupe = models.ForeignKey("Group", on_delete = models.SET_NULL, verbose_name = "Groupe", blank = True, null = True)
+	photo = ThumbnailerImageField("Photo", null = True)
+	date_inscription = models.DateTimeField("Date et heure d'inscription", auto_now_add=True)
+
 	class Meta:
 		verbose_name = _("child")
 		abstract = True
@@ -200,6 +211,7 @@ class CommonChild(models.Model):
 				# special case
 				if self.annee_pardon > today.year:  # type: ignore
 					raise ValidationError({f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur."})
+				return
 
 			check_not_future(f"date_{name}", f"La date {msg}")
 			check_after_birth(f"date_{name}", f"La date {msg}")

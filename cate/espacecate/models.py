@@ -5,8 +5,6 @@ from common.models import CommonArticle, CommonChild, CommonDate, CommonDocument
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-from easy_thumbnails.fields import ThumbnailerImageField
 from uservisit.models import CommonUserVisit
 
 
@@ -99,15 +97,12 @@ class Child(CommonChild):
 
 	freres_soeurs = models.TextField("Frères et soeurs", blank = True)
 
-	autres_infos = models.TextField("Autres informations")
+	autres_infos = models.TextField("Autres informations", blank = True)
 
 	photos = models.BooleanField("Publication des photos")
 	frais = PriceField("Participation aux frais")
 
-	paye = models.BooleanField("Payé")
-	signe = models.BooleanField("Signé")
-	groupe = models.ForeignKey(Group, on_delete = models.SET_NULL, verbose_name = "Groupe", null = True)
-	photo = ThumbnailerImageField("Photo", null = True)
+	communion_cette_annee = models.BooleanField("Communion cette année")
 
 	fieldsets = [
 		("Informations de l'enfant", {
@@ -129,7 +124,7 @@ class Child(CommonChild):
 			"fields": ("photos", "frais")
 		}),
 		("Espace administrateur", {
-			"fields": ("paye", "signe", "groupe", "photo")
+			"fields": ("communion_cette_annee", "paye", "signe", "groupe", "photo", "date_inscription")
 		}),
 	]
 

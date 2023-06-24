@@ -1,4 +1,4 @@
-from common.admin import CommonArticleAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonPageAdmin
+from common.admin import CommonArticleAdmin, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonPageAdmin
 from django.contrib import admin
 from uservisit.admin import CommonUserVisitAdmin
 
@@ -30,13 +30,12 @@ class GroupAdmin(CommonGroupAdmin):
 	"""
 
 @admin.register(Child)
-class ChildAdmin(admin.ModelAdmin):
+class ChildAdmin(CommonChildAdmin):
 	"""
 	Admin interface for childs of the espacecate app.
 	"""
-	@property
-	def fieldsets(self):
-		return self.model.fieldsets
+	list_display = ("nom", "prenom", "paye", "signe", "groupe")
+	readonly_fields = ("date_inscription",)
 
 @admin.register(Document)
 class DocumentAdmin(CommonDocumentAdmin):

@@ -17,7 +17,7 @@ def subscription(request):
         form = SubscriptionForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("espacecate:subscription_ok")
+            return redirect("espacecate:inscription_ok")
     else:
         form = SubscriptionForm()
     return render(request, "common/subscription.html", {"title": "Inscription caté et éveil à la foi", "form": form})

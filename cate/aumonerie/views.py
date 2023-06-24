@@ -17,7 +17,7 @@ def subscription(request):
         form = SubscriptionForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("aumonerie:subscription_ok")
+            return redirect("aumonerie:inscription_ok")
     else:
         form = SubscriptionForm()
     return render(request, "common/subscription.html", {"title": "Inscription à l'aumônerie", "form": form})

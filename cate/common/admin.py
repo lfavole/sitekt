@@ -5,8 +5,10 @@ from cate.widgets import MarkdownEditor
 from common.models import CommonArticle, CommonPage
 from django import forms
 from django.contrib import admin
+from easy_thumbnails.fields import ThumbnailerImageField
 
 from .models import Year
+from .widgets import CustomImageClearableFileInput
 
 
 @admin.register(Year)
@@ -49,6 +51,19 @@ class CommonGroupAdmin(admin.ModelAdmin):
 	Admin interface for groups.
 	"""
 	list_display = ("name",)
+
+class CommonChildAdmin(admin.ModelAdmin):
+	"""
+	Admin interface for childs.
+	"""
+	@property
+	def fieldsets(self):
+		return self.model.fieldsets
+
+	readonly_fields = ("date_inscription",)
+	formfield_overrides = {
+		ThumbnailerImageField: {"widget": CustomImageClearableFileInput},
+	}
 
 class CommonDateAdmin(admin.ModelAdmin):
 	"""
