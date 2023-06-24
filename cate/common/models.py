@@ -1,4 +1,6 @@
 from datetime import date
+from typing import Any
+
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError, models
@@ -261,7 +263,7 @@ class CommonDocument(models.Model):
 	"""
 	title = models.fields.CharField(_("Document title"), max_length = 100)
 	file = models.FileField(_("File"), null = True)
-	categories = models.ManyToManyField("DocumentCategory", verbose_name=_("Categories"), blank=True)
+	categories: "models.ManyToManyField[CommonDocumentCategory, Any]" = models.ManyToManyField("DocumentCategory", verbose_name=_("Categories"), blank=True)
 
 	class Meta:
 		verbose_name = _("document")
