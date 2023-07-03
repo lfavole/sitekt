@@ -16,13 +16,22 @@ from django.views.static import was_modified_since
 from .models import CommonArticle, CommonDate, CommonDocument, CommonDocumentCategory, CommonPage
 
 
+def _encode_filename(filename: str):
+    try:
+        filename.encode("ascii")
+        return 'filename="{}"'.format(
+            filename.replace("\\", "\\\\").replace('"', r"\"")
+        )
+    except UnicodeEncodeError:
+        return "filename*=utf-8''{}".format(quote(filename))
+
 def pdf_response(request: HttpRequest, content: bytes | bytearray, filename = "document"):
     if isinstance(content, bytearray):
         content = bytes(content)
 
     disposition = "attachment" if bool(request.GET.get("dl")) else "inline"
     return HttpResponse(content, "application/pdf", headers={
-        "Content-Disposition": f"{disposition}; filename={filename.removesuffix('.pdf')}.pdf",
+        "Content-Disposition": f"{disposition}; {_encode_filename(filename.removesuffix('.pdf') + '.pdf')}\"",
     })
 
 def subscription_ok(request):

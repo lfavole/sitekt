@@ -1,17 +1,16 @@
 import argparse
-from datetime import date
 import json
+from datetime import date
 from pathlib import Path
 
 import requests
 
-BASE_URL = "https://data.education.gouv.fr/api/v2/catalog/datasets/fr-en-calendrier-scolaire/exports/json"
 DATA = Path(__file__).resolve().parent.parent / "data"
 
 
 def main(args):
 	req = requests.get(
-		BASE_URL,
+		"https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/records",
 		{
 			"select": "description,start_date,end_date",
 			"where": (
@@ -26,18 +25,26 @@ def main(args):
 		}
 	)
 	data = req.json()
+
 	result: list[tuple[str, str, str]] = []
-	for item in data:
-		print(
+	lens = [0, 0, 0]
+	for item in data["results"]:
+		data = (
 			item["description"],
 			item["start_date"].split("T", 1)[0],
 			item["end_date"].split("T", 1)[0],
 		)
-		result.append((
-			item["description"],
-			item["start_date"].split("T", 1)[0],
-			item["end_date"].split("T", 1)[0],
-		))
+		result.append(data)
+		for i, element in enumerate(data):
+			if lens[i] < len(element):
+				lens[i] = len(element)
+
+	for line in result:
+		to_print = []
+		for i, element in enumerate(line):
+			to_print.append(element.ljust(lens[i]))
+
+		print("  ".join(to_print))
 
 	with open(DATA / "fr_holidays.json", "w") as f:
 		json.dump(result, f)

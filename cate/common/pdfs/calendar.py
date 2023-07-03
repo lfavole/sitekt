@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import Literal
 
+from cate.abbreviation import abbreviation
 from dateutil.easter import easter
 from fpdf import FPDF
 from fpdf.enums import Align, XPos, YPos
@@ -15,55 +16,78 @@ DATA = HERE.parent.parent.parent.parent / "data"
 fr_months = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
 fr_weekdays = "LMMJVSD"
 
-class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], str, datetime.date, datetime.date | None]]):
+class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], str, datetime.date, datetime.date | None, bool]]):
 	easter_date: datetime.date
 
-	def add_date(self, name: str, start_date: datetime.date, end_date: datetime.date):
-		self.append(("date", name, start_date, end_date))
+	def add_date(self, name: str, start_date: datetime.date, end_date: datetime.date | None = None, display = True):
+		self.append(("date", name, start_date, end_date, display))
 
-	def add_event(self, name: str, date: datetime.date):
-		self.append(("event", name, date, date))
+	def add_event(self, name: str, date: datetime.date, display = True):
+		self.append(("event", name, date, None, display))
 
 	def add_holidays(self, name: str, start: datetime.date, end: datetime.date):
-		self.append(("holidays", name, start, end))
+		if "Ascension" in name and (end - start) == datetime.timedelta(days=1):
+			# start = Friday, end = Saturday
+			start -= datetime.timedelta(days=2)  # Wednesday
+			end += datetime.timedelta(days=2)  # Monday
+		self.append(("holidays", name, start, end, True))
 
-	def add_ferie(self, name: str, date: datetime.date):
-		self.append(("ferie", name, date, date))
+	def add_ferie(self, name: str, date: datetime.date, display = True):
+		self.append(("ferie", name, date, None, display))
 
-	def add_easter_date(self, name: str, days_number: int):
+	def add_easter_date(self, name: str, days_number: int, display = True):
 		date = self.easter_date + datetime.timedelta(days = days_number)
-		self.append(("date", name, date, date))
+		self.append(("date", name, date, None, display))
 
-	def add_easter_ferie(self, name: str, days_number: int):
+	def add_easter_ferie(self, name: str, days_number: int, display = True):
 		date = self.easter_date + datetime.timedelta(days = days_number)
-		self.append(("ferie", name, date, date))
+		self.append(("ferie", name, date, None, display))
 
 	def __contains__(self, value):
+		return self.contains(value)
+
+	def contains(self, value, include_hidden = True):
 		for date in self:
-			if date[2] <= value <= (date[3] or date[2]):
+			if self.date_contains(date, value, include_hidden):
 				return True
+
+		return False
+
+	@staticmethod
+	def date_contains(date, value, include_hidden = True):
+		if not date[4] and not include_hidden:
+			return False
+
+		if date[3]:
+			if date[2] <= value < date[3]:
+				return True
+		else:
+			if value == date[2]:
+				return True
+
 		return False
 
 	def filter(self, *date_types: Literal["event", "date", "holidays", "ferie"]):
 		new = type(self)()
-		for date_type in date_types:
-			for date in self:
-				if date[0] == date_type:
-					new.append(date)
+		for date in self:
+			if any(date[0] == date_type for date_type in date_types):
+				new.append(date)
 		return new
 
 	def is_a(self, value: datetime.date, *date_types: Literal["event", "date", "holidays", "ferie"]):
 		return value in self.filter(*date_types)
 
-	def get_dates_for(self, value: datetime.date):
-		ret: list[str] = []
+	def get_dates_for(self, value: datetime.date) -> "zip[tuple[str, ...]]":
+		ret = [date[1] for date in self if self.date_contains(date, value, False) and date[0] != "holidays"]
+		return zip(*(abbreviation(date) for date in ret))
 
-		dates = self.filter("event", "date")
-		for date in dates:
-			if date[2] <= value <= (date[3] or date[2]):
-				ret.append(date[1])
+def get_epiphanie(year: int):
+	for day in range(2, 8 + 1):
+		date = datetime.date(year, 1, day)
+		if date.weekday() == 6:
+			return date
 
-		return ret
+	raise ValueError(f"No Sunday between January 2-8 {year}")
 
 def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 	start_year = Year.get_current().start_year
@@ -98,18 +122,23 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 				from_iso(date[2]),
 			)
 
-	special_dates.add_event("Toussaint", datetime.date(start_year, 11, 1))
+	special_dates.add_ferie("Assomption", datetime.date(start_year, 8, 15), False)
+	special_dates.add_ferie("Toussaint", datetime.date(start_year, 11, 1))
+	special_dates.add_ferie("Armistice", datetime.date(start_year, 11, 11), False)
 	special_dates.add_ferie("Noël", datetime.date(start_year, 12, 25))
+	special_dates.add_ferie("Jour de l'An", datetime.date(start_year + 1, 1, 1), False)
+	special_dates.add_date("Épiphanie", get_epiphanie(start_year + 1))
+	special_dates.add_ferie("Fête du Travail", datetime.date(start_year + 1, 5, 1), False)
+	special_dates.add_ferie("Armistice", datetime.date(start_year + 1, 5, 8), False)
 
 	special_dates.add_easter_date("Merc. Cendres", -46)
 	special_dates.add_easter_date("Rameaux", -7)
 	special_dates.add_easter_date("Jeudi Saint", -3)
 	special_dates.add_easter_date("Pâques", 0)
-	special_dates.add_easter_ferie("Lundi de Pâques", 1)
-	special_dates.add_easter_date("Ascension", 39)
+	special_dates.add_easter_ferie("Lundi de Pâques", 1, False)
 	special_dates.add_easter_ferie("Ascension", 39)
 	special_dates.add_easter_date("Pentecôte", 49)
-	special_dates.add_easter_ferie("Lundi de Pentecôte", 50)
+	special_dates.add_easter_ferie("Lundi de Pentecôte", 50, False)
 
 	if app == "espacecate":
 		from espacecate.models import Date
@@ -146,7 +175,7 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 		month_width = pdf.epw / len(months)
 
 		for month_n, month in enumerate(months):
-			pdf.set_left_margin(10 + month_width * month_n)
+			# pdf.set_left_margin(10 + month_width * month_n)
 			pdf.y = 10 + title_height
 			days_number = get_days_in_month(year, month)
 
@@ -203,15 +232,50 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 				elif sunday:
 					pdf.set_fill_color(200, 200, 255)
 					fill = True
+
+				text = ""
+				width = month_width - day_width - weekday_width
+				stretching = 100
+				for dates in special_dates.get_dates_for(datetime_day):
+					text = " – ".join(dates)
+					if not text:
+						break  # avoid setting the font size if there is no text
+
+					pdf.set_font_size(10)
+					text_width = pdf.get_string_width(text)
+
+					# for a given text:
+					#         100 % <--> text_width mm
+					#  stretching % <--> width mm
+
+					if text_width:  # avoid division by zero
+						padding = (pdf.font_size_pt / 3) / pdf.k * 2  # 4 pt on each side
+						stretching = (width - padding) * 100 / text_width
+					else:
+						stretching = 100
+
+					if stretching >= 75:
+						break
+
+				if stretching < 100:
+					pdf.set_stretching(stretching)
+
 				pdf.cell(
-					month_width - day_width - weekday_width,
+					width,
 					day_height,
-					" – ".join(special_dates.get_dates_for(datetime_day)),
+					text,
 					border = True,
-					align = Align.C,
 					fill = fill,
 					new_x = XPos.LMARGIN,
 					new_y = YPos.NEXT,
 				)
+
+				if stretching != 100:
+					pdf.set_stretching(100)
+
+				pdf.set_font_size(12)
+
+			pdf.l_margin += month_width
+			pdf.x = pdf.l_margin
 
 	return bytes(pdf.output())
