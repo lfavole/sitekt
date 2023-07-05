@@ -1,6 +1,6 @@
 cate/db.sqlite3
 cate/settings.py
-cate/locale/*/LC_MESSAGES/django.mo
+*.mo
 cate/src/vendor/tinymce/**
 **/__pycache__/**
 cate/media/**

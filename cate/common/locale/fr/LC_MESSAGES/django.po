@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-09 14:00+0100\n"
+"POT-Creation-Date: 2023-07-05 11:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,165 +14,192 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\cate\templatetags\join_last.py:8
-msgid ", "
-msgstr ", "
-
-#: .\cate\templatetags\join_last.py:8
-msgid "and"
-msgstr "et"
-
-#: .\common\models.py:17
+#: .\common\models.py:22
 msgid "Start year"
 msgstr "Année de début"
 
-#: .\common\models.py:18
+#: .\common\models.py:23
 msgid "Active year"
 msgstr "Année active"
 
-#: .\common\models.py:21
+#: .\common\models.py:26
 msgid "school year"
 msgstr "année scolaire"
 
-#: .\common\models.py:25
+#: .\common\models.py:31
 msgid "End year"
 msgstr "Année de fin"
 
-#: .\common\models.py:30
+#: .\common\models.py:36
 msgid "School year"
 msgstr "Année scolaire"
 
-#: .\common\models.py:34
+#: .\common\models.py:40
 #, python-format
 msgid "School year %s"
 msgstr "Année scolaire %s"
 
-#: .\common\models.py:49
+#: .\common\models.py:100
 msgid "Slug"
 msgstr "ID"
 
-#: .\common\models.py:50
+#: .\common\models.py:101 .\common\models.py:293
 msgid "Title"
 msgstr "Titre"
 
-#: .\common\models.py:51
+#: .\common\models.py:102
 msgid "Content"
 msgstr "Contenu"
 
-#: .\common\models.py:52
+#: .\common\models.py:103
 msgid "Hidden page"
 msgstr "Page cachée"
 
-#: .\common\models.py:82
+#: .\common\models.py:133
+msgid "Image"
+msgstr "Image"
+
+#: .\common\models.py:142
 msgid "Order"
 msgstr "Ordre"
 
-#: .\common\models.py:83
+#: .\common\models.py:143
 msgid "Previous page"
 msgstr "Page précédente"
 
-#: .\common\models.py:86
+#: .\common\models.py:146
 msgid "page"
 msgstr "page"
 
-#: .\common\models.py:97 .\espacecate\templates\espacecate\dates.html:13
+#: .\common\models.py:157
+msgid "Page"
+msgstr "Page"
+
+#: .\common\models.py:160
+msgid "page image"
+msgstr "image dans une page"
+
+#: .\common\models.py:161
+msgid "page images"
+msgstr "images dans une page"
+
+#: .\common\models.py:168 .\common\templates\common\dates.html:13
 msgid "Date"
 msgstr "Date"
 
-#: .\common\models.py:98
+#: .\common\models.py:169
 msgid "Hidden article"
 msgstr "Article caché"
 
-#: .\common\models.py:101
+#: .\common\models.py:172
 msgid "article"
 msgstr "article"
 
-#: .\common\models.py:106
-msgid "Start date"
-msgstr "Date de début"
+#: .\common\models.py:180
+msgid "Article"
+msgstr "Article"
 
-#: .\common\models.py:107
-msgid "End date"
-msgstr "Date de fin"
+#: .\common\models.py:183
+msgid "article image"
+msgstr "image dans un article"
 
-#: .\common\models.py:108
-msgid "Start time"
-msgstr "Heure de début"
+#: .\common\models.py:184
+msgid "article images"
+msgstr "images dans un article"
 
-#: .\common\models.py:109
-msgid "End time"
-msgstr "Heure de fin"
-
-#: .\common\models.py:112
-msgid "Time (as text)"
-msgstr "Heure (en tant que texte)"
-
-#: .\common\models.py:113 .\espacecate\templates\espacecate\dates.html:15
+#: .\common\models.py:191 .\common\models.py:262
+#: .\common\templates\common\dates.html:15
 msgid "Name"
 msgstr "Nom"
 
-#: .\common\models.py:114
+#: .\common\models.py:194
+msgid "group"
+msgstr "groupe"
+
+#: .\common\models.py:218
+msgid "child"
+msgstr "enfant"
+
+#: .\common\models.py:257
+msgid "Start date"
+msgstr "Date de début"
+
+#: .\common\models.py:258
+msgid "End date"
+msgstr "Date de fin"
+
+#: .\common\models.py:259
+msgid "Start time"
+msgstr "Heure de début"
+
+#: .\common\models.py:260
+msgid "End time"
+msgstr "Heure de fin"
+
+#: .\common\models.py:261
+msgid "Time (as text)"
+msgstr "Heure (en tant que texte)"
+
+#: .\common\models.py:263
 msgid "Short name"
 msgstr "Nom abrégé"
 
-#: .\common\models.py:115 .\espacecate\templates\espacecate\dates.html:16
+#: .\common\models.py:264 .\common\templates\common\dates.html:16
 msgid "Place"
 msgstr "Lieu"
 
-#: .\common\models.py:116
+#: .\common\models.py:265
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: .\common\models.py:119
+#: .\common\models.py:268
 msgid "date"
 msgstr "date"
 
-#: .\common\models.py:124
+#: .\common\models.py:273
 msgid "The end date must be after the start date."
 msgstr "La date de fin doit être avant la date de début."
 
-#: .\common\models.py:127
+#: .\common\models.py:276
 msgid "The start time must be specified when the end time is specified."
 msgstr ""
 "L'heure de début doit être spécifiée quand l'heure de fin est spécifiée."
 
-#: .\common\models.py:131
-msgid "The time as text or the start time must be specified."
-msgstr "L'heure en tant que texte ou l'heure de début doivent être spécifiées."
-
-#: .\common\models.py:136
+#: .\common\models.py:280
 msgid "The end time must be after the start time."
 msgstr "L'heure de fin doit être avant l'heure de début."
 
-#: .\common\models.py:139
-msgid "The start time, the end time or the time as text must be specified."
-msgstr ""
-"L'heure de début, l'heure de fin ou l'heure en tant que texte doivent être "
-"spécifiées."
-
-#: .\common\models.py:143
+#: .\common\models.py:283
 msgid ""
 "The start time / end time or the time as text must be specified, not both."
 msgstr ""
 "L'heure de début / de fin ou l'heure en tant que texte doivent être "
 "spécifiées, pas les deux."
 
-#: .\common\models.py:153
+#: .\common\models.py:299
+msgid "document category"
+msgstr "catégorie de document"
+
+#: .\common\models.py:300
+msgid "document categories"
+msgstr "catégories de document"
+
+#: .\common\models.py:307
 msgid "Document title"
 msgstr "Titre du document"
 
-#: .\common\models.py:154
+#: .\common\models.py:308
 msgid "File"
 msgstr "Fichier"
 
-#: .\common\models.py:157
+#: .\common\models.py:309
+msgid "Categories"
+msgstr "Catégories"
+
+#: .\common\models.py:312
 msgid "document"
 msgstr "document"
 
-#: .\espacecate\templates\espacecate\dates.html:14
+#: .\common\templates\common\dates.html:14
 msgid "Time"
-msgstr ""
-
-#, python-format
-#~ msgid "School year %d-%d"
-#~ msgstr "Année scolaire %d-%d"
+msgstr "Heure"
