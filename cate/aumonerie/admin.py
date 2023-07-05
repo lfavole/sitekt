@@ -1,8 +1,8 @@
-from common.admin import CommonArticleAdmin, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonPageAdmin
+from common.admin import CommonArticleAdmin, CommonArticleImagesInline, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonPageAdmin, CommonPageImagesInline
 from django.contrib import admin
 from uservisit.admin import CommonUserVisitAdmin
 
-from .models import Article, Child, Date, Document, DocumentCategory, Page, UserVisit
+from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Page, PageImage, UserVisit
 
 
 @admin.register(UserVisit)
@@ -11,17 +11,31 @@ class UserVisitAdmin(CommonUserVisitAdmin):
 	Admin interface for user visits of the aumonerie app.
 	"""
 
+class PageImagesInline(CommonPageImagesInline):
+	"""
+	Inline for page images of the aumonerie app.
+	"""
+	model = PageImage
+
 @admin.register(Page)
 class PageAdmin(CommonPageAdmin):
 	"""
 	Admin interface for pages of the aumonerie app.
 	"""
+	inlines = [PageImagesInline]
+
+class ArticleImagesInline(CommonArticleImagesInline):
+	"""
+	Inline for article images of the aumonerie app.
+	"""
+	model = ArticleImage
 
 @admin.register(Article)
 class ArticleAdmin(CommonArticleAdmin):
 	"""
 	Admin interface for articles of the aumonerie app.
 	"""
+	inlines = [ArticleImagesInline]
 
 @admin.register(Child)
 class ChildAdmin(CommonChildAdmin):

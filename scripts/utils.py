@@ -3,6 +3,7 @@ import importlib
 import os
 import re
 import shlex
+import socket
 import subprocess as sp
 import sys
 from pathlib import Path
@@ -56,6 +57,8 @@ class Settings(Namespace):
 		if not self:
 			return
 
+		self._offline = None
+
 		self.HOST = self.HOST or (USERNAME + "." + PYTHONANYWHERE_SITE)
 
 		if PYTHONANYWHERE:
@@ -81,6 +84,31 @@ class Settings(Namespace):
 		"""
 		create = import_path(FOLDER, "create_settings").create_settings_file
 		return create()
+
+	def is_offline(self):
+		"""
+		Check the Internet connectivity.
+
+		Host: 8.8.8.8 (google-public-dns-a.google.com)
+		OpenPort: 53/tcp
+		Service: domain (DNS/TCP)
+		"""
+		try:
+			socket.setdefaulttimeout(3)
+			socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+			return False
+		except socket.error:
+			return True
+
+	@property
+	def PYTHONANYWHERE(self):
+		return bool(self.PYTHONANYWHERE_SITE)
+
+	@property
+	def OFFLINE(self):
+		if self._offline is None:
+			self._offline = self.PYTHONANYWHERE or self.is_offline()
+		return self._offline
 
 def get_vars(obj: Any) -> dict[str, Any]:
 	"""

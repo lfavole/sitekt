@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import sys
 from pathlib import Path
 
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.functional import lazy
+from django.utils.text import format_lazy
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -54,6 +59,7 @@ INSTALLED_APPS = [
 	"adminsortable2",
 	"betterforms",
 	"easy_thumbnails",
+	"tinymce",
 	"cate",
 	"users",
 	"storage",
@@ -181,3 +187,72 @@ PRIVATE_MEDIA_ROOT = BASE_DIR / "private/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# TinyMCE editor
+
+
+def add_url(text, url):
+	return text % url
+
+
+add_url_lazy = lazy(add_url)
+static_lazy = lazy(static)
+TINYMCE_JS_URL = STATIC_URL + "vendor/tinymce/tinymce.min.js" if settings.OFFLINE else "https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"
+TINYMCE_EXTRA_MEDIA = {
+	"css": {
+		"all": (
+			"/static/tinymce/tinymce.css",
+		)
+	},
+	"js": (
+		"/static/tinymce/tinymce.js",
+	)
+}
+TINYMCE_DEFAULT_CONFIG = {
+	"language": "fr",
+	"language_url": static_lazy("tinymce/langs/fr_FR.js"),
+	"content_css": [
+		"https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+		static_lazy("global/global.css"),
+	],
+	"content_style": "body{padding:8px}",
+	"promotion": False,
+	"plugins": "autolink charmap code fullscreen help image link lists media preview quickbars save searchreplace table",
+	"toolbar": (
+		"undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft "
+		"aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor "
+		"backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | "
+		"fullscreen preview save print | insertfile image media pageembed template link anchor codesample"
+	),
+	"images_upload_credentials": True,
+	# pylint: disable=C0209
+	"images_upload_handler": add_url_lazy("""\
+(blobInfo, progress) => new Promise((success, failure) => {
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "%s");
+	xhr.withCredentials = true;
+	xhr.upload.onprogress = e => {
+		progress(e.loaded / e.total * 100);
+	};
+	xhr.onerror = () => {
+		failure("Image upload failed due to a XHR Transport error. Code: " + xhr.status);
+	};
+	xhr.onload = () => {
+		if(xhr.status < 200 || xhr.status >= 300) {
+			failure("HTTP Error: " + xhr.status);
+			return;
+		}
+		var json = JSON.parse(xhr.responseText);
+		if(!json || !json.location) {
+			failure("Invalid JSON: " + xhr.responseText);
+			return;
+		}
+		success(json.location);
+	};
+	var formData = new FormData();
+	formData.append("file", blobInfo.blob(), blobInfo.filename());
+	formData.append("csrfmiddlewaretoken", django.jQuery("#content-main form").get(0).csrfmiddlewaretoken.value);
+	xhr.send(formData);
+})
+""", reverse_lazy("tinymce-upload-image")),
+}

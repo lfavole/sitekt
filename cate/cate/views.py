@@ -4,11 +4,15 @@ import sys
 from hashlib import sha1
 from ipaddress import ip_address, ip_network
 from pathlib import Path
+from typing import Type
+from urllib.parse import urlparse
 
 import requests
+from common.models import ImageBase
+from django.apps import apps
 from django.conf import settings
-from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError
-from django.shortcuts import render
+from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError, JsonResponse
+from django.shortcuts import render, resolve_url
 from django.utils.encoding import force_bytes
 from django.views.decorators.csrf import csrf_exempt
 
@@ -87,3 +91,22 @@ def reload_website(request: HttpRequest):
 
 	# In case we receive an event that's not ping or push
 	return HttpResponse(status = 204)
+
+def upload_image(request: HttpRequest):
+	referer_url: str = request.headers["Referer"]
+	referer = urlparse(referer_url)
+	admin_index = resolve_url("admin:index").rstrip("/") + "/"
+	if not referer.path.startswith(admin_index):
+		return HttpResponseForbidden("The referer URL is not an admin URL." if settings.DEBUG else "")
+
+	parts = referer.path.removeprefix(admin_index).split("/")
+	if len(parts) < 3:
+		return HttpResponseForbidden("The referer URL doesn't contain enough information." if settings.DEBUG else "")
+
+	model = apps.get_model(parts[0], parts[1])
+	image_model: Type[ImageBase] = apps.get_model(parts[0], parts[1] + "Image")  # type: ignore
+
+	instance = model.objects.get(pk = parts[2])
+	image = image_model.objects.create(page = instance, image = request.FILES["file"])
+
+	return JsonResponse({"location": image.image.url})

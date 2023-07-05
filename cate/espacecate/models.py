@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from common.fields import PriceField
-from common.models import CommonArticle, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonPage
+from common.models import CommonArticle, CommonArticleImage, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonPage, CommonPageImage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
@@ -22,12 +22,22 @@ class Page(CommonPage):
 	def get_absolute_url(self):
 		return reverse("espacecate:page", args = [self.slug])
 
+class PageImage(CommonPageImage):
+	"""
+	Page image on `espacecate` app.
+	"""
+
 class Article(CommonArticle):
 	"""
 	Article on `espacecate` app.
 	"""
 	def get_absolute_url(self):
 		return reverse("espacecate:article", args = [self.slug])
+
+class ArticleImage(CommonArticleImage):
+	"""
+	Article image on `espacecate` app.
+	"""
 
 def get_current_year():
 	return datetime.now().year

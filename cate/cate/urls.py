@@ -30,6 +30,8 @@ urlpatterns = [
     add_website("aumonerie"),
     add_website("calendrier_avent_2022"),
     add_website("espacecate"),
+    path("tinymce/upload-image", views.upload_image, name = "tinymce-upload-image"),
+    path("tinymce/", include("tinymce.urls")),
     path("", views.home, name = "home"),
     path("reload-website/", views.reload_website),
     # re_path(r'^', include('filer.server.urls')),

@@ -126,6 +126,15 @@ class PageBase(models.Model):
 	def __str__(self): # pylint: disable=E0307
 		return self.title
 
+class ImageBase(models.Model):
+	"""
+	Base class for images in pages and articles.
+	"""
+	image = ThumbnailerImageField(_("Image"))
+
+	class Meta:
+		abstract = True
+
 class CommonPage(PageBase):
 	"""
 	Common page class for all apps.
@@ -141,6 +150,17 @@ class CommonPage(PageBase):
 	def get_absolute_url(self):
 		return reverse("espacecate:page", args = [self.slug])
 
+class CommonPageImage(ImageBase):
+	"""
+	Common page image class for all apps.
+	"""
+	page = models.ForeignKey("Page", on_delete = models.CASCADE, verbose_name = _("Page"))
+
+	class Meta:
+		verbose_name = _("page image")
+		verbose_name_plural = _("page images")
+		abstract = True
+
 class CommonArticle(PageBase):
 	"""
 	Common article class for all apps.
@@ -152,6 +172,17 @@ class CommonArticle(PageBase):
 		verbose_name = _("article")
 		abstract = True
 		ordering = ["-date"]
+
+class CommonArticleImage(ImageBase):
+	"""
+	Common article image class for all apps.
+	"""
+	page = models.ForeignKey("Article", on_delete = models.CASCADE, verbose_name = _("Article"))
+
+	class Meta:
+		verbose_name = _("article image")
+		verbose_name_plural = _("article images")
+		abstract = True
 
 class CommonGroup(models.Model):
 	"""

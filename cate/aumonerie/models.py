@@ -1,5 +1,5 @@
 from common.fields import PriceField
-from common.models import CommonArticle, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonPage
+from common.models import CommonArticle, CommonArticleImage, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonPage, CommonPageImage
 from django.db import models
 from django.urls import reverse
 from uservisit.models import CommonUserVisit
@@ -19,12 +19,22 @@ class Page(CommonPage):
 	def get_absolute_url(self):
 		return reverse("aumonerie:page", args = [self.slug])
 
+class PageImage(CommonPageImage):
+	"""
+	Page image on `aumonerie` app.
+	"""
+
 class Article(CommonArticle):
 	"""
 	Article on `aumonerie` app.
 	"""
 	def get_absolute_url(self):
 		return reverse("aumonerie:article", args = [self.slug])
+
+class ArticleImage(CommonArticleImage):
+	"""
+	Article image on `aumonerie` app.
+	"""
 
 class Group(CommonGroup):
 	"""

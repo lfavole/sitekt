@@ -1,11 +1,11 @@
 from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
-from cate.widgets import MarkdownEditor
-from common.models import CommonArticle, CommonPage
+from common.models import CommonArticle, CommonArticleImage, CommonPage, CommonPageImage, ImageBase
 from django import forms
 from django.contrib import admin
 from easy_thumbnails.fields import ThumbnailerImageField
+from tinymce.widgets import AdminTinyMCE
 
 from .models import Year
 from .widgets import CustomImageClearableFileInput
@@ -15,6 +15,19 @@ from .widgets import CustomImageClearableFileInput
 class YearAdmin(admin.ModelAdmin):
 	list_display = ("formatted_year", "is_active")
 
+class CommonImagesInline(admin.TabularInline):
+	"""
+	Inline for images.
+	"""
+	model: Type[ImageBase]
+
+class CommonPageImagesInline(CommonImagesInline):
+	"""
+	Inline for page images.
+	"""
+	model: Type[CommonPageImage]
+	extra = 0
+
 class CommonPageAdminForm(forms.ModelForm):
 	"""
 	Form in the admin interface for pages (with Markdown editor).
@@ -22,7 +35,7 @@ class CommonPageAdminForm(forms.ModelForm):
 	model: Type[CommonPage]
 	class Meta:
 		widgets = {
-			"content": MarkdownEditor(attrs = {"style": "width: 90%; height: 100%;"}),
+			"content": AdminTinyMCE(),
 		}
 
 class CommonPageAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -31,6 +44,13 @@ class CommonPageAdmin(SortableAdminMixin, admin.ModelAdmin):
 	"""
 	form = CommonPageAdminForm
 
+
+class CommonArticleImagesInline(CommonImagesInline):
+	"""
+	Inline for article images.
+	"""
+	model: Type[CommonArticleImage]
+	extra = 0
 
 class CommonArticleAdminForm(CommonPageAdminForm):
 	"""

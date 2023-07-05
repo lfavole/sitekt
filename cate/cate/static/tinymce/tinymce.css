@@ -1,0 +1,7 @@
+.tox.tox-tinymce {
+    width:100%;
+}
+.change-form .tox.tox-tinymce {
+    width:unset;
+    flex:1;
+}
