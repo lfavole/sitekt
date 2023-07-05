@@ -16,7 +16,6 @@ from pathlib import Path
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.functional import lazy
-from django.utils.text import format_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -151,6 +150,9 @@ AUTH_PASSWORD_VALIDATORS = [
 	},
 	{
 		"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+	},
+    {
+	    "NAME": "cate.password_validation.PwnedPasswordValidator",
 	},
 ]
 

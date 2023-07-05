@@ -51,6 +51,8 @@ class ChildAdmin(CommonChildAdmin):
 	"""
 	list_display = ("nom", "prenom", "paye", "signe", "groupe")
 	readonly_fields = ("date_inscription",)
+	search_fields = ("nom", "prenom")
+	list_filter = ("groupe", "communion_cette_annee", "paye", "signe", "classe", "redoublement", "annees_kt", "annees_evf", "bapteme", "premiere_communion", "photos")
 
 @admin.register(Document)
 class DocumentAdmin(CommonDocumentAdmin):

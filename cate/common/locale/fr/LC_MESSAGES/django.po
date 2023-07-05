@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-05 11:26+0200\n"
+"POT-Creation-Date: 2023-07-05 14:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,7 @@ msgstr "Année scolaire %s"
 msgid "Slug"
 msgstr "ID"
 
-#: .\common\models.py:101 .\common\models.py:293
+#: .\common\models.py:101 .\common\models.py:300
 msgid "Title"
 msgstr "Titre"
 
@@ -59,144 +59,149 @@ msgstr "Page cachée"
 msgid "Image"
 msgstr "Image"
 
-#: .\common\models.py:142
+#: .\common\models.py:137
+#, python-format
+msgid "Image '%s' in %s"
+msgstr "Image '%s' dans %s"
+
+#: .\common\models.py:146
 msgid "Order"
 msgstr "Ordre"
 
-#: .\common\models.py:143
+#: .\common\models.py:147
 msgid "Previous page"
 msgstr "Page précédente"
 
-#: .\common\models.py:146
+#: .\common\models.py:150
 msgid "page"
 msgstr "page"
 
-#: .\common\models.py:157
+#: .\common\models.py:161
 msgid "Page"
 msgstr "Page"
 
-#: .\common\models.py:160
+#: .\common\models.py:164
 msgid "page image"
 msgstr "image dans une page"
 
-#: .\common\models.py:161
+#: .\common\models.py:165
 msgid "page images"
 msgstr "images dans une page"
 
-#: .\common\models.py:168 .\common\templates\common\dates.html:13
+#: .\common\models.py:172 .\common\templates\common\dates.html:13
 msgid "Date"
 msgstr "Date"
 
-#: .\common\models.py:169
+#: .\common\models.py:173
 msgid "Hidden article"
 msgstr "Article caché"
 
-#: .\common\models.py:172
+#: .\common\models.py:176
 msgid "article"
 msgstr "article"
 
-#: .\common\models.py:180
+#: .\common\models.py:184
 msgid "Article"
 msgstr "Article"
 
-#: .\common\models.py:183
+#: .\common\models.py:187
 msgid "article image"
 msgstr "image dans un article"
 
-#: .\common\models.py:184
+#: .\common\models.py:188
 msgid "article images"
 msgstr "images dans un article"
 
-#: .\common\models.py:191 .\common\models.py:262
+#: .\common\models.py:195 .\common\models.py:269
 #: .\common\templates\common\dates.html:15
 msgid "Name"
 msgstr "Nom"
 
-#: .\common\models.py:194
+#: .\common\models.py:201
 msgid "group"
 msgstr "groupe"
 
-#: .\common\models.py:218
+#: .\common\models.py:225
 msgid "child"
 msgstr "enfant"
 
-#: .\common\models.py:257
+#: .\common\models.py:264
 msgid "Start date"
 msgstr "Date de début"
 
-#: .\common\models.py:258
+#: .\common\models.py:265
 msgid "End date"
 msgstr "Date de fin"
 
-#: .\common\models.py:259
+#: .\common\models.py:266
 msgid "Start time"
 msgstr "Heure de début"
 
-#: .\common\models.py:260
+#: .\common\models.py:267
 msgid "End time"
 msgstr "Heure de fin"
 
-#: .\common\models.py:261
+#: .\common\models.py:268
 msgid "Time (as text)"
 msgstr "Heure (en tant que texte)"
 
-#: .\common\models.py:263
+#: .\common\models.py:270
 msgid "Short name"
 msgstr "Nom abrégé"
 
-#: .\common\models.py:264 .\common\templates\common\dates.html:16
+#: .\common\models.py:271 .\common\templates\common\dates.html:16
 msgid "Place"
 msgstr "Lieu"
 
-#: .\common\models.py:265
+#: .\common\models.py:272
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: .\common\models.py:268
+#: .\common\models.py:275
 msgid "date"
 msgstr "date"
 
-#: .\common\models.py:273
+#: .\common\models.py:280
 msgid "The end date must be after the start date."
 msgstr "La date de fin doit être avant la date de début."
 
-#: .\common\models.py:276
+#: .\common\models.py:283
 msgid "The start time must be specified when the end time is specified."
 msgstr ""
 "L'heure de début doit être spécifiée quand l'heure de fin est spécifiée."
 
-#: .\common\models.py:280
+#: .\common\models.py:287
 msgid "The end time must be after the start time."
 msgstr "L'heure de fin doit être avant l'heure de début."
 
-#: .\common\models.py:283
+#: .\common\models.py:290
 msgid ""
 "The start time / end time or the time as text must be specified, not both."
 msgstr ""
 "L'heure de début / de fin ou l'heure en tant que texte doivent être "
 "spécifiées, pas les deux."
 
-#: .\common\models.py:299
+#: .\common\models.py:306
 msgid "document category"
 msgstr "catégorie de document"
 
-#: .\common\models.py:300
+#: .\common\models.py:307
 msgid "document categories"
 msgstr "catégories de document"
 
-#: .\common\models.py:307
+#: .\common\models.py:314
 msgid "Document title"
 msgstr "Titre du document"
 
-#: .\common\models.py:308
+#: .\common\models.py:315
 msgid "File"
 msgstr "Fichier"
 
-#: .\common\models.py:309
+#: .\common\models.py:316
 msgid "Categories"
 msgstr "Catégories"
 
-#: .\common\models.py:312
+#: .\common\models.py:319
 msgid "document"
 msgstr "document"
 

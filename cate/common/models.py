@@ -131,6 +131,10 @@ class ImageBase(models.Model):
 	Base class for images in pages and articles.
 	"""
 	image = ThumbnailerImageField(_("Image"))
+	page: "models.ForeignKey[CommonPage]"
+
+	def __str__(self):
+		return _("Image '%s' in %s") % (self.image.url, self.page)
 
 	class Meta:
 		abstract = True
@@ -189,6 +193,9 @@ class CommonGroup(models.Model):
 	Common group class for all apps.
 	"""
 	name = models.fields.CharField(_("Name"), max_length = 100)
+
+	def __str__(self):
+		return self.name
 
 	class Meta:
 		verbose_name = _("group")

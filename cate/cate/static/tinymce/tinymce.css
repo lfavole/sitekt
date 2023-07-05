@@ -5,3 +5,6 @@
     width:unset;
     flex:1;
 }
+.tox-fullscreen {
+    width:100% !important;
+}
