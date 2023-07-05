@@ -1,8 +1,8 @@
-from common.admin import CommonArticleAdmin, CommonArticleImagesInline, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonPageAdmin, CommonPageImagesInline
+from common.admin import CommonArticleAdmin, CommonArticleImagesInline, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonPageAdmin, CommonPageImagesInline
 from django.contrib import admin
 from uservisit.admin import CommonUserVisitAdmin
 
-from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Page, PageImage, UserVisit
+from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Page, PageImage, UserVisit
 
 
 @admin.register(UserVisit)
@@ -36,6 +36,12 @@ class ArticleAdmin(CommonArticleAdmin):
 	Admin interface for articles of the aumonerie app.
 	"""
 	inlines = [ArticleImagesInline]
+
+@admin.register(Group)
+class GroupAdmin(CommonGroupAdmin):
+	"""
+	Admin interface for groups of the espacecate app.
+	"""
 
 @admin.register(Child)
 class ChildAdmin(CommonChildAdmin):
