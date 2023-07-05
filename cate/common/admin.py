@@ -64,7 +64,6 @@ class CommonArticleAdmin(admin.ModelAdmin):
 	"""
 	form = CommonArticleAdminForm
 	list_display = ("title", "date")
-	ordering = ("-date",)
 
 class CommonGroupAdmin(admin.ModelAdmin):
 	"""
@@ -91,7 +90,6 @@ class CommonDateAdmin(admin.ModelAdmin):
 	"""
 	list_display = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
 	fields = ("name", "short_name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
-	ordering = ("-start_date",)
 
 class CommonDocumentAdmin(admin.ModelAdmin):
 	"""
