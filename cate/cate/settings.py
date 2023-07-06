@@ -219,12 +219,11 @@ TINYMCE_DEFAULT_CONFIG = {
 	],
 	"content_style": "body{padding:8px}",
 	"promotion": False,
-	"plugins": "autolink charmap code fullscreen help image link lists media preview quickbars save searchreplace table",
+	"plugins": "autolink code fullscreen help image link lists media preview quickbars save searchreplace table",
 	"toolbar": (
 		"undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft "
-		"aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor "
-		"backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | "
-		"fullscreen preview save print | insertfile image media pageembed template link anchor codesample"
+		"aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor removeformat | "
+		"image media link"
 	),
 	"images_upload_credentials": True,
 	# pylint: disable=C0209

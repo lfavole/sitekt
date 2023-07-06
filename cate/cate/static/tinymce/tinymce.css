@@ -1,10 +1,12 @@
-.tox.tox-tinymce {
-    width:100%;
-}
-.change-form .tox.tox-tinymce {
-    width:unset;
-    flex:1;
-}
-.tox-fullscreen {
-    width:100% !important;
+@media (min-width: 768px) {
+    .tox.tox-tinymce {
+        width:100%;
+    }
+    .change-form .tox.tox-tinymce {
+        width:unset;
+        flex:1;
+    }
+    .tox-fullscreen {
+        width:100% !important;
+    }
 }
