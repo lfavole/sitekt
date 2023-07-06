@@ -1,9 +1,11 @@
 from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
+from django.http.request import HttpRequest
 from common.models import CommonArticle, CommonArticleImage, CommonPage, CommonPageImage, ImageBase
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from easy_thumbnails.fields import ThumbnailerImageField
 from tinymce.widgets import AdminTinyMCE
 
@@ -20,6 +22,13 @@ class CommonImagesInline(admin.TabularInline):
 	Inline for images.
 	"""
 	model: Type[ImageBase]
+	readonly_fields = ("image",)
+
+	def has_add_permission(self, *args, **kwargs):
+		return False
+
+	def has_change_permission(self, *args, **kwargs):
+		return False
 
 class CommonPageImagesInline(CommonImagesInline):
 	"""

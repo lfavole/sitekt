@@ -225,6 +225,9 @@ TINYMCE_DEFAULT_CONFIG = {
 		"aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor removeformat | "
 		"image media link"
 	),
+	"relative_urls": False,
+	"image_advtab": True,
+	"images_reuse_filename": True,
 	"images_upload_credentials": True,
 	# pylint: disable=C0209
 	"images_upload_handler": add_url_lazy("""\

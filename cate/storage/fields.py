@@ -1,3 +1,5 @@
+import os.path
+
 from django.db import models
 from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.fields import ThumbnailerField
@@ -21,13 +23,20 @@ class FileField(ThumbnailerField):
 			return file
 
 		try:
-			file = Thumbnailer(file).generate_thumbnail({"size": self.resize_source})
+			thumbnailer = Thumbnailer(file)
+			thumbnailer.thumbnail_namer = self.thumbnail_namer  # type: ignore
+			thumbnail = thumbnailer.generate_thumbnail({"size": self.resize_source})
 		except InvalidImageFormatError:
-			pass
+			return file
 
-		if file and not file._committed:
-			file.save(file.name, file.file, save = False)
-		return file
+		if thumbnail:
+			file.name = thumbnail.name
+			self.storage.save(thumbnail.name, thumbnail.file, max_length=self.max_length)
+		return thumbnail
+
+	@staticmethod
+	def thumbnail_namer(source_filename, thumbnail_extension, **kwargs):
+		return os.path.splitext(source_filename)[0] + "." + thumbnail_extension
 
 	def formfield(self, **kwargs):
 		del kwargs["widget"]

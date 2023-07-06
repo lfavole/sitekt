@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from easy_thumbnails.fields import ThumbnailerImageField
+from storage.fields import FileField, ImageField
 
 from .fields import DatalistField
 
@@ -130,7 +130,7 @@ class ImageBase(models.Model):
 	"""
 	Base class for images in pages and articles.
 	"""
-	image = ThumbnailerImageField(_("Image"))
+	image = ImageField(_("Image"))
 	page: "models.ForeignKey[CommonPage]"
 
 	def __str__(self):
@@ -218,7 +218,7 @@ class CommonChild(models.Model):
 	])
 	signe = models.BooleanField("Signé")
 	groupe = models.ForeignKey("Group", on_delete = models.SET_NULL, verbose_name = "Groupe", blank = True, null = True)
-	photo = ThumbnailerImageField("Photo", null = True)
+	photo = ImageField("Photo", null = True)
 	date_inscription = models.DateTimeField("Date et heure d'inscription", auto_now_add=True)
 
 	class Meta:
@@ -313,7 +313,7 @@ class CommonDocument(models.Model):
 	Common document class for all apps.
 	"""
 	title = models.fields.CharField(_("Document title"), max_length = 100)
-	file = models.FileField(_("File"), null = True)
+	file = FileField(_("File"), null = True)
 	categories: "models.ManyToManyField[CommonDocumentCategory, Any]" = models.ManyToManyField("DocumentCategory", verbose_name=_("Categories"), blank=True)
 
 	class Meta:
