@@ -184,6 +184,8 @@ MEDIA_ROOT = BASE_DIR / "media/"
 PRIVATE_MEDIA_URL = "private/"
 PRIVATE_MEDIA_ROOT = BASE_DIR / "private/"
 
+THUMBNAIL_BASEDIR = "thumbs"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
