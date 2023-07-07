@@ -218,7 +218,7 @@ class CommonChild(models.Model):
 	])
 	signe = models.BooleanField("Signé")
 	groupe = models.ForeignKey("Group", on_delete = models.SET_NULL, verbose_name = "Groupe", blank = True, null = True)
-	photo = ImageField("Photo", null = True)
+	photo = ImageField("Photo", blank = True, null = True)
 	date_inscription = models.DateTimeField("Date et heure d'inscription", auto_now_add=True)
 
 	class Meta:
