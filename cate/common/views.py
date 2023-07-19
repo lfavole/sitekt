@@ -1,19 +1,23 @@
 import mimetypes
 from pathlib import Path
 from typing import Literal, Type
+from urllib.parse import quote
 
+from common.pdfs.list import list_pdf
+from django.apps import apps
+from django.conf import settings
 from django.contrib.auth import get_permission_codename
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
-from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseNotModified
+from django.http import FileResponse, HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotModified
 from django.shortcuts import render
 from django.utils.http import http_date
 from django.utils.timezone import now
 from django.views import generic
 from django.views.static import was_modified_since
 
-from .models import CommonArticle, CommonDate, CommonDocument, CommonDocumentCategory, CommonPage
+from .models import CommonArticle, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonPage
 
 
 def _encode_filename(filename: str):
@@ -31,7 +35,7 @@ def pdf_response(request: HttpRequest, content: bytes | bytearray, filename = "d
 
     disposition = "attachment" if bool(request.GET.get("dl")) else "inline"
     return HttpResponse(content, "application/pdf", headers={
-        "Content-Disposition": f"{disposition}; {_encode_filename(filename.removesuffix('.pdf') + '.pdf')}\"",
+        "Content-Disposition": f"{disposition}; {_encode_filename(filename.removesuffix('.pdf') + '.pdf')}",
     })
 
 def subscription_ok(request):
@@ -43,6 +47,12 @@ def has_permission_for_view(view: generic.View, permission = "view"):
 def has_permission(request: HttpRequest, model: Type[Model], permission = "view"):
     perm_name = model._meta.app_label + "." + get_permission_codename(permission, model._meta)
     return request.user.has_perm(perm_name) # type: ignore
+
+def common_list(request: HttpRequest, app: Literal["espacecate", "aumonerie"]):
+    Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
+    if not has_permission(request, Child):
+        return HttpResponseForbidden("You don't have the permission to see this list." if settings.DEBUG else "")
+    return pdf_response(request, list_pdf(request, app), "liste")
 
 class BaseView(generic.View):
     """

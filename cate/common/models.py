@@ -223,6 +223,7 @@ class CommonChild(models.Model):
 
 	class Meta:
 		verbose_name = _("child")
+		ordering = ["nom", "prenom"]
 		abstract = True
 
 	def __str__(self):
