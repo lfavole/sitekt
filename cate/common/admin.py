@@ -1,16 +1,31 @@
 from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
-from django.http.request import HttpRequest
 from common.models import CommonArticle, CommonArticleImage, CommonPage, CommonPageImage, ImageBase
 from django import forms
 from django.contrib import admin
-from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
+from django.shortcuts import redirect, resolve_url
+from django.utils.translation import gettext_lazy as _
 from easy_thumbnails.fields import ThumbnailerImageField
 from tinymce.widgets import AdminTinyMCE
 
-from .models import Year
+from .models import CommonChild, Year
 from .widgets import CustomImageClearableFileInput
+
+
+@admin.action(description=_("Export selected %(verbose_name_plural)s"))
+def export_selected(modeladmin, request, queryset):
+	meta = modeladmin.model._meta
+	return redirect(
+		"export",
+		"json",
+		meta.app_label,
+		meta.model_name,
+		",".join(str(element.pk) for element in queryset),
+	)
+
+
+admin.site.add_action(export_selected)
 
 
 @admin.register(Year)
@@ -84,14 +99,26 @@ class CommonChildAdmin(admin.ModelAdmin):
 	"""
 	Admin interface for childs.
 	"""
+	model: Type[CommonChild]
+	change_list_template = "admin/change_list_child.html"
+
+	list_display = ("nom", "prenom")  # this is not useful !
+	list_display_links = ("nom", "prenom")
+
 	@property
 	def fieldsets(self):
 		return self.model.fieldsets
 
 	readonly_fields = ("date_inscription",)
-	formfield_overrides = {
-		ThumbnailerImageField: {"widget": CustomImageClearableFileInput},
-	}
+	actions = ["mark_paid", "mark_signed"]
+
+	@admin.action(description=_("Mark as paid"))
+	def mark_paid(self, request, queryset):
+		queryset.update(paye=True)
+
+	@admin.action(description=_("Mark as signed"))
+	def mark_signed(self, request, queryset):
+		queryset.update(signe=True)
 
 class CommonDateAdmin(admin.ModelAdmin):
 	"""

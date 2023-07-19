@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-05 14:29+0200\n"
+"POT-Creation-Date: 2023-07-19 15:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -13,6 +13,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: .\common\admin.py:16
+#, python-format
+msgid "Export selected %(verbose_name_plural)s"
+msgstr "Exporter les %(verbose_name_plural)s sélectionnés"
+
+#: .\common\admin.py:112
+msgid "Mark as paid"
+msgstr "Marquer comme payé"
+
+#: .\common\admin.py:116
+msgid "Mark as signed"
+msgstr "Marquer comme signé"
 
 #: .\common\models.py:22
 msgid "Start year"
@@ -43,7 +56,7 @@ msgstr "Année scolaire %s"
 msgid "Slug"
 msgstr "ID"
 
-#: .\common\models.py:101 .\common\models.py:300
+#: .\common\models.py:101 .\common\models.py:302
 msgid "Title"
 msgstr "Titre"
 
@@ -112,7 +125,7 @@ msgstr "image dans un article"
 msgid "article images"
 msgstr "images dans un article"
 
-#: .\common\models.py:195 .\common\models.py:269
+#: .\common\models.py:195 .\common\models.py:270
 #: .\common\templates\common\dates.html:15
 msgid "Name"
 msgstr "Nom"
@@ -125,83 +138,83 @@ msgstr "groupe"
 msgid "child"
 msgstr "enfant"
 
-#: .\common\models.py:264
+#: .\common\models.py:265
 msgid "Start date"
 msgstr "Date de début"
 
-#: .\common\models.py:265
+#: .\common\models.py:266
 msgid "End date"
 msgstr "Date de fin"
 
-#: .\common\models.py:266
+#: .\common\models.py:267
 msgid "Start time"
 msgstr "Heure de début"
 
-#: .\common\models.py:267
+#: .\common\models.py:268
 msgid "End time"
 msgstr "Heure de fin"
 
-#: .\common\models.py:268
+#: .\common\models.py:269
 msgid "Time (as text)"
 msgstr "Heure (en tant que texte)"
 
-#: .\common\models.py:270
+#: .\common\models.py:271
 msgid "Short name"
 msgstr "Nom abrégé"
 
-#: .\common\models.py:271 .\common\templates\common\dates.html:16
+#: .\common\models.py:272 .\common\templates\common\dates.html:16
 msgid "Place"
 msgstr "Lieu"
 
-#: .\common\models.py:272
+#: .\common\models.py:273
 msgid "Cancelled"
 msgstr "Annulé"
 
-#: .\common\models.py:275
+#: .\common\models.py:276
 msgid "date"
 msgstr "date"
 
-#: .\common\models.py:280
+#: .\common\models.py:282
 msgid "The end date must be after the start date."
 msgstr "La date de fin doit être avant la date de début."
 
-#: .\common\models.py:283
+#: .\common\models.py:285
 msgid "The start time must be specified when the end time is specified."
 msgstr ""
 "L'heure de début doit être spécifiée quand l'heure de fin est spécifiée."
 
-#: .\common\models.py:287
+#: .\common\models.py:289
 msgid "The end time must be after the start time."
 msgstr "L'heure de fin doit être avant l'heure de début."
 
-#: .\common\models.py:290
+#: .\common\models.py:292
 msgid ""
 "The start time / end time or the time as text must be specified, not both."
 msgstr ""
 "L'heure de début / de fin ou l'heure en tant que texte doivent être "
 "spécifiées, pas les deux."
 
-#: .\common\models.py:306
+#: .\common\models.py:308
 msgid "document category"
 msgstr "catégorie de document"
 
-#: .\common\models.py:307
+#: .\common\models.py:309
 msgid "document categories"
 msgstr "catégories de document"
 
-#: .\common\models.py:314
+#: .\common\models.py:316
 msgid "Document title"
 msgstr "Titre du document"
 
-#: .\common\models.py:315
+#: .\common\models.py:317
 msgid "File"
 msgstr "Fichier"
 
-#: .\common\models.py:316
+#: .\common\models.py:318
 msgid "Categories"
 msgstr "Catégories"
 
-#: .\common\models.py:319
+#: .\common\models.py:321
 msgid "document"
 msgstr "document"
 

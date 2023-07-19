@@ -1,3 +1,4 @@
+import datetime as dt
 import hmac
 import importlib
 import sys
@@ -9,10 +10,13 @@ from urllib.parse import urlparse
 
 import requests
 from common.models import ImageBase
+from common.views import _encode_filename, has_permission
 from django.apps import apps
 from django.conf import settings
-from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError, JsonResponse
-from django.shortcuts import render, resolve_url
+from django.contrib.contenttypes.models import ContentType
+from django.core.serializers import get_serializer
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError, JsonResponse
+from django.shortcuts import get_object_or_404, render, resolve_url
 from django.utils.encoding import force_bytes
 from django.views.decorators.csrf import csrf_exempt
 
@@ -31,6 +35,45 @@ def get_fetch_function():
 		fetch_cache = None
 
 	return fetch_cache
+
+def export(request, format: str, app_label: str, model_name: str, elements_pk: str):
+	# Run the operations that don't need the database first
+	pk_list = None if elements_pk == "all" else [int(pk) for pk in elements_pk.split(",")]
+	serializer = get_serializer(format)()
+
+	# import this now because it is assigned during serializers loading
+	from django.core.serializers import _serializers
+	for ext, module in _serializers:
+		if module == serializer.__module__:
+			extension = ext
+			break
+	else:
+		extension = "txt"
+
+	content_type = get_object_or_404(ContentType, app_label=app_label, model=model_name)
+	model = content_type.model_class()
+
+	if not model:
+		raise Http404
+
+	# Check for permission
+	if not has_permission(request, model):
+		if not settings.DEBUG:
+			raise Http404
+		return HttpResponseForbidden("Permission denied.")
+
+	queryset = model.objects.all()
+	if pk_list:
+		queryset = queryset.filter(pk__in=pk_list)
+
+	response = HttpResponse()
+
+	date = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+	filename = f"export_{content_type.app_label}_{content_type.model}_{date}.{extension}"
+	response.headers["Content-Disposition"] = "attachment; " + _encode_filename(filename)
+
+	serializer.serialize(queryset, stream=response)
+	return response
 
 def home(request: HttpRequest):
     return render(request, "cate/home.html", {"app": "home"})

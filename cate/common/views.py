@@ -37,10 +37,12 @@ def pdf_response(request: HttpRequest, content: bytes | bytearray, filename = "d
 def subscription_ok(request):
     return render(request, "common/subscription_ok.html")
 
-def has_permission(view: generic.View, permission = "view"):
-    model: Type[Model] = view.model # type: ignore
+def has_permission_for_view(view: generic.View, permission = "view"):
+    return has_permission(view.request, view.model, permission)  # type: ignore
+
+def has_permission(request: HttpRequest, model: Type[Model], permission = "view"):
     perm_name = model._meta.app_label + "." + get_permission_codename(permission, model._meta)
-    return view.request.user.has_perm(perm_name) # type: ignore
+    return request.user.has_perm(perm_name) # type: ignore
 
 class BaseView(generic.View):
     """
@@ -51,7 +53,7 @@ class BaseView(generic.View):
     model: Type[Model]
 
     def get_queryset(self): # pylint: disable=C0116
-        admin = has_permission(self, "view")
+        admin = has_permission_for_view(self, "view")
         ret = self.model.objects.all()
         if not admin:
             if hasattr(self.model, "content"):

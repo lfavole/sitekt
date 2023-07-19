@@ -1,12 +1,11 @@
 import os.path
 
+from common.widgets import CustomImageClearableFileInput
 from django.db import models
 from easy_thumbnails.engine import NoSourceGenerator
 from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.fields import ThumbnailerField
 from easy_thumbnails.files import Thumbnailer
-
-from .forms import ImageField as ImageFormField
 
 
 class FileField(ThumbnailerField):
@@ -55,4 +54,4 @@ class ImageField(FileField, models.ImageField):
 
 	def formfield(self, **kwargs):
 		del kwargs["widget"]
-		return super().formfield(**{"form_class": ImageFormField, "max_length": self.max_length, **kwargs})
+		return super().formfield(**{"widget": CustomImageClearableFileInput, "max_length": self.max_length, **kwargs})

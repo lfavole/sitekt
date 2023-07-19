@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import include, path
 
 from . import views
 
@@ -30,6 +30,7 @@ urlpatterns = [
     add_website("aumonerie"),
     add_website("calendrier_avent_2022"),
     add_website("espacecate"),
+    path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name = "export"),
     path("tinymce/upload-image", views.upload_image, name = "tinymce-upload-image"),
     path("tinymce/", include("tinymce.urls")),
     path("", views.home, name = "home"),
