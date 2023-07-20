@@ -107,7 +107,7 @@ class Settings(Namespace):
 	@property
 	def OFFLINE(self):
 		if self._offline is None:
-			self._offline = not self.PYTHONANYWHERE or self.is_offline()
+			self._offline = not self.PYTHONANYWHERE and self.is_offline()
 		return self._offline
 
 def get_vars(obj: Any) -> dict[str, Any]:
