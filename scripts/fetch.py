@@ -29,10 +29,10 @@ def fetch(apps: list[App] | None = None):
 			continue
 
 		_run_with_explanation("git init", "creating git repo")
-		_run_with_explanation(["git", "fetch", settings.GITHUB_REPO + ".git"], "fetching changes")
+		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "fetching changes")
 		_run_with_explanation(["git", "stash"], "backing up changes")
 		_run_with_explanation(["git", "reset", "--hard", "origin/main"], "resetting to server state")
-		_run_with_explanation(["git", "fetch", settings.GITHUB_REPO + ".git"], "re-fetching changes")
+		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "re-fetching changes")
 
 		manage_py_args = [sys.executable, str(app / "manage.py")]
 
