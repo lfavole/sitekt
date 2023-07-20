@@ -29,14 +29,16 @@ def fetch(apps: list[App] | None = None):
 			continue
 
 		_run_with_explanation("git init", "creating git repo")
-		_run_with_explanation(["git", "fetch", "--depth=1", settings.GITHUB_REPO + ".git"], "fetching changes")
-		_run_with_explanation(["git", "merge", "FETCH_HEAD", "main", "--allow-unrelated-histories", "--strategy-option", "theirs", "-m", "Merging remote changes"], "merging changes")
+		_run_with_explanation(["git", "fetch", settings.GITHUB_REPO + ".git"], "fetching changes")
+		_run_with_explanation(["git", "stash"], "backing up changes")
+		_run_with_explanation(["git", "reset", "--hard", "origin/main"], "resetting to server state")
+		_run_with_explanation(["git", "fetch", settings.GITHUB_REPO + ".git"], "re-fetching changes")
 
 		manage_py_args = [sys.executable, str(app / "manage.py")]
 
 		_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
 		_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")
-		_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "collecting static files")
+		_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "copying static files")
 
 		if settings.WSGI_FILE:
 			print("Touching WSGI file for app " + app)
