@@ -1,160 +1,20 @@
 import datetime as dt
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Callable, Literal, Type
+from typing import Literal, Type
 
 from django.apps import apps
 from django.db import models
 from django.http import HttpRequest
+from django.utils.crypto import get_random_string
 from django.utils.formats import localize_input
 from django.utils.numberformat import format as number_format
-from fpdf import FPDF
-from fpdf.enums import AccessPermission, Align, MethodReturnValue, XPos, YPos
+from fpdf.enums import AccessPermission, Align, XPos, YPos
 from fpdf.fonts import FontFace
-from fpdf.table import Row
 
 from ..models import CommonChild, Year
-
-HERE = Path(__file__).resolve()
-DATA = HERE.parent.parent.parent.parent / "data"
+from . import PDF, Table
 
 
-@dataclass
-class Table:
-    fpdf: FPDF
-
-    table_data: list[list[str]] = field(default_factory=list)
-    col_widths: list[float] | float = field(default_factory=list)
-    line_height: float = 10
-    align: Align = Align.C
-    heading_font_face: FontFace = field(default_factory=FontFace)
-
-    fill_alternate: bool = True
-    fill_font_face: FontFace = field(default_factory=lambda: FontFace(fill_color = 230))
-
-    regroup_check: Callable[[int], Any] | None = None
-    regroup_font_face: FontFace = field(default_factory=FontFace)
-    regroup_height: float = 7
-    regroup_align: Align = Align.C
-
-    rows: list[Row] = field(default_factory=list)
-
-    def __post_init__(self):
-        self.width = self.fpdf.epw  # FIXME
-
-        for row in self.table_data:
-            self.row(row)
-
-    def row(self, cells=()):
-        """
-        Adds a row to the table. Returns a `Row` object.
-        """
-        row = Row(self.fpdf)
-        self.rows.append(row)
-        for cell in cells:
-            row.cell(str(cell))
-        return row
-
-    def _get_col_width(self, row_n, col_n, colspan=1):
-        if not self.col_widths:
-            cols_count = self.rows[row_n].cols_count
-            return colspan * (self.width / cols_count)
-        if isinstance(self.col_widths, float):
-            return colspan * self.col_widths
-        if col_n >= len(self.col_widths):
-            raise ValueError(
-                f"Invalid .col_widths specified: missing width for table() column {col_n + 1} on row {row_n + 1}"
-            )
-        # pylint: disable=unsubscriptable-object
-        col_width = 0
-        col_ratio = self.width / sum(self.col_widths)
-        for k in range(col_n, col_n + colspan):
-            col_width += col_ratio * self.col_widths[k]
-        return col_width
-
-    def render(self):
-        fill = False
-        regrouped_data = object()
-
-        for row_n in range(len(self.rows)):
-            fill, regrouped_data = self._display_line(row_n, fill, regrouped_data)
-
-    def _display_line(self, row_n, fill, regrouped_data):
-        data_row = self.rows[row_n]
-
-        if row_n > 0 and self.regroup_check:
-            new_regrouped_data = self.regroup_check(row_n - 1)
-            if new_regrouped_data != regrouped_data:
-                regrouped_data = new_regrouped_data
-
-                # check if the regrouped property AND the next line will trigger a page break
-                # (don't leave the title alone at the bottom of the page...)
-                if self.fpdf.will_page_break(self.regroup_height + self.line_height):
-                    # add a new page and print the header
-                    self.fpdf.add_page()
-                    fill, regrouped_data = self._display_line(0, fill, regrouped_data)
-
-                with self.fpdf.use_font_face(self.regroup_font_face):
-                    self.fpdf.cell(
-                        0,
-                        self.regroup_height,
-                        regrouped_data,
-                        border = True,
-                        align = self.regroup_align,
-                        fill = True,
-                        new_x = XPos.LMARGIN,
-                        new_y = YPos.NEXT,
-                    )
-                fill = False
-
-        # check if the next line will trigger a page break
-        if self.fpdf.will_page_break(self.line_height):
-            # add a new page and print the header
-            self.fpdf.add_page()
-            fill, regrouped_data = self._display_line(0, fill, regrouped_data)
-
-        font_face = FontFace()
-        if fill:
-            font_face = self.fill_font_face
-        if row_n == 0:
-            font_face = self.heading_font_face
-            fill = True
-
-        with self.fpdf.use_font_face(font_face):
-            col_n = 0
-            for cell in data_row.cells:
-                col_width = self._get_col_width(row_n, col_n, cell.colspan)
-                lines = self.fpdf.multi_cell(
-                    col_width,
-                    self.line_height,
-                    cell.text,
-                    dry_run = True,
-                    output = MethodReturnValue.LINES,
-                )
-                self.fpdf.multi_cell(
-                    col_width,
-                    self.line_height,
-                    cell.text,
-                    border = True,
-                    align = self.align,
-                    fill = fill,
-                    new_x = XPos.RIGHT,
-                    new_y = YPos.TOP,
-                    max_line_height = self.line_height / len(lines),
-                )
-                col_n += cell.colspan
-
-            self.fpdf.ln(self.line_height)
-
-        if self.fill_alternate:
-            fill = not fill
-        else:
-            if row_n == 0:
-                fill = False
-
-        return fill, regrouped_data
-
-class List(FPDF):
+class List(PDF):
     MARKDOWN_LINK_COLOR = "#0d47a1"
 
     lines: dict[str, int] = {}
@@ -165,15 +25,12 @@ class List(FPDF):
 
         self._classes: list[str] = []
 
-        self.add_font("Montserrat", "", str(DATA / "fonts/Montserrat-Regular.ttf"))
-        self.add_font("Montserrat", "B", str(DATA / "fonts/Montserrat-Bold.ttf"))
-
         self.set_margin(5)
         self.set_auto_page_break(True, 5)
 
         self.set_encryption(  # type: ignore
-            "",
-            AccessPermission.PRINT_LOW_RES | AccessPermission.PRINT_HIGH_RES | AccessPermission.COPY,
+            get_random_string(50),
+            permissions=AccessPermission.PRINT_LOW_RES | AccessPermission.PRINT_HIGH_RES | AccessPermission.COPY,
         )
 
     @property

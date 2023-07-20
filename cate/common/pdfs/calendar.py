@@ -5,10 +5,10 @@ from typing import Literal
 
 from cate.abbreviation import abbreviation
 from dateutil.easter import easter
-from fpdf import FPDF
 from fpdf.enums import Align, XPos, YPos
 
 from ..models import Year
+from . import PDF
 
 HERE = Path(__file__).resolve()
 DATA = HERE.parent.parent.parent.parent / "data"
@@ -92,7 +92,7 @@ def get_epiphanie(year: int):
 def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 	start_year = Year.get_current().start_year
 
-	pdf = FPDF("L")
+	pdf = PDF("L")
 	pdf.add_font("Montserrat", "", str(DATA / "fonts/Montserrat-Regular.ttf"))
 	pdf.add_font("Montserrat", "B", str(DATA / "fonts/Montserrat-Bold.ttf"))
 

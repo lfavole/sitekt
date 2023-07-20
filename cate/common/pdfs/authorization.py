@@ -3,10 +3,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 from django.http import HttpRequest, QueryDict
-from fpdf import FPDF
 from fpdf.enums import Align, XPos, YPos
 
 from ..models import Year
+from . import PDF
 
 HERE = Path(__file__).resolve()
 DATA = HERE.parent.parent.parent.parent / "data"
@@ -41,7 +41,7 @@ class AuthorizationData:
 		else:
 			self.date = dt.date.today()
 
-class Authorization(FPDF):
+class Authorization(PDF):
 	line_h_mul = 1.9
 
 	def __init__(self, request: HttpRequest, *args, **kwargs):
