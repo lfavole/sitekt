@@ -83,12 +83,17 @@ def reload_website(request: HttpRequest):
 	forbidden = HttpResponseForbidden("Permission denied.")
 	fetch = get_fetch_function()
 	if not fetch:
-		print("xxx")
 		return forbidden
 
+	def run_fetch():
+		try:
+			ret = fetch(pipe = True)
+		except:
+			return HttpResponseServerError("Failed to fetch changes")
+		return HttpResponse(ret, "text/plain")
+
 	if request.user.is_superuser: # type: ignore
-		fetch()
-		return HttpResponse("success")
+		return run_fetch()
 
 	if request.method != "POST":
 		return HttpResponseNotAllowed(["GET", "POST"])
@@ -126,11 +131,7 @@ def reload_website(request: HttpRequest):
 	if event == "ping":
 		return HttpResponse("pong")
 	elif event == "push":
-		try:
-			fetch()
-		except:
-			return HttpResponseServerError("Failed to fetch changes")
-		return HttpResponse("success")
+		return run_fetch()
 
 	# In case we receive an event that's not ping or push
 	return HttpResponse(status = 204)

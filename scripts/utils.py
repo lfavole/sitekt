@@ -178,6 +178,7 @@ class App:
 			cls(path) for path in cls.BASE_FOLDER.iterdir()
 			if path.is_dir()
 			and not path.name.startswith(".") # Don't include hidden folders like .vscode
+			and path.name != "data" # Don't include data folder
 			and path.name != "scripts" # Don't include scripts folder
 			and not path.name.startswith("_") # Don't include __pycache__
 		)
@@ -222,23 +223,44 @@ def is_sensitive(key_name: str):
 
 	return False
 
-def run(args: list[str] | str, pipe = False, **kwargs) -> sp.CompletedProcess[str]:
+def run(args: list[str] | str, pipe = False, capture = False, **kwargs) -> sp.CompletedProcess[str]:
 	"""
 	Run the command specified by args. Return a `CompletedProcess[str]`.
+
+	`pipe=True` wraps the input and output in pipes.
+
+	`capture=True` adds the command before the output, that is captured.
 	"""
 	# pylint: disable=W1510
 	if isinstance(args, str):
 		args = shlex.split(args)
 	kwargs = {**kwargs, "encoding": "utf-8", "errors": "replace"}
+
 	if pipe:
-		kwargs = {**kwargs, "stdin": sp.PIPE, "stdout": sp.PIPE, "stderr": sp.PIPE}
-	if not pipe:
-		print()
-		print("--- Command: " + " ".join(shlex.quote(arg) for arg in args) + " ---")
+		kwargs["stdin"] = sp.PIPE
+		kwargs["stdout"] = sp.PIPE
+		kwargs["stderr"] = sp.PIPE
+	if capture:
+		kwargs["capture_output"] = True
+
+	before_text = ""
+	after_text = ""
+
+	if not pipe or capture:
+		before_text = "\n--- Command: " + " ".join(shlex.quote(arg) for arg in args) + " ---"
+		if not capture:
+			print(before_text)
+
 	ret = sp.run(args, **kwargs)
-	if not pipe:
-		print("--- End of command ---")
-		print()
+
+	if not pipe or capture:
+		after_text = "--- End of command ---\n"
+		if not capture:
+			print(after_text)
+
+	if capture:
+		ret.stdout = before_text + ret.stdout + after_text
+
 	return ret
 
 
