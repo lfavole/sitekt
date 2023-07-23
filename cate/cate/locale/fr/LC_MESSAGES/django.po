@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-05 14:52+0200\n"
+"POT-Creation-Date: 2023-07-19 15:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,13 +14,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\cate\password_validation.py:27
+#: .\cate\password_validation.py:28
 msgid ""
 "Your password was determined to have been involved in a major security "
 "breach."
 msgstr "Votre mot de passe a été trouvé dans une faille de sécurité majeure."
 
-#: .\cate\password_validation.py:45
+#: .\cate\password_validation.py:46
 msgid ""
 "We could not validate the safety of this password. This does not mean the "
 "password is invalid. Please try again later."
@@ -29,11 +29,50 @@ msgstr ""
 "pas dire que le mot de passe est invalide pour autant. Veuillez réessayer "
 "plus tard."
 
-#: .\cate\password_validation.py:71
+#: .\cate\password_validation.py:72
 msgid "Your password must not have been detected in a major security breach."
 msgstr ""
 "Votre mot de passe ne doit pas avoir été trouvé dans une faille de sécurité "
 "majeure."
+
+#: .\cate\templates\cate\404.html:5
+msgid "Page not found"
+msgstr "Page non trouvée"
+
+#: .\cate\templates\cate\404.html:6
+#, python-format
+msgid "The page <code>%(request_path)s</code> has not been found."
+msgstr "La page <code>%(request_path)s</code> n'a pas été trouvée."
+
+#: .\cate\templates\cate\500.html:5
+msgid "Server error"
+msgstr "Erreur du serveur"
+
+#: .\cate\templates\cate\500.html:6
+#, python-format
+msgid "The error has been saved with the number %(error_id)s."
+msgstr "L'erreur a été enregistrée avec le numéro %(error_id)s."
+
+#: .\cate\templates\cate\paginator.html:6
+msgid "first"
+msgstr "début"
+
+#: .\cate\templates\cate\paginator.html:7
+msgid "previous"
+msgstr "précédente"
+
+#: .\cate\templates\cate\paginator.html:11
+#, python-format
+msgid "Page %(current)s of %(total)s"
+msgstr "Page %(current)s sur %(total)s"
+
+#: .\cate\templates\cate\paginator.html:15
+msgid "next"
+msgstr "suivante"
+
+#: .\cate\templates\cate\paginator.html:16
+msgid "last"
+msgstr "fin"
 
 #: .\cate\templatetags\join_last.py:8
 msgid ", "

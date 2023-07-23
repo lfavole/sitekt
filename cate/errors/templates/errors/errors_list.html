@@ -1,0 +1,24 @@
+{% extends "cate/site_base.html" %}
+{% load i18n %}
+
+{% block title-header %}Erreurs{% endblock %}
+
+{% block content %}
+<h1>{% trans "Errors" %}</h1>
+{% if page_obj %}
+<form action="{% url "errors:errors_list" %}">
+    <p>
+        {{ form }}
+        <input type="submit" value="OK">
+    </p>
+</form>
+<ul>
+{% for error in page_obj %}
+    <li><a href="{% url "errors:error" error.pk %}">{{ error }}</a></li>
+{% endfor %}
+</ul>
+{% include "cate/paginator.html" %}
+{% else %}
+<p>{% trans "No errors" %}</p>
+{% endif %}
+{% endblock %}

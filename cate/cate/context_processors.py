@@ -16,11 +16,11 @@ def now_variable(_request: HttpRequest):
 def navbar_processor(request):
     app = app_name(request)["app"]
     if not app:
-        return {"pages": []}
+        return {"pages": [], "display_navbar": False}
     try:
         PageView: Type[CommonPageView] = importlib.import_module(app + ".views").PageView # pylint: disable=C0103
-    except ImportError:
-        return {"pages": []}
+    except (ImportError, AttributeError):
+        return {"pages": [], "display_navbar": False}
 
     pages_list = PageView(request = request).get_queryset()
 
@@ -31,4 +31,4 @@ def navbar_processor(request):
             pages.append((page, get_pages(page)))
         return pages
 
-    return {"pages": get_pages(None)}
+    return {"pages": get_pages(None), "display_navbar": True}

@@ -6,7 +6,7 @@ from hashlib import sha1
 from ipaddress import ip_address, ip_network
 from pathlib import Path
 from typing import Type
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 import requests
 from common.models import ImageBase
@@ -16,9 +16,13 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.serializers import get_serializer
 from django.http import Http404, HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError, JsonResponse
+from django.http.response import Http404
 from django.shortcuts import get_object_or_404, render, resolve_url
+from django.template import Context, Engine
 from django.utils.encoding import force_bytes
+from django.views.debug import ExceptionReporter, technical_404_response
 from django.views.decorators.csrf import csrf_exempt
+from errors.models import Error
 
 fetch_cache = None
 
@@ -77,6 +81,52 @@ def export(request, format: str, app_label: str, model_name: str, elements_pk: s
 
 def home(request: HttpRequest):
     return render(request, "cate/home.html", {"app": "home"})
+
+
+def handler_404(request, exception):
+    """
+    404 (not found) error page.
+    """
+    if request.user and request.user.has_perm("can_see_traceback"):
+        return technical_404_response(request, exception)
+    return render(
+        request,
+        "website/404.html",
+        {
+            "request_path": quote(request.path),
+            # "exception": exception_repr,
+        },
+        status=404,
+    )
+
+
+DEBUG_ENGINE = Engine(
+    dirs=[str(Path(__file__).parent / "templates")],
+    debug=True,
+    libraries={
+        "i18n": "django.templatetags.i18n",
+        "nav": "cate.templatetags.nav",
+        "static": "django.templatetags.static",
+    },
+)
+
+
+def handler_500(request, _template_name=None):
+    """
+    500 (server error) page that logs the error.
+    """
+    reporter = ExceptionReporter(request, *sys.exc_info(), is_email=True)
+    html = reporter.get_traceback_html()
+    error = Error.create_from_traceback_data(reporter.get_traceback_data(), html)
+    if request.user and request.user.has_perm("can_see_traceback"):
+        return HttpResponse(html, status=500)
+
+    with (Path(__file__).parent / "templates/cate/500.html").open() as f:
+        t = DEBUG_ENGINE.from_string(f.read())
+    c = Context({"error_id": error.pk}, use_l10n=False)
+    html = t.render(c)
+    return HttpResponse(html, status=500)
+
 
 @csrf_exempt
 def reload_website(request: HttpRequest):

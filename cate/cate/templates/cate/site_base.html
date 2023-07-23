@@ -5,6 +5,7 @@
 <header>
 <div class="titre">{% block title-header %}{% endblock %}</div>
 </header>
+{% if display_navbar %}
 <nav>
 <div class="ouvrir-menu" onclick="menu_ouvrir()">Menu</div> {# TODO: remove onclick #}
 <div class="menu">
@@ -12,6 +13,7 @@
 {{ pages | nav }}
 </div>
 </nav>
+{% endif %}
 <main>
 {% block content %}{% endblock %}
 </main>

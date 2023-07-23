@@ -65,6 +65,7 @@ INSTALLED_APPS = [
 	"tracking",
 	"aumonerie",
 	"common",
+	"errors",
 	"espacecate",
 	"calendrier_avent_2022",
 	"django_cleanup", # must be placed last
