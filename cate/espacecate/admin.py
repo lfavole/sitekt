@@ -1,16 +1,9 @@
 from common.admin import CommonArticleImagesInline, CommonPageImagesInline
 from common.admin import CommonArticleAdmin, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonPageAdmin
 from django.contrib import admin
-from uservisit.admin import CommonUserVisitAdmin
 
-from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Page, PageImage, UserVisit
+from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Page, PageImage
 
-
-@admin.register(UserVisit)
-class UserVisitAdmin(CommonUserVisitAdmin):
-	"""
-	Admin interface for user visits of the espacecate app.
-	"""
 
 class PageImagesInline(CommonPageImagesInline):
 	"""

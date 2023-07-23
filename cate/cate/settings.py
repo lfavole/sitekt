@@ -62,7 +62,7 @@ INSTALLED_APPS = [
 	"cate",
 	"users",
 	"storage",
-	"uservisit",
+	"tracking",
 	"aumonerie",
 	"common",
 	"espacecate",
@@ -81,7 +81,7 @@ MIDDLEWARE = [
 	"django.contrib.auth.middleware.AuthenticationMiddleware",
 	"django.contrib.messages.middleware.MessageMiddleware",
 	"django.middleware.clickjacking.XFrameOptionsMiddleware",
-	"uservisit.middleware.UserVisitMiddleware",
+	"tracking.middleware.VisitorTrackingMiddleware",
 ]
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
@@ -108,6 +108,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "cate.wsgi.application"
+
+TRACK_IGNORE_URLS = (
+	r"^(favicon\.ico|robots\.txt)$",
+	r"^admin/",
+)
+
+TRACK_IGNORE_STATUS_CODES = (403, 404, 500)
+
+TRACK_PAGEVIEWS = True
 
 
 DEFAULT_FILE_STORAGE = "storage.storages.CustomFileSystemStorage"

@@ -1,0 +1,91 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-16 18:38+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: .\tracking\apps.py:8
+msgid "Visits"
+msgstr "Visites"
+
+#: .\tracking\models.py:11
+msgid "Session key"
+msgstr "ID de session"
+
+#: .\tracking\models.py:18
+msgid "User"
+msgstr "Utilisateur"
+
+#: .\tracking\models.py:20
+msgid "IP address"
+msgstr "Adresse IP"
+
+#: .\tracking\models.py:21
+msgid "User agent"
+msgstr "Agent utilisateur"
+
+#: .\tracking\models.py:22
+msgid "Start time"
+msgstr "Heure de début"
+
+#: .\tracking\models.py:23
+msgid "Session expiry time"
+msgstr "Heure d'expiration de la session"
+
+#: .\tracking\models.py:24 .\tracking\models.py:48
+msgid "Time on site"
+msgstr "Temps sur le site"
+
+#: .\tracking\models.py:29
+msgid "visit"
+msgstr "visite"
+
+#: .\tracking\models.py:43
+msgid "Session expired"
+msgstr "Session expirée"
+
+#: .\tracking\models.py:55
+msgid "Visit"
+msgstr "Visite"
+
+#: .\tracking\models.py:57
+msgid "URL"
+msgstr "URL"
+
+#: .\tracking\models.py:58
+msgid "Referer"
+msgstr "Page d'origine"
+
+#: .\tracking\models.py:59
+msgid "Query string"
+msgstr "Chaîne de requête"
+
+#: .\tracking\models.py:60
+msgid "Method"
+msgstr "Méthode"
+
+#: .\tracking\models.py:61
+msgid "View time"
+msgstr "Heure de la vue"
+
+#: .\tracking\models.py:66
+msgid "page view"
+msgstr "page vue"
+
+#: .\tracking\models.py:67
+msgid "page views"
+msgstr "pages vues"

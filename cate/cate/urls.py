@@ -33,6 +33,7 @@ urlpatterns = [
     path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name = "export"),
     path("tinymce/upload-image", views.upload_image, name = "tinymce-upload-image"),
     path("tinymce/", include("tinymce.urls")),
+    path("tracking/", include("tracking.urls")),
     path("", views.home, name = "home"),
     path("reload-website/", views.reload_website),
     # re_path(r'^', include('filer.server.urls')),

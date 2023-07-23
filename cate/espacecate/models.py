@@ -5,13 +5,7 @@ from common.models import CommonArticle, CommonArticleImage, CommonChild, Common
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
-from uservisit.models import CommonUserVisit
 
-
-class UserVisit(CommonUserVisit):
-	"""
-	User visit on `espacecate` app.
-	"""
 
 class Page(CommonPage):
 	"""

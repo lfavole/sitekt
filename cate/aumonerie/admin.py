@@ -1,15 +1,8 @@
 from common.admin import CommonArticleAdmin, CommonArticleImagesInline, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonPageAdmin, CommonPageImagesInline
 from django.contrib import admin
-from uservisit.admin import CommonUserVisitAdmin
 
-from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Page, PageImage, UserVisit
+from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Page, PageImage
 
-
-@admin.register(UserVisit)
-class UserVisitAdmin(CommonUserVisitAdmin):
-	"""
-	Admin interface for user visits of the aumonerie app.
-	"""
 
 class PageImagesInline(CommonPageImagesInline):
 	"""

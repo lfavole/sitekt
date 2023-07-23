@@ -2,13 +2,7 @@ from common.fields import PriceField
 from common.models import CommonArticle, CommonArticleImage, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonPage, CommonPageImage
 from django.db import models
 from django.urls import reverse
-from uservisit.models import CommonUserVisit
 
-
-class UserVisit(CommonUserVisit):
-	"""
-	User visit on `aumonerie` app.
-	"""
 
 class Page(CommonPage):
 	"""
