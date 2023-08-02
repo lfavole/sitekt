@@ -122,21 +122,9 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             }
             exclude = ["paye", "signe", "groupe", "photo"]
             formfield_callback = formfield_for_dbfield
-
             fieldsets = copy.deepcopy(target_model.fieldsets)  # type: ignore
             fieldsets.pop()  # remove admin section
             # add authorization document information
             fieldsets[-1][1]["fields"] = (fieldsets[-1][1]["fields"][0], "autorisation", *fieldsets[-1][1]["fields"][1:])
-
-        def save(self, *args, **kwargs):
-            if app == "espacecate":
-                self.instance.communion_cette_annee = self.instance.annees_kt == 2
-            if app == "aumonerie":
-                self.instance.profession_cette_annee = False
-                self.instance.confirmation_cette_annee = False
-
-            self.instance.paye = False
-            self.instance.signe = False
-            return super().save(*args, **kwargs)
 
     return SubscriptionForm
