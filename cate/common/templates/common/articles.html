@@ -6,7 +6,12 @@
 {% block page-title %}Articles{% endblock %}
 
 {% block content %}
-<h1>Articles</h1>
+<style>
+li {
+	margin:10px 0;
+}
+</style>
+<h1>Articles / Photos</h1>
 {% comment %}
 The hidden articles are already removed from the pages with views.py.
 If there is a hidden article, it means the user is an admin.
