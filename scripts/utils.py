@@ -247,16 +247,16 @@ def run(args: list[str] | str, pipe = False, capture = False, **kwargs) -> sp.Co
 	after_text = ""
 
 	if not pipe or capture:
-		before_text = "\n--- Command: " + " ".join(shlex.quote(arg) for arg in args) + " ---"
+		before_text = "\n--- Command: " + " ".join(shlex.quote(arg) for arg in args) + " ---\n"
 		if not capture:
-			print(before_text)
+			print(before_text, end="")
 
 	ret = sp.run(args, **kwargs)
 
 	if not pipe or capture:
 		after_text = "--- End of command ---\n"
 		if not capture:
-			print(after_text)
+			print(after_text, end="")
 
 	if capture:
 		ret.stdout = before_text + ret.stdout + after_text
