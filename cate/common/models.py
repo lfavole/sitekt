@@ -7,10 +7,11 @@ from django.core.exceptions import ValidationError
 from django.db import DatabaseError, models
 from django.db.models import Manager
 from django.urls import reverse
-from django.utils.text import slugify
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from storage.fields import FileField, ImageField
+
+from cate.utils.text import slugify
 
 from .fields import DatalistField
 
@@ -109,7 +110,7 @@ class PageBase(models.Model):
 
 	def _generate_slug(self):
 		value = self.title
-		slug_candidate = slug_original = slugify(value, allow_unicode = False)
+		slug_candidate = slug_original = slugify(value)
 		i = 0
 		while True:
 			i += 1

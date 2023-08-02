@@ -182,6 +182,8 @@ class PDF(FPDF):
         return super().set_font(family, style, size)
 
 
+# Fix encryption of metadata
+
 class PDFInfo(PDFObject):
     def __init__(
         self,

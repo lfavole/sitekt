@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-16 18:38+0200\n"
+"POT-Creation-Date: 2023-08-02 16:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,70 +22,70 @@ msgstr ""
 msgid "Visits"
 msgstr "Visites"
 
-#: .\tracking\models.py:11
+#: .\tracking\models.py:12
 msgid "Session key"
 msgstr "ID de session"
 
-#: .\tracking\models.py:18
+#: .\tracking\models.py:19
 msgid "User"
 msgstr "Utilisateur"
 
-#: .\tracking\models.py:20
+#: .\tracking\models.py:21
 msgid "IP address"
 msgstr "Adresse IP"
 
-#: .\tracking\models.py:21
+#: .\tracking\models.py:22
 msgid "User agent"
 msgstr "Agent utilisateur"
 
-#: .\tracking\models.py:22
+#: .\tracking\models.py:23
 msgid "Start time"
 msgstr "Heure de début"
 
-#: .\tracking\models.py:23
+#: .\tracking\models.py:24
 msgid "Session expiry time"
 msgstr "Heure d'expiration de la session"
 
-#: .\tracking\models.py:24 .\tracking\models.py:48
+#: .\tracking\models.py:25 .\tracking\models.py:49
 msgid "Time on site"
 msgstr "Temps sur le site"
 
-#: .\tracking\models.py:29
+#: .\tracking\models.py:30
 msgid "visit"
 msgstr "visite"
 
-#: .\tracking\models.py:43
+#: .\tracking\models.py:44
 msgid "Session expired"
 msgstr "Session expirée"
 
-#: .\tracking\models.py:55
+#: .\tracking\models.py:56
 msgid "Visit"
 msgstr "Visite"
 
-#: .\tracking\models.py:57
+#: .\tracking\models.py:58
 msgid "URL"
 msgstr "URL"
 
-#: .\tracking\models.py:58
+#: .\tracking\models.py:59
 msgid "Referer"
 msgstr "Page d'origine"
 
-#: .\tracking\models.py:59
+#: .\tracking\models.py:60
 msgid "Query string"
 msgstr "Chaîne de requête"
 
-#: .\tracking\models.py:60
+#: .\tracking\models.py:61
 msgid "Method"
 msgstr "Méthode"
 
-#: .\tracking\models.py:61
+#: .\tracking\models.py:62
 msgid "View time"
 msgstr "Heure de la vue"
 
-#: .\tracking\models.py:66
+#: .\tracking\models.py:67
 msgid "page view"
 msgstr "page vue"
 
-#: .\tracking\models.py:67
+#: .\tracking\models.py:68
 msgid "page views"
 msgstr "pages vues"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-02 17:19+0200\n"
+"POT-Creation-Date: 2023-08-02 16:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,50 +18,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\errors\apps.py:8 .\errors\templates\errors\errors_list.html:5
+#: .\errors\apps.py:8 .\errors\templates\errors\errors_list.html:7
 msgid "Errors"
 msgstr "Erreurs"
 
-#: .\errors\forms.py:9
-#, fuzzy
-#| msgid "Error ID"
+#: .\errors\forms.py:10
 msgid "error ID"
 msgstr "ID de l'erreur"
 
-#: .\errors\models.py:12
+#: .\errors\models.py:13
 msgid "time"
 msgstr "heure"
 
-#: .\errors\models.py:13
+#: .\errors\models.py:14
 msgid "error class"
 msgstr "classe d'erreur"
 
-#: .\errors\models.py:14
+#: .\errors\models.py:15
 msgid "error message"
 msgstr "message d'erreur"
 
-#: .\errors\models.py:15
+#: .\errors\models.py:16
 msgid "URL"
 msgstr "URL"
 
-#: .\errors\models.py:16
+#: .\errors\models.py:17
 msgid "HTML content"
 msgstr "contenu HTML"
 
-#: .\errors\models.py:19
+#: .\errors\models.py:20
 msgid "error"
 msgstr "erreur"
 
-#: .\errors\templates\errors\errors_list.html:20
+#: .\errors\templates\errors\errors_list.html:22
 msgid "No errors"
 msgstr "Pas d'erreurs"
 
-#: .\errors\views.py:28
+#: .\errors\views.py:41
 #, python-format
 msgid "'%s' is not a valid error ID."
 msgstr "'%s' n'est pas un identifiant d'erreur valide."
 
-#: .\errors\views.py:32
+#: .\errors\views.py:45
 #, python-format
 msgid "The error with ID %d doesn't exist."
 msgstr "L'erreur avec l'identifiant %d n'existe pas."

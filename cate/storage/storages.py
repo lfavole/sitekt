@@ -1,5 +1,4 @@
 import os.path
-import re
 from pathlib import PurePath
 
 from django.core.exceptions import SuspiciousFileOperation
@@ -7,7 +6,8 @@ from django.core.files.storage import FileSystemStorage
 from django.core.files.utils import validate_file_name
 from django.utils.crypto import get_random_string
 from django.utils.functional import keep_lazy_text
-from unidecode import unidecode
+
+from cate.utils.text import slugify
 
 
 @keep_lazy_text
@@ -15,19 +15,9 @@ def get_valid_filename(filename: str):
 	"""
 	Get a valid filename from the given filename.
 	"""
-	filename = unidecode(filename)
-
-	def normalize(part):
-		part = part.replace("_", "-")
-		part = re.sub(r"[^\w.]+", "-", part)
-		part = re.sub(r"-{2,}", "-", part)
-		part = part.replace("-.", ".").replace(".-", ".")
-		part = part.strip("-")
-		return part
-
 	name, ext = os.path.splitext(filename)
-	name = normalize(name)
-	ext = normalize(ext)
+	name = slugify(name)
+	ext = slugify(ext)
 	filename = name + ext
 	if not filename:
 		raise SuspiciousFileOperation(f"Could not derive file name from '{filename}'")
