@@ -318,7 +318,11 @@ class CommonMeeting(models.Model):
 				Attendance.objects.create(child=child, meeting=self, is_present=True, has_warned=False)
 
 	def __str__(self):
-		return self.name or ("" if not self.date_item else self.date_item.name) or self.kind
+		return (
+			self.name
+			or ("" if not self.date_item else self.date_item.name)
+			or self.get_kind_display()  # type: ignore
+		)
 
 	class Meta:
 		verbose_name = _("meeting")
