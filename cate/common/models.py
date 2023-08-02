@@ -1,9 +1,11 @@
 from datetime import date
-from typing import Any
+from typing import Any, Callable, Type
 
+from django.apps import apps
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError, models
+from django.db.models import Manager
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import now
@@ -294,6 +296,59 @@ class CommonDate(models.Model):
 
 	def __str__(self): # pylint: disable=E0307
 		return self.name
+
+class CommonMeeting(models.Model):
+	"""
+	Common meeting class for all apps.
+	"""
+	Kind: "models.TextChoices"
+	kind: "models.CharField[str]"
+	date = models.fields.DateField(_("Date"))
+	date_item: "models.OneToOneField[CommonDate | None]" = models.OneToOneField("Date", on_delete=models.SET_NULL, verbose_name=_("Date item"), blank=True, null=True)  # type: ignore
+	name = models.CharField(_("Name"), blank=True, max_length=100)
+
+	get_childs: Callable[[], Manager[CommonChild]]
+
+	def save(self, *args, **kwargs):
+		add = self._state.adding
+		super().save(*args, **kwargs)
+		if add:
+			Attendance: Type[CommonAttendance] = apps.get_model(self._meta.app_label, "Attendance")  # type: ignore
+			for child in self.get_childs():
+				Attendance.objects.create(child=child, meeting=self, is_present=True, has_warned=False)
+
+	def __str__(self):
+		return self.name or ("" if not self.date_item else self.date_item.name) or self.kind
+
+	class Meta:
+		verbose_name = _("meeting")
+		abstract = True
+
+class CommonAttendance(models.Model):
+	"""
+	Common attendance class for all apps.
+	"""
+	child: "models.ForeignKey[CommonChild]" = models.ForeignKey("Child", on_delete=models.CASCADE, verbose_name=_("Child"))
+	meeting: "models.ForeignKey[CommonMeeting]" = models.ForeignKey("Meeting", on_delete=models.CASCADE, verbose_name=_("Meeting"))
+	is_present = models.BooleanField(_("Present"))
+	has_warned = models.BooleanField(_("Has warned"))
+
+	def __str__(self):
+		return _("%s was %s%s") % (
+			str(self.child),
+			(
+				# Translators: use inclusive writing
+				_("present")
+				if self.is_present
+				# Translators: use inclusive writing
+				else _("absent")
+			),
+			(" " + _("and has warned")) if self.has_warned else "",
+		)
+
+	class Meta:
+		verbose_name = _("attendance")
+		abstract = True
 
 class CommonDocumentCategory(models.Model):
 	"""

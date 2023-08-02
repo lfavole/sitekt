@@ -1,7 +1,7 @@
-from common.admin import CommonArticleAdmin, CommonArticleImagesInline, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonPageAdmin, CommonPageImagesInline
+from common.admin import CommonArticleAdmin, CommonArticleImagesInline, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonMeetingAdmin, CommonPageAdmin, CommonPageImagesInline, CommonAttendancesInline
 from django.contrib import admin
 
-from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Page, PageImage
+from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Meeting, Page, PageImage, Attendance
 
 
 class PageImagesInline(CommonPageImagesInline):
@@ -41,6 +41,19 @@ class ChildAdmin(CommonChildAdmin):
 	"""
 	Admin interface for childs of the aumonerie app.
 	"""
+
+class AttendancesInline(CommonAttendancesInline):
+	"""
+	Inline for attendances of the aumonerie app.
+	"""
+	model = Attendance
+
+@admin.register(Meeting)
+class MeetingAdmin(CommonMeetingAdmin):
+	"""
+	Admin interface for meetings of the aumonerie app.
+	"""
+	inlines = [AttendancesInline]
 
 @admin.register(Document)
 class DocumentAdmin(CommonDocumentAdmin):

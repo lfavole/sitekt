@@ -1,7 +1,8 @@
 from common.fields import PriceField
-from common.models import CommonArticle, CommonArticleImage, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonPage, CommonPageImage
+from common.models import CommonArticle, CommonArticleImage, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonMeeting, CommonPage, CommonPageImage, CommonAttendance
 from django.db import models
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 
 class Page(CommonPage):
@@ -137,6 +138,45 @@ class Child(CommonChild):
 class Date(CommonDate):
 	"""
 	Date on `aumonerie` app.
+	"""
+
+class Meeting(CommonMeeting):
+	"""
+	Meeting on `aumonerie` app.
+	"""
+	class Kind(models.TextChoices):
+		AUMONERIE_COLLEGE = "A_COL", "Rencontre d'aumônerie (collège)"
+		AUMONERIE_LYCEE = "A_LYC", "Rencontre d'aumônerie (lycée)"
+		MESSE_FAMILLES = "MF", "Messe des familles"
+		PROFESSION = "PF", "Profession de Foi"
+		CONFIRMATION = "CONF", "Confirmation"
+
+	kind = models.CharField(_("Kind"), max_length=5, blank=True, choices=Kind.choices)
+
+	def get_childs(self):
+		"""
+		Returns all the `Childs` that match the kind of this `Meeting`.
+		"""
+		kind = self.kind
+		objs = Child.objects.all()
+
+		if kind == Meeting.Kind.AUMONERIE_COLLEGE:
+			return objs.filter(classe__in=["6e", "5e", "4e", "3e"])
+
+		if kind == Meeting.Kind.AUMONERIE_LYCEE:
+			return objs.filter(classe__in=["2nde", "1ere", "terminale"])
+
+		if kind == Meeting.Kind.PROFESSION:
+			return objs.filter(profession_cette_annee=True)
+
+		if kind == Meeting.Kind.CONFIRMATION:
+			return objs.filter(confirmation_cette_annee=True)
+
+		return objs
+
+class Attendance(CommonAttendance):
+	"""
+	Attendance on `aumonerie` app.
 	"""
 
 class DocumentCategory(CommonDocumentCategory):

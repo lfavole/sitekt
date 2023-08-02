@@ -1,0 +1,39 @@
+.field-is_present input {
+	background-color:#f44;
+	border:0px;
+	box-shadow:unset;
+    appearance:none;
+	width:24px;
+	height:24px;
+	border-radius:50%;
+	transition:background-color .4s;
+	position:relative;
+}
+.field-is_present input::before, .field-is_present input::after {
+	position:absolute;
+	transform:translate(-50%, -50%);
+	left:50%;
+	top:50%;
+	width:2px;
+	height:2px;
+	background-color:black;
+}
+.field-is_present input::before {
+	content:"" !important;
+	font-size:20px;
+	width:60% !important;
+	height:2px !important;
+}
+.field-is_present input::after {
+	content:"";
+	transition:height .4s;
+}
+.field-is_present input:checked {
+	background-color:#4f4;
+}
+.field-is_present input:checked::after {
+	height:60%;
+}
+.field-is_present input:disabled {
+	filter:none;
+}

@@ -1,10 +1,11 @@
 from datetime import datetime
 
 from common.fields import PriceField
-from common.models import CommonArticle, CommonArticleImage, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonPage, CommonPageImage
+from common.models import CommonArticle, CommonArticleImage, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonGroup, CommonMeeting, CommonPage, CommonPageImage, CommonAttendance
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 
 class Page(CommonPage):
@@ -141,6 +142,39 @@ class Child(CommonChild):
 class Date(CommonDate):
 	"""
 	Date on `espacecate` app.
+	"""
+
+class Meeting(CommonMeeting):
+	"""
+	Meeting on `espacecate` app.
+	"""
+	class Kind(models.TextChoices):
+		CATE = "KT", "Rencontre de caté"
+		EVF = "EVF", "Rencontre d'éveil à la foi"
+		TEMPS_FORT = "TF", "Temps fort"
+		MESSE_FAMILLES = "MF", "Messe des familles"
+
+	kind = models.CharField(_("Kind"), max_length=5, blank=True, choices=Kind.choices)
+
+	def get_childs(self):
+		"""
+		Returns all the `Childs` that match the kind of this `Meeting`.
+		"""
+		kind = self.kind
+		objs = Child.objects.all()
+
+		if kind in (Meeting.Kind.CATE, Meeting.Kind.TEMPS_FORT):
+			groups_ok = ["Giang", "Eliane", "Carine", "Mélanie"]
+			return objs.filter(groupe__name__in=groups_ok)
+
+		if kind == Meeting.Kind.EVF:
+			return objs.filter(groupe__name="EVF")
+
+		return objs
+
+class Attendance(CommonAttendance):
+	"""
+	Attendance on `espacecate` app.
 	"""
 
 class DocumentCategory(CommonDocumentCategory):

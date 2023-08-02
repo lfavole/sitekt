@@ -1,8 +1,7 @@
-from common.admin import CommonArticleImagesInline, CommonPageImagesInline
-from common.admin import CommonArticleAdmin, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonPageAdmin
+from common.admin import CommonArticleAdmin, CommonArticleImagesInline, CommonChildAdmin, CommonDateAdmin, CommonDocumentAdmin, CommonDocumentCategoryAdmin, CommonGroupAdmin, CommonMeetingAdmin, CommonPageAdmin, CommonPageImagesInline, CommonAttendancesInline
 from django.contrib import admin
 
-from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Page, PageImage
+from .models import Article, ArticleImage, Child, Date, Document, DocumentCategory, Group, Meeting, Page, PageImage, Attendance
 
 
 class PageImagesInline(CommonPageImagesInline):
@@ -46,6 +45,19 @@ class ChildAdmin(CommonChildAdmin):
 	readonly_fields = ("date_inscription",)
 	search_fields = ("nom", "prenom")
 	list_filter = ("groupe", "communion_cette_annee", "paye", "signe", "classe", "redoublement", "annees_kt", "annees_evf", "bapteme", "premiere_communion", "photos")
+
+class AttendancesInline(CommonAttendancesInline):
+	"""
+	Inline for attendances of the espacecate app.
+	"""
+	model = Attendance
+
+@admin.register(Meeting)
+class MeetingAdmin(CommonMeetingAdmin):
+	"""
+	Admin interface for meetings of the espacecate app.
+	"""
+	inlines = [AttendancesInline]
 
 @admin.register(Document)
 class DocumentAdmin(CommonDocumentAdmin):
