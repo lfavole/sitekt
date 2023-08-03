@@ -26,7 +26,7 @@ def nav(value: list[tuple[Page, Any]], request: HttpRequest):
 					href = None
 
 			if not href:
-				href = reverse("espacecate:page", kwargs = {"slug": page.slug})
+				href = reverse(request.resolver_match.app_name + ":page", kwargs = {"slug": page.slug})
 
 			try:
 				match = resolve(href) if href and href != "#" else None
@@ -42,7 +42,7 @@ def nav(value: list[tuple[Page, Any]], request: HttpRequest):
 				if (
 					match.func != req_match.func
 					and getattr(match.func, "view_class", 1) != getattr(req_match.func, "view_class", 2)
-					):
+				):
 					return False
 
 				if match.args != req_match.args or match.kwargs != req_match.kwargs:
