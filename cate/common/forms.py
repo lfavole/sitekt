@@ -74,7 +74,8 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             )
         return db_field.formfield(**kwargs)
 
-    class SubscriptionForm(BetterModelForm):  # pylint: disable=W0223
+    # class SubscriptionForm(BetterModelForm):  # pylint: disable=W0223
+    class SubscriptionForm(forms.ModelForm):
         autorisation = DisplayedHTMLField(
             "Un document intitulé <b>« Autorisation et engagement »</b> devra être signé par vos soins.<br>"
             'Vous pouvez <a class="autorisation" href="#">le télécharger</a>, '
@@ -126,5 +127,36 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             fieldsets.pop()  # remove admin section
             # add authorization document information
             fieldsets[-1][1]["fields"] = (fieldsets[-1][1]["fields"][0], "autorisation", *fieldsets[-1][1]["fields"][1:])
+
+        fieldsets_template = "common/form_as_fieldsets.html"
+
+        def get_context(self):
+            context = super().get_context()  # type: ignore
+            fieldsets = []
+
+            for title, data in self.Meta.fieldsets:  # type: ignore
+                fieldset = (title, [])
+                for field in data["fields"]:
+                    bf = self[field]
+                    errors = self.error_class(bf.errors, renderer=self.renderer)
+                    fieldset[1].append((bf, errors))
+
+                fieldsets.append(fieldset)
+
+            context["fieldsets"] = fieldsets
+            context["numbers"] = False
+            return context
+
+        def as_fieldsets(self):
+            """
+            Render as <fieldset> elements.
+            """
+            return self.render(self.fieldsets_template)  # type: ignore
+
+        def as_fieldsets_with_numbers(self):
+            """
+            Render as <fieldset> elements.
+            """
+            return self.render(self.fieldsets_template, {**self.get_context(), "numbers": True})  # type: ignore
 
     return SubscriptionForm

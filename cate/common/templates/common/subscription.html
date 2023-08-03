@@ -65,7 +65,7 @@ $(function() {
 <h1>{{ title }}</h1>
 <form name="subscription" action="{% url app|add:":inscription" %}" method="post">
 	{% csrf_token %}
-	{{ form.as_p }}
+	{{ form.as_fieldsets_with_numbers }}
 	<input type="submit" value="Valider">
 </form>
 {% endblock %}

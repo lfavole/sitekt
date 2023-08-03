@@ -503,6 +503,28 @@ th {
 	text-align:center;
 }
 
+
+fieldset {
+	border:2px solid black;
+	border-radius:8px;
+	margin:1em 0;
+	background-color:#eee;
+}
+legend {
+	padding:0.1em 0.3em;
+	font-size:1.5em;
+	background-color:#fff;
+	border-radius:1em;
+}
+.number {
+	display:inline-block;
+	text-align:center;
+	width:1.4em;
+	height:1.4em;
+	line-height:1.4em;
+    border:2px solid #0c0;
+    border-radius:50%;
+}
 input, button, select, .r-select, textarea {
 	border:1px solid black;
 	cursor:pointer;

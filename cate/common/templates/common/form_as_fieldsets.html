@@ -1,0 +1,30 @@
+{{ errors }}
+{% if errors and not fields %}
+  <p>{% for field in hidden_fields %}{{ field }}{% endfor %}</p>
+{% endif %}
+{% for title, fields in fieldsets %}
+    <fieldset>
+        <legend>
+            {% if numbers %}<span class="number">{{ forloop.counter }}.</span>{% endif %}
+            {{ title }}
+        </legend>
+        {% for field, errors in fields %}
+            {{ errors }}
+            <p{% with classes=field.css_classes %}{% if classes %} class="{{ classes }}"{% endif %}{% endwith %}>
+                {% if field.label %}
+                    {{ field.label_tag }}
+                {% endif %}
+                {{ field }}
+                {% if field.help_text %}
+                    <span class="helptext">{{ field.help_text|safe }}</span>
+                {% endif %}
+                {% if forloop.last %}
+                    {% for field in hidden_fields %}{{ field }}{% endfor %}
+                {% endif %}
+            </p>
+        {% endfor %}
+    </fieldset>
+{% endfor %}
+{% if not fields and not errors %}
+  {% for field in hidden_fields %}{{ field }}{% endfor %}
+{% endif %}
