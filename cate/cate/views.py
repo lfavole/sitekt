@@ -193,6 +193,12 @@ def reload_website(request: HttpRequest):
 	# In case we receive an event that's not ping or push
 	return HttpResponse(status = 204)
 
+def robots(_request):
+    robots_file = Path(__file__).resolve().parent.parent / "robots.txt"
+    if robots_file.exists():
+        return FileResponse(robots_file.open("rb"))
+    raise Http404()
+
 def upload_image(request: HttpRequest):
 	referer_url: str = request.headers["Referer"]
 	referer = urlparse(referer_url)
