@@ -35,6 +35,7 @@ urlpatterns = [
     add_website("errors"),
     add_website("espacecate"),
     path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name = "export"),
+    path("google<str:id>.html", views.google),
     path("tinymce/upload-image", views.upload_image, name = "tinymce-upload-image"),
     path("tinymce/", include("tinymce.urls")),
     path("tracking/", include("tracking.urls")),

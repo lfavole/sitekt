@@ -14,9 +14,13 @@ class SpacelessMiddleware:
 
 	def __call__(self, request):
 		response: HttpResponse = self.get_response(request)
-		if response.headers.get("Content-Type", "") != "text/html": # type: ignore
+		if response.headers.get("Content-Type", "").split(";")[0] != "text/html":  # type: ignore
 			return response
-		content = response.content
+		try:
+			content = response.content
+		except AttributeError:  # file response
+			return response
+
 		content = re.sub(rb"\n\s*\n", b"\n", content)
 		if not settings.DEBUG:
 			content = re.sub(rb">\s+<", b"><", content)

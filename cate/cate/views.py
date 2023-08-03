@@ -15,14 +15,15 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.serializers import get_serializer
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError, JsonResponse
-from django.http.response import Http404
+from django.http import FileResponse, Http404, HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseServerError, JsonResponse
 from django.shortcuts import get_object_or_404, render, resolve_url
 from django.template import Context, Engine
 from django.utils.encoding import force_bytes
 from django.views.debug import ExceptionReporter, technical_404_response
 from django.views.decorators.csrf import csrf_exempt
 from errors.models import Error
+
+DATA = Path(__file__).resolve().parent.parent.parent / "data"
 
 fetch_cache = None
 
@@ -78,6 +79,12 @@ def export(request, format: str, app_label: str, model_name: str, elements_pk: s
 
 	serializer.serialize(queryset, stream=response)
 	return response
+
+def google(_request, id):
+    google_file = DATA / f"google{id}.html"
+    if google_file.exists():
+        return FileResponse(google_file.open("rb"))
+    raise Http404()
 
 def home(request: HttpRequest):
     return render(request, "cate/home.html", {"app": "home"})
