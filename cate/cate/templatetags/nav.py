@@ -1,7 +1,8 @@
 from typing import Any
 
 from django import template
-from django.urls import NoReverseMatch, reverse
+from django.http import HttpRequest
+from django.urls import Resolver404, resolve, reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from espacecate.models import Page
@@ -9,7 +10,9 @@ from espacecate.models import Page
 register = template.Library()
 
 @register.filter
-def nav(value: list[tuple[Page, Any]]):
+def nav(value: list[tuple[Page, Any]], request: HttpRequest):
+	req_match = request.resolver_match
+
 	def nav_list(liste: list[tuple[Page, Any]]):
 		ret = "<ul>\n"
 		for page, nested_pages in liste:
@@ -19,13 +22,35 @@ def nav(value: list[tuple[Page, Any]]):
 			elif len(page.content) < 100 and page.content[0] != "<":
 				try:
 					href = reverse(page.content)
-				except NoReverseMatch:
+				except Resolver404:
 					href = None
 
 			if not href:
-				href = reverse("espacecate:page", args = [page.slug])
+				href = reverse("espacecate:page", kwargs = {"slug": page.slug})
 
-			ret += "\t<li><a href=\"" + href + "\">"
+			try:
+				match = resolve(href) if href and href != "#" else None
+			except Resolver404:
+				match = None
+
+			def is_active(match, req_match):
+				if not match:
+					return False
+
+				# check for view_class if as_view() is used multiple times:
+				# the returned function is not the same
+				if (
+					match.func != req_match.func
+					and getattr(match.func, "view_class", 1) != getattr(req_match.func, "view_class", 2)
+					):
+					return False
+
+				if match.args != req_match.args or match.kwargs != req_match.kwargs:
+					return False
+
+				return True
+
+			ret += "\t<li><a" + (" class=\"act\"" if is_active(match, req_match) else "") + " href=\"" + href + "\">"
 			if page.hidden:
 				ret += "<i>(<small>Page cachée :</small> "
 			ret += escape(page.title)

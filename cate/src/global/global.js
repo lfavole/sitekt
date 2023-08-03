@@ -281,15 +281,15 @@ var position = {
 	latitude: 44.5662047,
 	longitude: 6.48334128
 };
-var mode_nuit = {
+var night_mode = {
 	date: null,
 	interval: null,
 	auto: function(jr) {
-		if(mode_nuit.interval == null)
-			mode_nuit.interval = setInterval(function() {
-				if(new Date() >= mode_nuit.date)
-					mode_nuit.date += 864e5,
-					mode_nuit.auto("i");
+		if(night_mode.interval == null)
+			night_mode.interval = setInterval(function() {
+				if(new Date() >= night_mode.date)
+					night_mode.date += 864e5,
+					night_mode.auto("i");
 			}, 1000);
 		var interval = false;
 		if(jr == "i")
@@ -311,15 +311,11 @@ var mode_nuit = {
 		else if(j.isBefore(d[1]))
 			nuit = false, dt = d[1];
 		else
-			return mode_nuit.auto(j.add(1, "day"));
+			return night_mode.auto(j.add(1, "day"));
 
-		// var div = $("<div>").addClass("cpt-soleil").appendTo("body");
-		// $("head").append($("<style>").html(".cpt-soleil {position:fixed; bottom:0px; right:0px; padding:4px 8px; background-color:#f88; border-top-left-radius:8px;} @media(max-width: 500px) {.espace-cpt-soleil {height:30px;} .cpt-soleil {right:unset; left:50%; transform:translateX(-50%); border-radius:8px 8px 0px 0px;}}"));
-		// $("main").append($("<div>").addClass("espace-cpt-soleil"));
-		// cpt_rb(div, dt);
 		$("body").toggleClass("mode-nuit", nuit);
 		console.log((nuit ? "Lever" : "Coucher") + " du soleil à :", dt);
-		mode_nuit.date = dt;
+		night_mode.date = dt;
 		if(interval) {
 			var el = $("<div>").addClass("popup").html(nuit ? "Bonne nuit !" : "Bonjour !").appendTo($("body"));
 			setTimeout(function() {el.remove();}, 4000);
@@ -327,47 +323,30 @@ var mode_nuit = {
 	}
 };
 
-/*
-function mode_nuit_auto(jr) {
-	$(".cpt-soleil").remove();
-	jr = jr ? moment(jr) : moment();
-	var j = moment();
-	var d = calc_soleil(44.5662047, 6.48334128, jr.isDST() ? 2 : 1, jr.format("M"), jr.format("D"), true);
-	d = [d.hl, d.hc];
-	if(!d[0].isValid() || !d[1].isValid()) {
-		console.warn("Erreur dans le calcul du lever / coucher du soleil");
-		return;
-	}
-	var cpt = function(date) {
-		// var div = $("<div>").addClass("cpt-soleil").attr("style", "position:fixed; bottom:0%; left:50%; transform:translateX(-50%); padding:4px 8px; background-color:#f88; border-radius:8px 8px 0px 0px;").appendTo("body");
-		// cpt_rb(div, date);
-		// return div;
-	};
-	var div_cpt;
-	if(j.isBefore(d[0]))
-		div_cpt = cpt(d[0]),
-		$("body").addClass("mode-nuit"),
-		console.log("d[0] :", d[0]),
-		setTimeout(function() {
-			$(".cpt-soleil").remove();
-			$("body").removeClass("mode-nuit");
-			var el = $("<div>").addClass("popup").html("Bonjour !").appendTo($("body"));
-			setTimeout(function() {el.remove();}, 4000);
-			mode_nuit_auto();
-		}, d[0].diff(j));
-	else if(j.isBefore(d[1]))
-		div_cpt = cpt(d[1]),
-		$("body").removeClass("mode-nuit"),
-		console.log("d[1] :", d[1]),
-		setTimeout(function() {
-			$(".cpt-soleil").remove();
-			$("body").addClass("mode-nuit");
-			var el = $("<div>").addClass("popup").html("Bonne nuit !").appendTo($("body"));
-			setTimeout(function() {el.remove();}, 4000);
-			mode_nuit_auto();
-		}, d[1].diff(j));
-	else
-		mode_nuit_auto(j.add(1, "day"));
+function menu_ouvrir() {
+	if($(".menu").is(".ouvert")) return;
+	$(".menu").addClass("ouvert").css("opacity", 1);
+	$("body").css("overflow", "hidden");
 }
-*/
-var mode_nuit_auto = mode_nuit.auto;
+function menu_fermer() {
+	if(!$(".menu").is(".ouvert")) return;
+	$(".menu").removeClass("ouvert");
+	$("body").css("overflow", "");
+	setTimeout(function() {
+		$(".menu").css("opacity", "");
+	}, innerWidth > 500 ? 0 : 1000);
+}
+
+
+$(function() {
+	try {
+		moment.locale("fr");
+		moment.locale(navigator.language);
+		moment.locale(navigator.languages || []);
+	} catch(e) {}
+	$(window).on("resize", function() {
+		if(innerWidth > 500) menu_fermer();
+	});
+
+	night_mode.auto();
+});

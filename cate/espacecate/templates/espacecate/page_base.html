@@ -1,4 +1,9 @@
 {% extends "cate/site_base.html" %}
+{% load static %}
+
+{% block app_css %}
+<link rel="stylesheet" href="{% static app|add:"/style.css" %}">
+{% endblock %}
 
 {% block title %}{% block page-title %}{% endblock %} – Espace caté{% endblock %}
 
