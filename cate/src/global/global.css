@@ -82,9 +82,12 @@ header {
 	background-color:#fff3e0;
 	background-position:8px 8px;
 	background-size:auto 84px;
-	background-image:url(../favicon.ico);
+	/* background-image:url (favicon.ico); */
+	/* add the icon in app CSS */
+	/* the space after "url" prevents Django from detecting this */
 	background-repeat:no-repeat;
 	transition:background-position .4s;
+	box-shadow:0px 0px 9px 6px #fff3e0;
 }
 @media screen and (max-width: 500px) {
 	header {

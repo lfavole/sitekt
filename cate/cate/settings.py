@@ -120,7 +120,14 @@ TRACK_IGNORE_STATUS_CODES = (403, 404, 500)
 TRACK_PAGEVIEWS = True
 
 
-DEFAULT_FILE_STORAGE = "storage.storages.CustomFileSystemStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "storage.storages.CustomFileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
