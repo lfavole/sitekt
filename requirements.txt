@@ -1,5 +1,5 @@
 colorama # colorama
-Django # django
+Django ~= 4.2 # django
 Markdown # markdown
 django_betterforms # betterforms
 django-crispy-forms # crispy_forms
