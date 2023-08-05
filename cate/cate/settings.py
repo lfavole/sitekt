@@ -76,7 +76,6 @@ MIDDLEWARE = [
 	"django.middleware.gzip.GZipMiddleware",
 	"django.contrib.sessions.middleware.SessionMiddleware",
 	"django.middleware.http.ConditionalGetMiddleware",
-	"cate.middleware.SpacelessMiddleware",
 	"django.middleware.common.CommonMiddleware",
 	"django.middleware.csrf.CsrfViewMiddleware",
 	"django.contrib.auth.middleware.AuthenticationMiddleware",
