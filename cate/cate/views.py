@@ -98,7 +98,7 @@ def handler_404(request, exception):
         return technical_404_response(request, exception)
     return render(
         request,
-        "website/404.html",
+        "cate/404.html",
         {
             "request_path": quote(request.path),
             # "exception": exception_repr,
