@@ -8,6 +8,18 @@
 {% block content %}
 <h1>Dates importantes</h1>
 {% if dates %}
+<style>
+table {
+	text-align:center;
+}
+tr:nth-child(2n+1) {
+	background-color:#eee;
+}
+tr:first-child {
+	background-color:#ffab91;
+	font-weight:bold;
+}
+</style>
 <table cellspacing="0">
 	<tr>
 		<th>{% translate "Date" %}</th>
