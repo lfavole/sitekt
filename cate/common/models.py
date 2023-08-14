@@ -238,11 +238,13 @@ class CommonChild(models.Model):
 		today = date.today()
 
 		def check_not_future(name: str, msg: str):
-			if getattr(self, name) > today:
+			date = getattr(self, name)
+			if date and date > today:
 				raise ValidationError({name: f"{msg} ne doit pas être dans le futur."})
 
 		def check_after_birth(name: str, msg: str):
-			if getattr(self, name) < self.date_naissance:
+			date = getattr(self, name)
+			if date and date < self.date_naissance:
 				raise ValidationError({name: f"{msg} doit être après la date de naissance."})
 
 		def check_sacrament(name: str, msg: str):
