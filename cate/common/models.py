@@ -277,7 +277,7 @@ class CommonDate(models.Model):
 
 	class Meta:
 		verbose_name = _("date")
-		ordering = ["-start_date", "-start_time"]
+		ordering = ["start_date", "start_time"]
 		abstract = True
 
 	def clean(self):
