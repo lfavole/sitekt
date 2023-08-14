@@ -40,21 +40,6 @@ class Child(CommonChild):
 	"""
 	A subscribed child.
 	"""
-	ECOLES = [
-		("FARANDOLE", "École La Farandole"),
-		("SOLDANELLE", "École La Soldanelle"),
-		("PASTEUR", "École Pasteur"),
-		("CEZANNE", "École Cézanne"),
-		("BARATIER", "École de Baratier"),
-		("CHATEAUROUX", "École de Châteauroux"),
-		("ST_ANDRE", "École de Saint-André"),
-		("CROTS", "École de Crots"),
-		("SAVINES", "École de Savines"),
-		("ORRES", "École des Orres"),
-		("PUYS", "École des Puys"),
-		("MAISON", "École à la maison"),
-	]
-
 	CLASSES = [
 		("6e", "6ème"),
 		("5e", "5ème"),
@@ -65,7 +50,7 @@ class Child(CommonChild):
 		("terminale", "Terminale"),
 	]
 
-	ecole = models.fields.CharField("École", choices = ECOLES, max_length = 15)
+	ecole = models.fields.CharField("École", max_length = 100)
 	classe = models.fields.CharField("Classe", choices = CLASSES, max_length = 10)
 
 	bapteme = models.fields.BooleanField("Baptême")
