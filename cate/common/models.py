@@ -219,7 +219,7 @@ class CommonChild(models.Model):
 		("attente", "En attente"),
 		("oui", "Oui"),
 	])
-	signe = models.BooleanField("Signé")
+	signe = models.BooleanField("Signé", default = False)
 	groupe = models.ForeignKey("Group", on_delete = models.SET_NULL, verbose_name = "Groupe", blank = True, null = True)
 	photo = ImageField("Photo", blank = True, null = True)
 	date_inscription = models.DateTimeField("Date et heure d'inscription", auto_now_add=True)

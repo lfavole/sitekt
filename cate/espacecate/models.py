@@ -110,7 +110,7 @@ class Child(CommonChild):
 	communion_cette_annee = models.BooleanField("Communion cette année")
 
 	fieldsets = [
-		("Informations de l'enfant", {
+		("Informations concernant l'enfant", {
 			"fields": ("nom", "prenom", "date_naissance", "lieu_naissance", "adresse")
 		}),
 		("École", {

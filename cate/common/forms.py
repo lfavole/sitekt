@@ -74,7 +74,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             )
         return db_field.formfield(**kwargs)
 
-    # class SubscriptionForm(BetterModelForm):  # pylint: disable=W0223
+    nom = {"espacecate": "l'enfant", "aumonerie": "le jeune"}[app]
     class SubscriptionForm(forms.ModelForm):
         autorisation = DisplayedHTMLField(
             "Un document intitulé <b>« Autorisation et engagement »</b> devra être signé par vos soins.<br>"
@@ -87,17 +87,17 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             model = target_model
             labels = {
                 "nom": "Nom de famille",
-                "adresse": "Adresse des parents",
+                "adresse": f"Adresse où vit {nom}",
                 "ecole": f"École pour l'année scolaire {Year.get_current().formatted_year}",
                 "bapteme": SafeString("Votre enfant a-t-il reçu <b>le Baptême</b>"),
                 "pardon": SafeString("Votre enfant a-t-il vécu <b>le Sacrement du Pardon</b>"),
                 "premiere_communion": SafeString("Votre enfant a-t-il vécu <b>la Première Communion</b>"),
                 "profession": SafeString("Votre enfant a-t-il vécu <b>la Profession de Foi</b>"),
                 "confirmation": SafeString("Votre enfant a-t-il vécu <b>la Confirmation</b>"),
-                "adresse_mere": SafeString("Adresse <small>(si différente de celle des parents)</small>"),
+                "adresse_mere": SafeString(f"Adresse <small>(si différente de celle où vit {nom})</small>"),
                 "tel_mere": "Téléphone",
                 "email_mere": "Email",
-                "adresse_pere": SafeString("Adresse <small>(si différente de celle des parents)</small>"),
+                "adresse_pere": SafeString(f"Adresse <small>(si différente de celle où vit {nom})</small>"),
                 "tel_pere": "Téléphone",
                 "email_pere": "Email",
                 "freres_soeurs": "Frères et sœurs (prénoms et âges)",
@@ -118,7 +118,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
                     "Participation aux frais, en espèces ou par chèque, à l'ordre de « Paroisses de l'Embrunais »"
                 ) if app == "espacecate" else (
                     f"Participation aux frais (cotisation pour l'année {Year.get_current().formatted_year} : "
-                    "à partir de 20 euros à l'ordre de « Aumônerie des Jeunes d'Embrun », en espèces ou par chèque)"
+                    "en espèces ou par chèque, à partir de 20 euros à l'ordre de « Aumônerie des Jeunes d'Embrun »)"
                 )
             }
             exclude = ["paye", "signe", "groupe", "photo"]
