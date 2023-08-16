@@ -245,12 +245,8 @@ class CommonChild(models.Model):
 
 		def check_not_future(name: str, msg: str):
 			date: "date" | None = getattr(self, name)
-			if not date:
-				return
-			if date > today:
+			if date and date > today:
 				add_error(name, f"{msg.title()} ne doit pas être dans le futur.")
-			if date.year >= 10000:
-				add_error(name, f"L'année de {msg} doit avoir 4 chiffres.")
 
 		def check_after_birth(name: str, msg: str):
 			date = getattr(self, name)
