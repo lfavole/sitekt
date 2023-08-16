@@ -1,6 +1,6 @@
 from common.pdfs.authorization import authorization_pdf
 from common.pdfs.calendar import calendar_pdf
-from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView, common_list, serve
+from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView, common_list, pdf_response, serve
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -23,7 +23,7 @@ def subscription(request):
     return render(request, "common/subscription.html", {"title": "Inscription à l'aumônerie", "form": form})
 
 def authorization(request):
-    return HttpResponse(authorization_pdf(request, "aumonerie"), "application/pdf")
+    return pdf_response(request, authorization_pdf(request, "aumonerie"), "autorisation")
 
 def list(request):
     return common_list(request, "aumonerie")

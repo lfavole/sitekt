@@ -23,7 +23,7 @@ def subscription(request):
     return render(request, "common/subscription.html", {"title": "Inscription caté et éveil à la foi", "form": form})
 
 def authorization(request):
-    return pdf_response(request, authorization_pdf(request, "aumonerie"), "autorisation")
+    return pdf_response(request, authorization_pdf(request, "espacecate"), "autorisation")
 
 def list(request):
     return common_list(request, "espacecate")

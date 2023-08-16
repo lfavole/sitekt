@@ -134,7 +134,8 @@ class Authorization(PDF):
 
 		self.set_font("Montserrat", "", 10)
 		self.cell(0, txt = "Secteur paroissial de l'Embrunais et du Savinois", align = Align.L)
-		self.cell(0, txt = f"Catéchisme pour l'année scolaire {Year.get_current().formatted_year}", align = Align.R)
+		title = {"espacecate": "Catéchisme", "aumonerie": "Aumônerie des Jeunes"}[app]
+		self.cell(0, txt = f"{title} pour l'année scolaire {Year.get_current().formatted_year}", align = Align.R)
 		self.ln(self.line_h * 1.5)
 
 		self.render_section_title("Autorisation")
@@ -159,7 +160,11 @@ class Authorization(PDF):
 
 		self.ln()
 		self.dash()
-		self.write(txt = f"autorise mon enfant à participer aux activités du catéchisme des Paroisses de l'Embrunais et du Savinois pour l'année scolaire {Year.get_current().formatted_year}.")
+		text = {
+			"espacecate": f"du catéchisme des Paroisses de l'Embrunais et du Savinois pour l'année scolaire {Year.get_current().formatted_year}",
+			"aumonerie": "de l'Aumônerie des Jeunes",
+	  	}[app]
+		self.write(txt = f"autorise mon enfant à participer aux activités {text}.")
 		self.ln()
 
 
@@ -178,17 +183,22 @@ class Authorization(PDF):
 		self.write(txt = "n'autorise pas")
 
 		self.ln()
-		self.write(txt = "la publication des photos de mon enfant prises au cours des différentes manifestations liées aux activités du catéchisme (plaquettes, presse municipale et locale, site Internet, ...).")
+		text = {"espacecate": "du catéchisme", "aumonerie": "de l'Aumônerie"}[app]
+		self.write(txt = f"la publication des photos de mon enfant prises au cours des différentes manifestations liées aux activités {text} (plaquettes, presse municipale et locale, site Internet, ...).")
 		self.ln()
 		self.ln(4)
 
 		self.render_section_title("Engagement")
 
 		self.write(txt = "Je m'engage :")
-		for line in [
-			"à ce que mon enfant participe de manière régulière aux rencontres du catéchisme",
+
+		lines = [
+			f"à ce que mon enfant participe de manière régulière aux rencontres {text}",
 			"à prévenir impérativement en cas d'absence",
-		]:
+		]
+		if app == "aumonerie":
+			lines.append("à ce que mon enfant n'utilise pas son téléphone portable pendant les rencontres")
+		for line in lines:
 			self.ln()
 			self.dash()
 			self.write(txt = line)
