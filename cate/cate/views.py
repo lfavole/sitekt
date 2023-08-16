@@ -43,12 +43,12 @@ def get_fetch_function():
 
 def export(request, format: str, app_label: str, model_name: str, elements_pk: str):
 	# Run the operations that don't need the database first
-	pk_list = None if elements_pk == "all" else [int(pk) for pk in elements_pk.split(",")]
+	pk_list = None if elements_pk == "all" else elements_pk.split(",")
 	serializer = get_serializer(format)()
 
 	# import this now because it is assigned during serializers loading
 	from django.core.serializers import _serializers
-	for ext, module in _serializers:
+	for ext, module in _serializers.items():
 		if module == serializer.__module__:
 			extension = ext
 			break
