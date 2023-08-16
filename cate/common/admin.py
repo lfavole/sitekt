@@ -112,7 +112,7 @@ class CommonChildAdmin(admin.ModelAdmin):
 
 	@admin.action(description=_("Mark as paid"))
 	def mark_paid(self, request, queryset):
-		queryset.update(paye=True)
+		queryset.update(paye="oui")
 
 	@admin.action(description=_("Mark as signed"))
 	def mark_signed(self, request, queryset):
