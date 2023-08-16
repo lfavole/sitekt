@@ -79,6 +79,8 @@ class List(PDF):
         ret = []
         for prefix in self.sacraments[key]:
             value = getattr(element, prefix + "_" + key)
+            if not value:
+                continue
             if prefix == "annee":
                 ret.append("En " + str(value))
             elif prefix == "date":
@@ -88,7 +90,7 @@ class List(PDF):
             else:
                 ret.append(value)
 
-        return "\n".join(ret).capitalize()
+        return "\n".join(ret).capitalize() or "Oui"
 
     def render(self, app: Literal["espacecate", "aumonerie"], regroup_by: str = ""):
         self.Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
