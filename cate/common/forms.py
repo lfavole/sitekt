@@ -72,6 +72,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             kwargs["widget"] = forms.RadioSelect(
                 choices=[(True, "Oui"), (False, "Non")],
             )
+            kwargs["required"] = True
         return db_field.formfield(**kwargs)
 
     nom = {"espacecate": "l'enfant", "aumonerie": "le jeune"}[app]
