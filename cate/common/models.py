@@ -253,7 +253,7 @@ class CommonChild(models.Model):
 
 			if name == "pardon":
 				# special case
-				if self.annee_pardon > today.year:  # type: ignore
+				if self.annee_pardon and self.annee_pardon > today.year:  # type: ignore
 					raise ValidationError({f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur."})
 				return
 
