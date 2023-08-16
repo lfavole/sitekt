@@ -83,14 +83,14 @@ class Child(CommonChild):
 
 	bapteme = models.fields.BooleanField("Baptême")
 	date_bapteme = models.fields.DateField("Date du Baptême", blank = True, null = True)
-	lieu_bapteme = models.CharField("Lieu du Baptême", max_length = 100, blank = True, null = True)
+	lieu_bapteme = models.CharField("Lieu du Baptême", max_length = 100, blank = True)
 
 	pardon = models.fields.BooleanField("Sacrement du Pardon")
 	annee_pardon = models.fields.IntegerField("Année du Sacrement du Pardon", blank = True, null = True, validators = [MaxValueValidator(get_current_year)])
 
 	premiere_communion = models.fields.BooleanField("Première Communion")
 	date_premiere_communion = models.fields.DateField("Date de la Première Communion", blank = True, null = True)
-	lieu_premiere_communion = models.CharField("Lieu de la Première Communion", max_length = 100, blank = True, null = True)
+	lieu_premiere_communion = models.CharField("Lieu de la Première Communion", max_length = 100, blank = True)
 
 	nom_pere = models.CharField("Nom et prénom du père", blank = True, max_length = 100)
 	adresse_pere = models.TextField("Adresse du père", blank = True)
