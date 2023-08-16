@@ -6,7 +6,7 @@
 {% block page-title %}Dates importantes{% endblock %}
 
 {% block content %}
-<h1>Dates importantes</h1>
+<h1>Dates importantes <small>(<a href="{% url app|add:":calendrier" %}" target="_blank">voir le calendrier récapitulatif</a>)</small></h1>
 {% if dates %}
 <style>
 table {
