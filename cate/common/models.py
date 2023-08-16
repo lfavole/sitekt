@@ -272,7 +272,7 @@ class CommonChild(models.Model):
 		for name, msg in self.sacraments_checks.items():
 			check_sacrament(name, msg)
 
-		for field, msg in {"tel_mere": "de la mère", "tel_pere": "du père"}:
+		for field, msg in {"tel_mere": "de la mère", "tel_pere": "du père"}.items():
 			length = len(getattr(self, field))
 			if length not in (0, 10):
 				add_error(field, f"Le numéro de téléphone {msg} est incorrect (il a {length} chiffre{'s' if length >= 2 else ''}).")
