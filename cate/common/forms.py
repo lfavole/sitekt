@@ -188,7 +188,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
                 self.instance.profession_cette_annee = False
                 self.instance.confirmation_cette_annee = False
 
-            self.instance.paye = "oui"
+            self.instance.paye = "non"
             self.instance.signe = False
             return super().save(*args, **kwargs)
 
