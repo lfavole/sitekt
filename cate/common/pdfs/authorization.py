@@ -15,7 +15,7 @@ class AuthorizationData:
 	"""
 	Data that is used to render the authorization form.
 	"""
-	def __init__(self, data: dict[str, Any] | QueryDict | None = None, no_date = False):
+	def __init__(self, data: dict[str, Any] | QueryDict | None = None):
 		if data is None:
 			data = {}
 
@@ -36,10 +36,10 @@ class AuthorizationData:
 				photos = bool(photos)
 		self.photos: bool | None = photos
 
-		if no_date:
-			self.date = None
-		else:
+		if self.parent_type or self.parent_name or self.child_name or self.photos:
 			self.date = dt.date.today()
+		else:
+			self.date = None
 
 class Authorization(PDF):
 	line_h_mul = 1.9
@@ -213,7 +213,7 @@ class Authorization(PDF):
 			self.cell(width, self.line_h, str(getattr(data.date, attr)).rjust(zeros, "0") if data.date is not None else "", align = Align.C)
 
 		self.cell(30)
-		self.write(txt = "Signatures :")
+		self.write(txt = "Signature(s) :")
 		self.ln()
 		self.ln()
 
@@ -224,7 +224,7 @@ def authorization_pdf(request: HttpRequest, app: Literal["espacecate", "aumoneri
 	except ValueError:
 		number = 1
 
-	data = AuthorizationData(request.GET, no_date = number != 1)
+	data = AuthorizationData(request.GET)
 	for _ in range(number):
 		pdf.render_form(app, data)
 	return bytes(pdf.output())
