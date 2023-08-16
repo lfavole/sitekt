@@ -1,20 +1,21 @@
 import importlib
 from typing import Any, Type
 
-from django.http import HttpRequest
-from django.utils.timezone import now
 from common.models import CommonPage
 from common.views import CommonPageView
+from django.http import HttpRequest
+from django.utils.timezone import now
 
-
-def app_name(request: HttpRequest):
-    return {"app": request.resolver_match.app_name}
 
 def now_variable(_request: HttpRequest):
     return {"now": now()}
 
 def navbar_processor(request):
-    app = app_name(request)["app"]
+    match = request.resolver_match
+    if match:
+        app = match.app_name
+    else:
+        app = None
     if not app:
         return {"pages": [], "display_navbar": False}
     try:
