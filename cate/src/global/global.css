@@ -528,6 +528,11 @@ legend {
     border:2px solid #0c0;
     border-radius:50%;
 }
+ul.errorlist {
+	color:red;
+	margin:2em 0 1em;
+	padding:0 0 0 1.2em;
+}
 input, button, select, .r-select, textarea {
 	border:1px solid black;
 	cursor:pointer;

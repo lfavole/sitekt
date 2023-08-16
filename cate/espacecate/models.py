@@ -59,6 +59,7 @@ class Child(CommonChild):
 		("ORRES", "École des Orres"),
 		("PUYS", "École des Puys"),
 		("MAISON", "École à la maison"),
+		("AUTRE", "Autre"),
 	]
 
 	CLASSES = [
@@ -70,6 +71,7 @@ class Child(CommonChild):
 		("CE2", "CE2"),
 		("CM1", "CM1"),
 		("CM2", "CM2"),
+		("AUTRE", "Autre"),
 	]
 
 	ecole = models.fields.CharField("École", choices = ECOLES, max_length = 15)

@@ -265,8 +265,6 @@ class CommonChild(models.Model):
 
 			check_not_future(f"date_{name}", f"La date {msg}")
 			check_after_birth(f"date_{name}", f"La date {msg}")
-			if getattr(self, f"lieu_{name}").strip() == "":
-				add_error(f"lieu_{name}", f"Le lieu {msg} ne doit pas être vide.")
 
 		check_not_future("date_naissance", "La date de naissance")
 		for name, msg in self.sacraments_checks.items():

@@ -48,6 +48,7 @@ class Child(CommonChild):
 		("2nde", "2nde"),
 		("1ere", "1ère"),
 		("terminale", "Terminale"),
+		("AUTRE", "Autre"),
 	]
 
 	ecole = models.fields.CharField("École", max_length = 100)
