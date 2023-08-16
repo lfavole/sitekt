@@ -246,12 +246,12 @@ class CommonChild(models.Model):
 		def check_not_future(name: str, msg: str):
 			date: "date" | None = getattr(self, name)
 			if date and date > today:
-				add_error(name, f"{msg.title()} ne doit pas être dans le futur.")
+				add_error(name, f"{msg.capitalize()} ne doit pas être dans le futur.")
 
 		def check_after_birth(name: str, msg: str):
 			date = getattr(self, name)
 			if date and date < self.date_naissance:
-				add_error(name, f"{msg.title()} doit être après la date de naissance.")
+				add_error(name, f"{msg.capitalize()} doit être après la date de naissance.")
 
 		def check_sacrament(name: str, msg: str):
 			if not getattr(self, name):

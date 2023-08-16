@@ -166,7 +166,7 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 		pdf.cell(
 			0,
 			title_height,
-			f"{title} : {fr_months[months[0]].title()} – {fr_months[months[-1]].title()} {start_year + count}",
+			f"{title} : {fr_months[months[0]].capitalize()} – {fr_months[months[-1]].capitalize()} {start_year + count}",
 			new_x = XPos.LMARGIN,
 			new_y = YPos.NEXT,
 			align = Align.C,
@@ -185,7 +185,7 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 			pdf.cell(
 				month_width,
 				month_height,
-				fr_months[month].title(),
+				fr_months[month].capitalize(),
 				border = True,
 				fill = True,
 				new_x = XPos.LMARGIN,
