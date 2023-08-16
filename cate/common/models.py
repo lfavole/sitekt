@@ -236,16 +236,22 @@ class CommonChild(models.Model):
 
 	def clean(self):
 		today = date.today()
+		errors = {}
+
+		def add_error(field, error):
+			if field not in errors:
+				errors[field] = []
+			errors[field].append(error)
 
 		def check_not_future(name: str, msg: str):
 			date = getattr(self, name)
 			if date and date > today:
-				raise ValidationError({name: f"{msg} ne doit pas être dans le futur."})
+				add_error(name, f"{msg} ne doit pas être dans le futur.")
 
 		def check_after_birth(name: str, msg: str):
 			date = getattr(self, name)
 			if date and date < self.date_naissance:
-				raise ValidationError({name: f"{msg} doit être après la date de naissance."})
+				add_error(name, f"{msg} doit être après la date de naissance.")
 
 		def check_sacrament(name: str, msg: str):
 			if not getattr(self, name):
@@ -254,17 +260,25 @@ class CommonChild(models.Model):
 			if name == "pardon":
 				# special case
 				if self.annee_pardon and self.annee_pardon > today.year:  # type: ignore
-					raise ValidationError({f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur."})
+					add_error(f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur.")
 				return
 
 			check_not_future(f"date_{name}", f"La date {msg}")
 			check_after_birth(f"date_{name}", f"La date {msg}")
 			if getattr(self, f"lieu_{name}").strip() == "":
-				raise ValidationError({f"lieu_{name}": f"Le lieu {msg} ne doit pas être vide."})
+				add_error(f"lieu_{name}", f"Le lieu {msg} ne doit pas être vide.")
 
 		check_not_future("date_naissance", "La date de naissance")
 		for name, msg in self.sacraments_checks.items():
 			check_sacrament(name, msg)
+
+		for field, msg in {"tel_mere": "de la mère", "tel_pere": "du père"}:
+			length = len(getattr(self, field))
+			if length not in (0, 10):
+				add_error(field, f"Le numéro de téléphone {msg} est incorrect (il a {length} chiffre{'s' if length >= 2 else ''}).")
+
+		if errors:
+			raise ValidationError(errors)
 
 class CommonDate(models.Model):
 	start_date = models.fields.DateField(_("Start date"))
