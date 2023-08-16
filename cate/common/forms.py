@@ -1,7 +1,6 @@
 import copy
 from typing import Any, Literal, Type
 
-from betterforms.forms import BetterModelForm
 from django import forms
 from django.db import models
 from django.utils.safestring import SafeString
@@ -56,6 +55,29 @@ class DisplayedHTMLField(forms.Field):
         pass
 
 
+class BooleanField(forms.BooleanField):
+    """
+    Boolean field with yes/no radio buttons.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.widget = forms.RadioSelect(
+            attrs={"required": True},
+            choices=[(True, "Oui"), (False, "Non")],
+        )
+        self.widget.is_required = True
+
+    def to_python(self, value):
+        if value is None:
+            return None
+        return super().to_python(value)
+
+    def validate(self, value):
+        if value is None:
+            raise forms.ValidationError(self.error_messages["required"], code="required")
+        super().validate(value)
+
+
 def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model: Type[models.Model]):
     """
     Return the subscription form for the given `Child` model.
@@ -69,10 +91,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
                 attrs={"type": "date"},
             )
         if isinstance(db_field, models.BooleanField):
-            kwargs["widget"] = forms.RadioSelect(
-                choices=[(True, "Oui"), (False, "Non")],
-            )
-            kwargs["required"] = True
+            kwargs["form_class"] = BooleanField
         return db_field.formfield(**kwargs)
 
     nom = {"espacecate": "l'enfant", "aumonerie": "le jeune"}[app]
@@ -122,9 +141,11 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
                     "en espèces ou par chèque, à partir de 20 euros à l'ordre de « Aumônerie des Jeunes d'Embrun »)"
                 )
             }
-            exclude = ["paye", "signe", "groupe", "photo"]
             formfield_callback = formfield_for_dbfield
             fieldsets = copy.deepcopy(target_model.fieldsets)  # type: ignore
+
+            # the admin section is excluded
+            exclude = list(fieldsets[-1][1]["fields"])
             fieldsets.pop()  # remove admin section
             # add authorization document information
             fieldsets[-1][1]["fields"] = (fieldsets[-1][1]["fields"][0], "autorisation", *fieldsets[-1][1]["fields"][1:])
@@ -159,5 +180,16 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             Render as <fieldset> elements.
             """
             return self.render(self.fieldsets_template, {**self.get_context(), "numbers": True})  # type: ignore
+
+        def save(self, *args, **kwargs):
+            if app == "espacecate":
+                self.instance.communion_cette_annee = self.instance.annees_kt == 2
+            if app == "aumonerie":
+                self.instance.profession_cette_annee = False
+                self.instance.confirmation_cette_annee = False
+
+            self.instance.paye = False
+            self.instance.signe = False
+            return super().save(*args, **kwargs)
 
     return SubscriptionForm
