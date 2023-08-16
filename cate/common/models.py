@@ -244,14 +244,18 @@ class CommonChild(models.Model):
 			errors[field].append(error)
 
 		def check_not_future(name: str, msg: str):
-			date = getattr(self, name)
-			if date and date > today:
-				add_error(name, f"{msg} ne doit pas être dans le futur.")
+			date: "date" | None = getattr(self, name)
+			if not date:
+				return
+			if date > today:
+				add_error(name, f"{msg.title()} ne doit pas être dans le futur.")
+			if date.year >= 10000:
+				add_error(name, f"L'année de {msg} doit avoir 4 chiffres.")
 
 		def check_after_birth(name: str, msg: str):
 			date = getattr(self, name)
 			if date and date < self.date_naissance:
-				add_error(name, f"{msg} doit être après la date de naissance.")
+				add_error(name, f"{msg.title()} doit être après la date de naissance.")
 
 		def check_sacrament(name: str, msg: str):
 			if not getattr(self, name):
@@ -263,10 +267,10 @@ class CommonChild(models.Model):
 					add_error(f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur.")
 				return
 
-			check_not_future(f"date_{name}", f"La date {msg}")
-			check_after_birth(f"date_{name}", f"La date {msg}")
+			check_not_future(f"date_{name}", f"la date {msg}")
+			check_after_birth(f"date_{name}", f"la date {msg}")
 
-		check_not_future("date_naissance", "La date de naissance")
+		check_not_future("date_naissance", "la date de naissance")
 		for name, msg in self.sacraments_checks.items():
 			check_sacrament(name, msg)
 
