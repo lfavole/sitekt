@@ -145,7 +145,7 @@ def calendar_pdf(app: Literal["espacecate", "aumonerie"]):
 	elif app == "aumonerie":
 		from aumonerie.models import Date
 
-	for date in Date.objects.all().reverse():
+	for date in Date.objects.all():
 		special_dates.add_date(date.short_name or date.name, date.start_date, date.end_date)
 
 	pdf.title = f"{title} {start_year}-{start_year + 1}"
