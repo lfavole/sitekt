@@ -58,5 +58,5 @@ urlpatterns = [
     path("calendrier-avent/<optpath:path>", views.advent_calendar),
 
     # Redirect the other URLs normally (also removes .php extension)
-    # path("<optpath:path>", views.simple_redirect),
+    path("<optpath:path>", views.simple_redirect),
 ]
