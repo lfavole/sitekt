@@ -41,7 +41,7 @@ class ChildAdmin(CommonChildAdmin):
 	"""
 	Admin interface for childs of the espacecate app.
 	"""
-	list_display = ("nom", "prenom", "paye", "signe", "groupe")
+	list_display = ("nom", "prenom", "classe", "paye", "signe", "groupe")
 	readonly_fields = ("date_inscription",)
 	search_fields = ("nom", "prenom")
 	list_filter = ("groupe", "communion_cette_annee", "paye", "signe", "classe", "redoublement", "annees_kt", "annees_evf", "bapteme", "premiere_communion", "photos")
