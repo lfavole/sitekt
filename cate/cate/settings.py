@@ -19,6 +19,7 @@ from django.utils.functional import lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+DATA = BASE_DIR.parent / "data"
 
 sys.path.insert(0, str(BASE_DIR.parent / "scripts"))
 from utils import App
@@ -103,6 +104,7 @@ TEMPLATES = [
 				"cate.context_processors.app_name",
 				"cate.context_processors.navbar_processor",
 				"cate.context_processors.now_variable",
+				"cate.context_processors.offline",
 			],
 		},
 	},
@@ -193,14 +195,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "src/"]
-STATIC_ROOT = BASE_DIR / "static/"
+STATICFILES_DIRS = [BASE_DIR / "src", DATA / "static"]
+STATIC_ROOT = BASE_DIR / "static"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media/"
-
-PRIVATE_MEDIA_URL = "private/"
-PRIVATE_MEDIA_ROOT = BASE_DIR / "private/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 THUMBNAIL_BASEDIR = "thumbs"
 

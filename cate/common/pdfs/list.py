@@ -125,17 +125,6 @@ class List(PDF):
                 "premiere_communion": ("Première Comm.", 20),
                 "profession": ("Prof. de foi", 19),
                 "confirmation": ("Conf.", 18),
-
-                # "nom": ("Nom", 22),  # same thing
-                # "prenom": ("", 18),
-                # "date_naissance": ("", 20),
-                # "adresse": ("", 40),
-                # "telephone": ("Téléphone", 35),
-                # "email": ("Email", 47),
-                # "bapteme": ("", 29),
-                # "premiere_communion": ("", 25),
-                # "profession": ("", 25),
-                # "confirmation": ("", 26),
             },
         }[app]
         a, b = sum(v for k, v in fields.values()), int(self.epw)

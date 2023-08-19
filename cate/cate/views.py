@@ -23,7 +23,7 @@ from django.views.debug import ExceptionReporter, technical_404_response
 from django.views.decorators.csrf import csrf_exempt
 from errors.models import Error
 
-DATA = Path(__file__).resolve().parent.parent.parent / "data"
+DATA = settings.DATA
 
 fetch_cache = None
 

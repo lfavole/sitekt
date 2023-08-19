@@ -1,6 +1,7 @@
 import importlib
 from typing import Any, Type
 
+from cate import settings
 from common.models import CommonPage
 from common.views import CommonPageView
 from django.http import HttpRequest
@@ -9,6 +10,9 @@ from django.utils.timezone import now
 
 def now_variable(_request: HttpRequest):
     return {"now": now()}
+
+def offline(_request: HttpRequest):
+    return {"offline": settings.settings.OFFLINE}
 
 def app_name(request: HttpRequest):
     match = request.resolver_match
