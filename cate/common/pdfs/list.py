@@ -23,7 +23,7 @@ class List(PDF):
     def __init__(self, *args, **kwargs):
         super().__init__("L", *args, **kwargs)
 
-        self._classes: list[str] = []
+        self._classes_dict: dict[str, str] = {}
 
         self.set_margin(5)
         self.set_auto_page_break(True, 5)
@@ -34,16 +34,20 @@ class List(PDF):
         )
 
     @property
-    def classes(self):
-        if self._classes:
-            return self._classes
+    def classes_dict(self):
+        if self._classes_dict:
+            return self._classes_dict
 
         for field in self.Child._meta.fields:
             if field.name == "classe":
-                self._classes = [choice[1] for choice in field.choices]
-                return self._classes
+                self._classes_dict = dict(field.choices)
+                return self._classes_dict
 
         raise RuntimeError("Could not get the classes list for ordering")
+
+    @property
+    def classes(self):
+        return list(self.classes_dict.keys())
 
     def get_mother_father(self, element: CommonChild, key: str):
         real_key = "tel" if key == "telephone" else key
@@ -70,6 +74,8 @@ class List(PDF):
         "bapteme": ("date", "lieu"),
         "pardon": ("annee",),
         "premiere_communion": ("date", "lieu"),
+        "profession": ("date", "lieu"),
+        "confirmation": ("date", "lieu"),
     }
 
     def get_sacrament(self, element: CommonChild, key: str):
@@ -95,17 +101,45 @@ class List(PDF):
     def render(self, app: Literal["espacecate", "aumonerie"], regroup_by: str = ""):
         self.Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
         fields: dict[str, tuple[str, int]] = {
-            "nom": ("Nom", 23),  # not "Nom de famille" ! (too long)
-            "prenom": ("", 20),
-            "classe": ("", 15),
-            "date_naissance": ("", 22),
-            "adresse": ("", 40),
-            "telephone": ("Téléphone", 35),
-            "email": ("Email", 55),
-            "bapteme": ("", 26),
-            "pardon": ("", 24),
-            "premiere_communion": ("", 27),
-        }
+            "espacecate": {
+                "nom": ("Nom", 23),  # not "Nom de famille" ! (too long)
+                "prenom": ("", 20),
+                "classe": ("", 15),
+                "date_naissance": ("", 22),
+                "adresse": ("", 40),
+                "telephone": ("Téléphone", 35),
+                "email": ("Email", 55),
+                "bapteme": ("", 26),
+                "pardon": ("", 24),
+                "premiere_communion": ("", 27),
+            },
+            "aumonerie": {
+                "nom": ("Nom", 23),  # same thing
+                "prenom": ("", 20),
+                "classe": ("", 15),
+                "date_naissance": ("", 21),
+                "adresse": ("", 40),
+                "telephone": ("Téléphone", 35),
+                "email": ("Email", 55),
+                "bapteme": ("", 21),
+                "premiere_communion": ("Première Comm.", 20),
+                "profession": ("Prof. de foi", 19),
+                "confirmation": ("Conf.", 18),
+
+                # "nom": ("Nom", 22),  # same thing
+                # "prenom": ("", 18),
+                # "date_naissance": ("", 20),
+                # "adresse": ("", 40),
+                # "telephone": ("Téléphone", 35),
+                # "email": ("Email", 47),
+                # "bapteme": ("", 29),
+                # "premiere_communion": ("", 25),
+                # "profession": ("", 25),
+                # "confirmation": ("", 26),
+            },
+        }[app]
+        a, b = sum(v for k, v in fields.values()), int(self.epw)
+        assert a == b, f"{a} != {b}"
         field_types: dict[str, models.Field] = {}
         for field in self.Child._meta.fields:
             if field.name in fields and fields[field.name][0] == "":
@@ -140,12 +174,7 @@ class List(PDF):
                 return localize_input(ret)  # type: ignore
 
             if key == "classe":
-                ret = str(ret).upper()
-                return {
-                    "PS": "Petite section",
-                    "MS": "Moyenne section",
-                    "GS": "Grande section",
-                }.get(ret, ret)
+                return self.classes_dict.get(ret, ret)
 
             return str(ret)
 
@@ -195,7 +224,7 @@ class List(PDF):
             table_data,
             [value[1] for value in fields.values()],
 
-            heading_font_face = FontFace(size_pt = 11, fill_color = (34, 204, 34)),
+            heading_font_face = FontFace(size_pt = 10, fill_color = (34, 204, 34)),
             regroup_check = regroup_check,
             regroup_font_face = FontFace(emphasis = "B", size_pt = 11, fill_color = (255, 68, 68)),
         ).render()
