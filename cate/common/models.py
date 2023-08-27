@@ -319,7 +319,6 @@ class CommonMeeting(models.Model):
 	Kind: "models.TextChoices"
 	kind: "models.CharField[str]"
 	date = models.fields.DateField(_("Date"))
-	date_item: "models.OneToOneField[CommonDate | None]" = models.OneToOneField("Date", on_delete=models.SET_NULL, verbose_name=_("Date item"), blank=True, null=True)  # type: ignore
 	name = models.CharField(_("Name"), blank=True, max_length=100)
 
 	get_childs: Callable[[], Manager[CommonChild]]
@@ -333,11 +332,7 @@ class CommonMeeting(models.Model):
 				Attendance.objects.create(child=child, meeting=self, is_present=True, has_warned=False)
 
 	def __str__(self):
-		return (
-			self.name
-			or ("" if not self.date_item else self.date_item.name)
-			or self.get_kind_display()  # type: ignore
-		)
+		return self.name or self.get_kind_display()  # type: ignore
 
 	class Meta:
 		verbose_name = _("meeting")
