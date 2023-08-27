@@ -185,8 +185,16 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             if app == "espacecate":
                 self.instance.communion_cette_annee = self.instance.annees_kt == 2
             if app == "aumonerie":
+                from aumonerie.models import Group
+                
                 self.instance.profession_cette_annee = False
                 self.instance.confirmation_cette_annee = False
+                group_name = None
+                if self.instance.classe in ["6e", "5e", "4e", "3e"]:
+                    group_name = "Collège"
+                if self.instance.classe in ["2nde", "1ere", "terminale"]:
+                    group_name = "Lycée"
+                self.instance.groupe = Group.objects.get(name=group_name) if group_name else None
 
             self.instance.paye = "non"
             self.instance.signe = False
