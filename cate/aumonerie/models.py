@@ -147,10 +147,10 @@ class Meeting(CommonMeeting):
 		objs = Child.objects.all()
 
 		if kind == Meeting.Kind.AUMONERIE_COLLEGE:
-			return objs.filter(classe__in=["6e", "5e", "4e", "3e"])
+			return objs.filter(groupe__name="Collège")
 
 		if kind == Meeting.Kind.AUMONERIE_LYCEE:
-			return objs.filter(classe__in=["2nde", "1ere", "terminale"])
+			return objs.filter(groupe__name="Lycée")
 
 		if kind == Meeting.Kind.PROFESSION:
 			return objs.filter(profession_cette_annee=True)
