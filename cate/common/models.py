@@ -319,7 +319,7 @@ class CommonMeeting(models.Model):
 	Kind: "models.TextChoices"
 	kind: "models.CharField[str]"
 	date = models.fields.DateField(_("Date"))
-	name = models.CharField(_("Name"), blank=True, max_length=100)
+	name = models.CharField(_("Name"), blank=True, max_length=100, help_text=_("Replaces the meeting kind"))
 
 	get_childs: Callable[[], Manager[CommonChild]]
 

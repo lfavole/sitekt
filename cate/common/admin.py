@@ -144,6 +144,7 @@ class CommonMeetingAdmin(admin.ModelAdmin):
 	"""
 	Admin interface for meetings.
 	"""
+	fields = ("date", "kind", "name")
 	list_display = ("kind", "date", "name")
 	# inlines = [CommonAttendancesInline]
 	# this must be added to each subclass
