@@ -96,7 +96,10 @@ class List(PDF):
             else:
                 ret.append(value)
 
-        return "\n".join(ret).capitalize() or "Oui"
+        ret_str = "\n".join(ret)
+        if not ret_str:
+            return "Oui"
+        return ret_str[0].upper() + ret_str[1:]
 
     def render(self, app: Literal["espacecate", "aumonerie"], regroup_by: str = ""):
         self.Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
