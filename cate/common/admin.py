@@ -12,6 +12,25 @@ from tinymce.widgets import AdminTinyMCE
 from .models import CommonAttendance, CommonChild, Year
 
 
+def message_user(action=_("changed")):
+	def decorator(f):
+		def wrapper(self, request, queryset):
+			ret = f(self, request, queryset)
+			if ret is None:
+				n = queryset.count()
+				self.message_user(
+					request,
+					_("Successfully %(action)s %(count)d %(items)s.")
+					% {"action": action, "count": n, "items": model_ngettext(self.opts, n)},
+				)
+			return ret
+		return wrapper
+
+	if callable(action):
+		return decorator(action)
+	return decorator
+
+
 @admin.action(description=_("Export selected %(verbose_name_plural)s"))
 def export_selected(modeladmin, request, queryset):
 	meta = modeladmin.model._meta
@@ -112,26 +131,23 @@ class CommonChildAdmin(admin.ModelAdmin):
 	actions = ["mark_paid", "mark_signed", "change_group"]
 
 	@admin.action(description=_("Mark as paid"))
+	@message_user(_("marked as paid"))
 	def mark_paid(self, request, queryset):
 		queryset.update(paye="oui")
 
 	@admin.action(description=_("Mark as signed"))
+	@message_user(_("marked as signed"))
 	def mark_signed(self, request, queryset):
 		queryset.update(signe=True)
 
 	@admin.action(description=_("Change group"))
+	@message_user(_("changed group"))
 	def change_group(self, request, queryset):
 		ChangeGroupForm = forms.modelform_factory(self.model, fields=["groupe"])
 		if request.POST.get("post"):
 			form = ChangeGroupForm(request.POST)
 			if form.is_valid():
 				queryset.update(groupe=form.cleaned_data["groupe"])
-				n = queryset.count()
-				self.message_user(
-					request,
-					_("Successfully changed group of %(count)d %(items)s.")
-					% {"count": n, "items": model_ngettext(self.opts, n)},
-				)
 				return
 		else:
 			form = ChangeGroupForm()
