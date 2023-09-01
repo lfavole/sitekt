@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-27 16:52+0200\n"
+"POT-Creation-Date: 2023-09-01 11:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,18 +14,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\common\admin.py:14
+#: .\common\admin.py:15
 #, python-format
 msgid "Export selected %(verbose_name_plural)s"
 msgstr "Exporter les %(verbose_name_plural)s sélectionnés"
 
-#: .\common\admin.py:113
+#: .\common\admin.py:114
 msgid "Mark as paid"
 msgstr "Marquer comme payé"
 
-#: .\common\admin.py:117
+#: .\common\admin.py:118
 msgid "Mark as signed"
 msgstr "Marquer comme signé"
+
+#: .\common\admin.py:122 .\common\admin.py:141
+#: .\common\templates\admin\change_group.html:9
+msgid "Change group"
+msgstr "Changer de groupe"
+
+#: .\common\admin.py:132
+#, python-format
+msgid "Successfully changed group of %(count)d %(items)s."
+msgstr "%(count)d %(items)s ont correctement changé de groupe."
 
 #: .\common\models.py:25
 msgid "Start year"
@@ -265,6 +275,18 @@ msgstr "Catégories"
 #: .\common\models.py:390
 msgid "document"
 msgstr "document"
+
+#: .\common\templates\admin\change_group.html:6
+msgid "Home"
+msgstr "Accueil"
+
+#: .\common\templates\admin\change_group.html:15
+msgid "The following childs will be changed:"
+msgstr "Les enfants suivants seront modifiés :"
+
+#: .\common\templates\admin\change_group.html:23
+msgid "Please select the group in the list below."
+msgstr "Veuillez sélectionner le groupe dans la liste ci-dessous."
 
 #: .\common\templates\common\dates.html:60
 msgid "Time"

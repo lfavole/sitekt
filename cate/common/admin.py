@@ -4,11 +4,12 @@ from adminsortable2.admin import SortableAdminMixin
 from common.models import CommonArticle, CommonArticleImage, CommonPage, CommonPageImage, ImageBase
 from django import forms
 from django.contrib import admin
-from django.shortcuts import redirect
+from django.contrib.admin.utils import model_ngettext
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 from tinymce.widgets import AdminTinyMCE
 
-from .models import CommonChild, CommonAttendance, Year
+from .models import CommonAttendance, CommonChild, Year
 
 
 @admin.action(description=_("Export selected %(verbose_name_plural)s"))
@@ -108,7 +109,7 @@ class CommonChildAdmin(admin.ModelAdmin):
 		return self.model.fieldsets
 
 	readonly_fields = ("date_inscription",)
-	actions = ["mark_paid", "mark_signed"]
+	actions = ["mark_paid", "mark_signed", "change_group"]
 
 	@admin.action(description=_("Mark as paid"))
 	def mark_paid(self, request, queryset):
@@ -117,6 +118,33 @@ class CommonChildAdmin(admin.ModelAdmin):
 	@admin.action(description=_("Mark as signed"))
 	def mark_signed(self, request, queryset):
 		queryset.update(signe=True)
+
+	@admin.action(description=_("Change group"))
+	def change_group(self, request, queryset):
+		ChangeGroupForm = forms.modelform_factory(self.model, fields=["groupe"])
+		if request.POST.get("post"):
+			form = ChangeGroupForm(request.POST)
+			if form.is_valid():
+				queryset.update(groupe=form.cleaned_data["groupe"])
+				n = queryset.count()
+				self.message_user(
+					request,
+					_("Successfully changed group of %(count)d %(items)s.")
+					% {"count": n, "items": model_ngettext(self.opts, n)},
+				)
+				return
+		else:
+			form = ChangeGroupForm()
+
+		context = {
+			**self.admin_site.each_context(request),
+			"title": _("Change group"),
+			"opts": self.model._meta,
+			"form": form,
+			"queryset": queryset,
+			"action_checkbox_name": admin.helpers.ACTION_CHECKBOX_NAME,
+		}
+		return render(request, "admin/change_group.html", context)
 
 class CommonDateAdmin(admin.ModelAdmin):
 	"""

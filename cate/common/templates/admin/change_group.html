@@ -1,0 +1,30 @@
+{% extends "admin/base_site.html" %}
+{% load admin_urls i18n l10n static %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url "admin:index" %}">{% translate "Home" %}</a>
+&rsaquo; <a href="{% url "admin:app_list" app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:"changelist" %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; {% trans "Change group" %}
+</div>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+    <p>{% trans "The following childs will be changed:" %}</p>
+
+    <ul>{{ queryset|unordered_list }}</ul>
+
+    {% for obj in queryset %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
+    {% endfor %}
+
+    <p>{% trans "Please select the group in the list below." %}</p>
+
+    {{ form.as_p }}
+    <input type="hidden" name="action" value="change_group">
+    <input type="hidden" name="post" value="yes">
+    <input type="submit" value="{{ title }}">
+</form>
+{% endblock %}
