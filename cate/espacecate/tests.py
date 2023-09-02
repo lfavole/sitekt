@@ -1,6 +1,7 @@
 import datetime
 from contextlib import contextmanager
 from typing import Type
+from cate.templatetags.format_date import format_date
 
 from common.tests import REMOVED, DefaultArgs
 from django.contrib.auth import get_user_model
@@ -10,6 +11,7 @@ from django.db import models
 from django.shortcuts import resolve_url
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.formats import time_format
 
 from .models import Article, Date
 
@@ -60,8 +62,6 @@ class DateModelTests(TestCase):
 		date = Date(**def_args())
 		with self.assertValidationOK():
 			clean(date)
-		except ValidationError:
-			self.fail("ValidationError raised")
 
 	def test_invalid_date(self):
 		"""
@@ -116,6 +116,118 @@ class DateModelTests(TestCase):
 		date = Date(**def_args(time_text = "..."))
 		with self.assertRaises(ValidationError):
 			clean(date)
+
+	def test_start_end_date(self):
+		"""
+		start_date = x
+		=> start = x at midnight
+		=> end = x + 1 day at midnight
+		"""
+		for date_to_try in [
+			now,  # January 1st
+			now - datetime.timedelta(days=1),  # December 31st
+			now + datetime.timedelta(days=30),  # January 31st
+		]:
+			date = Date(start_date = date_to_try.date())
+			start = datetime.datetime.combine(date_to_try.date(), datetime.time())
+			end = start + datetime.timedelta(days=1)
+			self.assertEqual(date.start, start)
+			self.assertEqual(date.end, end)
+
+	def test_start_end_time(self):
+		"""
+		start_date = x
+		start_time = y
+		=> start = x at y
+		=> end = x at y + 1 hour
+		"""
+		for date_to_try in [
+			now,  # January 1st at 12:00
+			now - datetime.timedelta(days=1),  # December 31st at 12:00
+			now + datetime.timedelta(days=30),  # January 31st at 12:00
+			now + datetime.timedelta(hours=11, minutes=30),  # January 1st at 23:30 (day overflow)
+			datetime.datetime.combine(now.date(), datetime.time()),  # January 1st at 00:00
+		]:
+			date = Date(start_date = date_to_try.date(), start_time = date_to_try.time())
+			start = date_to_try
+			end = start + datetime.timedelta(hours=1)
+			self.assertEqual(date.start, start)
+			self.assertEqual(date.end, end)
+
+	def test_past(self):
+		"""
+		start = now - 1 day => past
+		start = now - 1 hour - 5 seconds => past*
+
+		start = now => current
+		start = now - 50 minutes => current
+
+		start = now + 5 seconds => future*
+
+		Also checks that the 2 other attributes are false.
+
+		* avoids race conditions
+		"""
+		now = datetime.datetime.now()
+		past_checks = [
+			now - datetime.timedelta(days=1),
+			now - datetime.timedelta(hours=1, seconds=5),
+		]
+		current_checks = [
+			now,
+			now - datetime.timedelta(minutes=50),
+		]
+		future_checks = [
+			now + datetime.timedelta(seconds=5),
+			now + datetime.timedelta(days=1),
+		]
+
+		for date_to_try in past_checks:
+			date = Date(start_date = date_to_try.date(), start_time = date_to_try.time())
+			self.assertTrue(date.is_past)
+
+			self.assertFalse(date.is_current)
+			self.assertFalse(date.is_future)
+
+		for date_to_try in current_checks:
+			date = Date(start_date = date_to_try.date(), start_time = date_to_try.time())
+			self.assertTrue(date.is_current)
+
+			self.assertFalse(date.is_past)
+			self.assertFalse(date.is_future)
+
+		for date_to_try in future_checks:
+			date = Date(start_date = date_to_try.date(), start_time = date_to_try.time())
+			self.assertTrue(date.is_future)
+
+			self.assertFalse(date.is_past)
+			self.assertFalse(date.is_current)
+
+class DateTests(TestCase):
+	"""
+	Tests on the dates page.
+	"""
+	def test_no_dates(self):
+		"""
+		No dates => "Aucune date" in the page
+		"""
+		response = self.client.get(reverse("espacecate:dates"))
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, "Aucune date")
+		self.assertQuerysetEqual(response.context["dates"], [])
+
+	def test_one_date(self):
+		"""
+		A date is shown in the page
+		"""
+		date = Date.objects.create(**def_args())
+
+		response = self.client.get(reverse("espacecate:dates"))
+		self.assertEqual(response.status_code, 200)
+		self.assertContains(response, format_date(date.start_date, date.end_date))
+		self.assertContains(response, time_format(date.start_time, "G:i"))  # type: ignore
+		self.assertContains(response, "– " + time_format(date.end_time, "G:i"))  # type: ignore
+		self.assertQuerysetEqual(response.context["dates"], [date])
 
 class ArticlesTests(TestCase):
 	"""
@@ -173,7 +285,7 @@ class ArticlesTests(TestCase):
 		self.assertEqual(response.status_code, 404)
 
 	def prepare_user(self):
-		user = User.objects.create_user("lfavole")
+		user = get_user_model().objects.create_user("lfavole")
 		# view_articles = Permission.objects.get(name="Can view article")
 		view_articles = Permission.objects.get_by_natural_key("view_article", "espacecate", "article")
 		user.user_permissions.add(view_articles)

@@ -1,4 +1,4 @@
-from datetime import date
+import datetime as dt
 from typing import Any, Callable, Type
 
 from django.apps import apps
@@ -91,7 +91,7 @@ class Year(models.Model):
 			try:
 				year = cls.objects.get(is_active = True)
 			except (cls.DoesNotExist, DatabaseError):
-				return Year(start_year = date.today().year, is_active = True)
+				return Year(start_year = dt.date.today().year, is_active = True)
 			cache.set("current_year", year)
 		return year
 
@@ -235,7 +235,7 @@ class CommonChild(models.Model):
 	sacraments_checks: dict[str, str] = {}
 
 	def clean(self):
-		today = date.today()
+		today = dt.date.today()
 		errors = {}
 
 		def add_error(field, error):
@@ -244,7 +244,7 @@ class CommonChild(models.Model):
 			errors[field].append(error)
 
 		def check_not_future(name: str, msg: str):
-			date: "date" | None = getattr(self, name)
+			date: "dt.date" | None = getattr(self, name)
 			if date and date > today:
 				add_error(name, f"{msg.capitalize()} ne doit pas être dans le futur.")
 
@@ -308,6 +308,40 @@ class CommonDate(models.Model):
 		if self.start_time and self.end_time and self.time_text:
 			msg = _("The start time / end time or the time as text must be specified, not both.")
 			raise ValidationError({"start_time": msg, "end_time": msg, "time_text": msg})
+
+	@property
+	def start(self):
+		start_date = self.start_date
+		# fall back to start time = midnight
+		start_time = self.start_time or dt.time()
+		return dt.datetime.combine(start_date, start_time)
+
+	@property
+	def end(self):
+		end_date = self.end_date or (
+			# entire day (no end time) => end = 1 day after
+			self.start_date + dt.timedelta(days=1)
+			if self.start_time is None
+			else self.start_date
+		)
+		ret = dt.datetime.combine(end_date, self.end_time or self.start.time())
+		if self.start_time and self.end_time is None:
+			# start time but no end time => end = 1 hour after
+			# we must use this trick because we can't do time + timedelta
+			ret += dt.timedelta(hours=1)
+		return ret
+
+	@property
+	def is_past(self):
+		return dt.datetime.now() > self.end
+
+	@property
+	def is_current(self):
+		return self.start <= dt.datetime.now() <= self.end
+
+	@property
+	def is_future(self):
+		return dt.datetime.now() < self.start
 
 	def __str__(self): # pylint: disable=E0307
 		return self.name
