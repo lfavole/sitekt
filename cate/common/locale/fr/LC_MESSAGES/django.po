@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-01 11:45+0200\n"
+"POT-Creation-Date: 2023-09-02 09:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,40 +14,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\common\admin.py:23
+#: .\common\admin.py:17
+msgctxt "admin action message"
+msgid "changed"
+msgstr "La modification"
+
+#: .\common\admin.py:25
 #, python-format
 msgid "Successfully %(action)s %(count)d %(items)s."
-msgstr "%(count)d %(items)s ont été correctement %(action)s."
+msgstr "%(action)s de %(count)d %(items)s a réussi."
 
-#: .\common\admin.py:31
+#: .\common\admin.py:34
 #, python-format
 msgid "Export selected %(verbose_name_plural)s"
 msgstr "Exporter les %(verbose_name_plural)s sélectionnés"
 
-#: .\common\admin.py:130
+#: .\common\admin.py:133
 msgid "Mark as paid"
 msgstr "Marquer comme payé"
 
-#: .\common\admin.py:131
+#: .\common\admin.py:134
+msgctxt "admin action message"
 msgid "marked as paid"
-msgstr "marqués comme payé"
+msgstr "Le changement de l'attribut « payé »"
 
-#: .\common\admin.py:135
+#: .\common\admin.py:138
 msgid "Mark as signed"
 msgstr "Marquer comme signé"
 
-#: .\common\admin.py:136
+#: .\common\admin.py:139
+msgctxt "admin action message"
 msgid "marked as signed"
-msgstr "marqués comme signé"
+msgstr "Le changement de l'attribut « signé »"
 
-#: .\common\admin.py:140 .\common\admin.py:154
+#: .\common\admin.py:143 .\common\admin.py:157
 #: .\common\templates\admin\change_group.html:9
 msgid "Change group"
 msgstr "Changer de groupe"
 
-#: .\common\admin.py:141
+#: .\common\admin.py:144
+msgctxt "admin action message"
 msgid "changed group"
-msgstr "changés de groupe"
+msgstr "Le changement de groupe"
 
 #: .\common\models.py:25
 msgid "Start year"

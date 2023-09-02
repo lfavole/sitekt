@@ -1,20 +1,22 @@
 from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
+from django.http import HttpRequest
 from common.models import CommonArticle, CommonArticleImage, CommonPage, CommonPageImage, ImageBase
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.utils import model_ngettext
+from django.db.models import QuerySet
 from django.shortcuts import redirect, render
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _,  pgettext_lazy
 from tinymce.widgets import AdminTinyMCE
 
 from .models import CommonAttendance, CommonChild, Year
 
 
-def message_user(action=_("changed")):
+def message_user(action=pgettext_lazy("admin action message", "changed")):
 	def decorator(f):
-		def wrapper(self, request, queryset):
+		def wrapper(self: admin.ModelAdmin, request: HttpRequest, queryset: QuerySet):
 			ret = f(self, request, queryset)
 			if ret is None:
 				n = queryset.count()
@@ -26,8 +28,6 @@ def message_user(action=_("changed")):
 			return ret
 		return wrapper
 
-	if callable(action):
-		return decorator(action)
 	return decorator
 
 
@@ -130,18 +130,18 @@ class CommonChildAdmin(admin.ModelAdmin):
 	readonly_fields = ("date_inscription",)
 	actions = ["mark_paid", "mark_signed", "change_group"]
 
-	@admin.action(description=_("Mark as paid"))
-	@message_user(_("marked as paid"))
+	@admin.action(permissions=["change"], description=_("Mark as paid"))
+	@message_user(pgettext_lazy("admin action message", "marked as paid"))
 	def mark_paid(self, request, queryset):
 		queryset.update(paye="oui")
 
-	@admin.action(description=_("Mark as signed"))
-	@message_user(_("marked as signed"))
+	@admin.action(permissions=["change"], description=_("Mark as signed"))
+	@message_user(pgettext_lazy("admin action message", "marked as signed"))
 	def mark_signed(self, request, queryset):
 		queryset.update(signe=True)
 
-	@admin.action(description=_("Change group"))
-	@message_user(_("changed group"))
+	@admin.action(permissions=["change"], description=_("Change group"))
+	@message_user(pgettext_lazy("admin action message", "changed group"))
 	def change_group(self, request, queryset):
 		ChangeGroupForm = forms.modelform_factory(self.model, fields=["groupe"])
 		if request.POST.get("post"):
