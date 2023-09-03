@@ -1,17 +1,22 @@
 from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
-from django.http import HttpRequest
 from common.models import CommonArticle, CommonArticleImage, CommonPage, CommonPageImage, ImageBase
 from django import forms
 from django.contrib import admin
 from django.contrib.admin.utils import model_ngettext
 from django.db.models import QuerySet
+from django.http import HttpRequest
 from django.shortcuts import redirect, render
-from django.utils.translation import gettext_lazy as _,  pgettext_lazy
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 from tinymce.widgets import AdminTinyMCE
 
 from .models import CommonAttendance, CommonChild, Year
+
+admin.site.site_title = "Administration site du caté"
+admin.site.site_header = "Administration du site du caté"
+admin.site.index_title = _("Homepage")
 
 
 def message_user(action=pgettext_lazy("admin action message", "changed")):
