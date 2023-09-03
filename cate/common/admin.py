@@ -1,9 +1,11 @@
+from functools import partial
 from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
 from common.models import CommonArticle, CommonArticleImage, CommonPage, CommonPageImage, ImageBase
 from django import forms
 from django.contrib import admin
+from django.contrib.admin.helpers import Fieldset
 from django.contrib.admin.utils import model_ngettext
 from django.db.models import QuerySet
 from django.http import HttpRequest
@@ -148,7 +150,11 @@ class CommonChildAdmin(admin.ModelAdmin):
 	@admin.action(permissions=["change"], description=_("Change group"))
 	@message_user(pgettext_lazy("admin action message", "changed group"))
 	def change_group(self, request, queryset):
-		ChangeGroupForm = forms.modelform_factory(self.model, fields=["groupe"])
+		ChangeGroupForm = forms.modelform_factory(
+			self.model,
+			fields=["groupe"],
+			formfield_callback=partial(self.formfield_for_dbfield, request=request),
+		)
 		if request.POST.get("post"):
 			form = ChangeGroupForm(request.POST)
 			if form.is_valid():
@@ -159,9 +165,11 @@ class CommonChildAdmin(admin.ModelAdmin):
 
 		context = {
 			**self.admin_site.each_context(request),
+			"media": self.media + form.media,
 			"title": _("Change group"),
 			"opts": self.model._meta,
 			"form": form,
+			"fieldset": Fieldset(form, fields = ["groupe"]),
 			"queryset": queryset,
 			"action_checkbox_name": admin.helpers.ACTION_CHECKBOX_NAME,
 		}

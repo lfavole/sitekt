@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-03 18:24+0200\n"
+"POT-Creation-Date: 2023-09-03 19:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,49 +14,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\common\admin.py:19
+#: .\common\admin.py:21
 msgid "Homepage"
 msgstr "Page d'accueil"
 
-#: .\common\admin.py:22
+#: .\common\admin.py:24
 msgctxt "admin action message"
 msgid "changed"
 msgstr "La modification"
 
-#: .\common\admin.py:30
+#: .\common\admin.py:32
 #, python-format
 msgid "Successfully %(action)s %(count)d %(items)s."
 msgstr "%(action)s de %(count)d %(items)s a réussi."
 
-#: .\common\admin.py:39
+#: .\common\admin.py:41
 #, python-format
 msgid "Export selected %(verbose_name_plural)s"
 msgstr "Exporter les %(verbose_name_plural)s sélectionnés"
 
-#: .\common\admin.py:138
+#: .\common\admin.py:140
 msgid "Mark as paid"
 msgstr "Marquer comme payé"
 
-#: .\common\admin.py:139
+#: .\common\admin.py:141
 msgctxt "admin action message"
 msgid "marked as paid"
 msgstr "Le changement de l'attribut « payé »"
 
-#: .\common\admin.py:143
+#: .\common\admin.py:145
 msgid "Mark as signed"
 msgstr "Marquer comme signé"
 
-#: .\common\admin.py:144
+#: .\common\admin.py:146
 msgctxt "admin action message"
 msgid "marked as signed"
 msgstr "Le changement de l'attribut « signé »"
 
-#: .\common\admin.py:148 .\common\admin.py:162
-#: .\common\templates\admin\change_group.html:9
+#: .\common\admin.py:150 .\common\admin.py:169
+#: .\common\templates\admin\change_group.html:20
 msgid "Change group"
 msgstr "Changer de groupe"
 
-#: .\common\admin.py:149
+#: .\common\admin.py:151
 msgctxt "admin action message"
 msgid "changed group"
 msgstr "Le changement de groupe"
@@ -300,15 +300,15 @@ msgstr "Catégories"
 msgid "document"
 msgstr "document"
 
-#: .\common\templates\admin\change_group.html:6
+#: .\common\templates\admin\change_group.html:17
 msgid "Home"
 msgstr "Accueil"
 
-#: .\common\templates\admin\change_group.html:15
+#: .\common\templates\admin\change_group.html:25
 msgid "The following childs will be changed:"
 msgstr "Les enfants suivants seront modifiés :"
 
-#: .\common\templates\admin\change_group.html:23
+#: .\common\templates\admin\change_group.html:29
 msgid "Please select the group in the list below."
 msgstr "Veuillez sélectionner le groupe dans la liste ci-dessous."
 

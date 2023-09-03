@@ -1,6 +1,17 @@
 {% extends "admin/base_site.html" %}
 {% load admin_urls i18n l10n static %}
 
+{% block extrahead %}
+{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">
+{% endblock %}
+
 {% block breadcrumbs %}
 <div class="breadcrumbs">
 <a href="{% url "admin:index" %}">{% translate "Home" %}</a>
@@ -11,20 +22,25 @@
 {% endblock %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-    <p>{% trans "The following childs will be changed:" %}</p>
+<p>{% trans "The following childs will be changed:" %}</p>
 
-    <ul>{{ queryset|unordered_list }}</ul>
+<ul>{{ queryset|unordered_list }}</ul>
+
+<p>{% trans "Please select the group in the list below." %}</p>
+
+<form action="" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="change_group">
+    <input type="hidden" name="post" value="yes">
 
     {% for obj in queryset %}
         <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
     {% endfor %}
 
-    <p>{% trans "Please select the group in the list below." %}</p>
-
-    {{ form.as_p }}
-    <input type="hidden" name="action" value="change_group">
-    <input type="hidden" name="post" value="yes">
-    <input type="submit" value="{{ title }}">
+    {{ form.non_field_errors }}
+    {% include "admin/includes/fieldset.html" %}
+    <p>
+        <input type="submit" value="{{ title }}">
+    </p>
 </form>
 {% endblock %}
