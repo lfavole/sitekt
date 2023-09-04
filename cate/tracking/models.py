@@ -1,8 +1,12 @@
 from datetime import timedelta
+from typing import Any
 
+import requests
+import user_agents
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 from .managers import PageviewManager, VisitorManager
@@ -32,6 +36,42 @@ class Visit(models.Model):
         permissions = (
             ("visitor_log", "Can view visitor"),
         )
+
+    def ip_address_location(self):
+        req = requests.get(f"http://ip-api.com/json/{self.ip_address}", {
+            "fields": "status,message,city,regionName,country,mobile,proxy,hosting",
+            "lang": "fr",
+        })
+        try:
+            data: dict[str, Any] = req.json()
+        except requests.JSONDecodeError as err:
+            return f"JSONDecodeError : {err}"
+        if data.get("status") == "fail":
+            return data.get("message", "")
+        extra = []
+        if data.get("mobile"):
+            extra.append(_("mobile connection"))
+        if data.get("proxy"):
+            extra.append(_("proxy"))
+        if data.get("hosting"):
+            extra.append(_("hosting"))
+
+        # Translators: This string is used as a separator between list elements
+        sep = gettext(", ")
+        ret = sep.join((
+            data.get("city", ""),
+            data.get("regionName", ""),
+            data.get("country", ""),
+        ))
+        if extra:
+            ret += " (" + sep.join(extra) + ")"
+        return ret
+
+    ip_address_location.short_description = _("IP address location")
+
+    def pretty_user_agent(self):
+        return str(user_agents.parse(self.user_agent))
+    pretty_user_agent.short_description = _("Information about user agent")
 
     def session_expired(self):
         """

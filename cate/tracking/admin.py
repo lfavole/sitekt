@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.forms import Media
 from django.utils.translation import gettext_lazy as _
 
 from .models import PageView, Visit
@@ -12,14 +14,26 @@ class PageviewInline(admin.TabularInline):
     fields = ["method", "url", "view_time"]
 
 @admin.register(Visit)
-class VisitorAdmin(admin.ModelAdmin):
+class VisitAdmin(admin.ModelAdmin):
     date_hierarchy = "start_time"
 
     list_display = ("session_key", "user", "start_time", "session_expired", "pretty_time_on_site", "ip_address")
     list_filter = ("user", "ip_address")
 
-    readonly_fields = ("pretty_time_on_site",)
-    exclude = ("time_on_site",)
+    fields = [
+        "session_key",
+        "user",
+        ("ip_address", "ip_address_location"),
+        "user_agent",
+        "pretty_user_agent",
+        ("start_time", "expiry_time", "pretty_time_on_site"),
+    ]
+
+    @property
+    def media(self):
+        return super().media + Media(css={
+            "all": [staticfiles_storage.url("admin/tracking.css")],
+        })
 
     inlines = [PageviewInline]
 
