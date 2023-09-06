@@ -286,7 +286,7 @@ class CommonDate(models.Model):
 	time_text = DatalistField(_("Time (as text)"), max_length = 50, blank = True, form_choices = ("Journée", "Week-end", "Séjour"))
 	name = models.fields.CharField(_("Name"), max_length = 100)
 	short_name = models.fields.CharField(_("Short name"), max_length = 50, blank = True)
-	place = models.fields.CharField(_("Place"), max_length = 100)
+	place = models.fields.CharField(_("Place"), max_length = 100, blank = True)
 	cancelled = models.fields.BooleanField(_("Cancelled"))
 
 	class Meta:
