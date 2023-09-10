@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-19 15:01+0200\n"
+"POT-Creation-Date: 2023-09-10 14:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,6 +34,13 @@ msgid "Your password must not have been detected in a major security breach."
 msgstr ""
 "Votre mot de passe ne doit pas avoir été trouvé dans une faille de sécurité "
 "majeure."
+
+#: .\cate\settings.py:218
+msgid ""
+"You must first create the article, then insert the image. Don't worry, the "
+"image will be uploaded after reloading."
+msgstr "Vous devez d'abord créer l'article, puis insérer l'image. Ne vous "
+"inquiétez pas, l'image sera envoyée lors du rechargement de la page."
 
 #: .\cate\templates\cate\404.html:5
 msgid "Page not found"

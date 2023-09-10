@@ -1,11 +1,18 @@
+import base64
 import datetime as dt
+import mimetypes
 from typing import Any, Callable, Type
+from urllib.parse import urlparse
+from bs4 import BeautifulSoup
 
 from django.apps import apps
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile, File
+from django.core.files.storage import Storage
 from django.db import DatabaseError, models
 from django.db.models import Manager
+from django.db.models.fields.files import FieldFile
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -125,6 +132,50 @@ class PageBase(models.Model):
 			self.slug = self._generate_slug()
 
 		super().save(*args, **kwargs)
+
+		self._write_base64_images()
+
+	def _write_base64_images(self):
+		"""
+		Creates the corresponding objects for Base64 images in the page/article.
+		Saves the element only if needed.
+		"""
+		edited = False
+
+		soup = BeautifulSoup(self.content)
+		for i, img in enumerate(soup.find_all("img")):
+			if not (src := img.attrs.get("src")):
+				continue
+
+			if (parse_result := urlparse(src)).scheme != "data":
+				continue
+
+			mimetype, data = parse_result.path.split(",", 1)
+			if mimetype.endswith(";base64"):
+				mimetype = mimetype.removesuffix(";base64")
+				data = base64.b64decode(data)
+
+			if not (ext := mimetypes.guess_extension(mimetype)):
+				continue
+
+			if not (path := self._save_image(f"blobid{i}{ext}", data)):
+				continue
+			img.attrs["src"] = path
+
+			edited = True
+
+		if edited:
+			self.content = soup.prettify()
+			super().save()
+
+	def _save_image(self, filename, content):
+		"""
+		Saves the image with the corresponding filename and content.
+		Returns the URL.
+		"""
+		Image: Type[ImageBase] = apps.get_model(self._meta.app_label, self._meta.model_name + "Image")  # type: ignore
+		image_obj = Image.objects.create(page=self, image=ContentFile(content, filename))
+		return image_obj.image.url
 
 	def __str__(self): # pylint: disable=E0307
 		return self.title

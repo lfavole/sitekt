@@ -16,6 +16,7 @@ from pathlib import Path
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.functional import lazy
+from django.utils.translation import gettext
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -213,7 +214,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 def add_url(text, url):
-	return text % url
+	return text % {
+		"message": gettext("You must first create the article, then insert the image. Don't worry, the image will be uploaded after reloading."),
+		"url": url,
+	}
 
 
 add_url_lazy = lazy(add_url)
@@ -251,8 +255,13 @@ TINYMCE_DEFAULT_CONFIG = {
 	# pylint: disable=C0209
 	"images_upload_handler": add_url_lazy("""\
 (blobInfo, progress) => new Promise((success, failure) => {
+	var parts = location.pathname.split("/");
+	if(parts[4] == "add" && parts[5] == "") {
+		failure("%(message)s");
+		return;
+	}
 	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "%s");
+	xhr.open("POST", "%(url)s");
 	xhr.withCredentials = true;
 	xhr.upload.onprogress = e => {
 		progress(e.loaded / e.total * 100);
