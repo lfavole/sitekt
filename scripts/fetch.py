@@ -1,6 +1,7 @@
 import argparse
 import builtins
 import io
+from shutil import which
 import sys
 from pathlib import Path
 
@@ -57,7 +58,11 @@ def fetch(apps: list[App] | None = None, pipe = False):
 		_run_with_explanation(["git", "reset", "--hard", "origin/main"], "resetting to server state")
 		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "re-fetching changes")
 
-		manage_py_args = [sys.executable, str(app / "manage.py")]
+		executable = sys.executable
+		if Path(executable).name == "uwsgi":
+			# use Python executable (not uwsgi) on PythonAnywhere
+			executable = which("python")
+		manage_py_args = [executable, str(app / "manage.py")]
 
 		_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
 		_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")
