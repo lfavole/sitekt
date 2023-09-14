@@ -4,6 +4,7 @@ from typing import Literal, Type
 from urllib.parse import quote
 
 from common.pdfs.list import list_pdf
+from common.pdfs.quick_list import quick_list_pdf
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_permission_codename
@@ -53,6 +54,12 @@ def common_list(request: HttpRequest, app: Literal["espacecate", "aumonerie"]):
     if not has_permission(request, Child):
         return HttpResponseForbidden("You don't have the permission to see this list." if settings.DEBUG else "")
     return pdf_response(request, list_pdf(request, app), "liste")
+
+def common_quick_list(request: HttpRequest, app: Literal["espacecate", "aumonerie"]):
+    Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
+    if not has_permission(request, Child):
+        return HttpResponseForbidden("You don't have the permission to see this list." if settings.DEBUG else "")
+    return pdf_response(request, quick_list_pdf(request, app), "liste")
 
 class BaseView(generic.View):
     """

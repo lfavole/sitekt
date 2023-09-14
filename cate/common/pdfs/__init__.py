@@ -1,4 +1,3 @@
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
@@ -8,7 +7,7 @@ from fpdf import FPDF, FPDF_VERSION, output
 from fpdf.enums import Align, MethodReturnValue, XPos, YPos
 from fpdf.fonts import FontFace
 from fpdf.syntax import PDFDate, PDFObject, PDFString
-from fpdf.table import Row
+from fpdf.table import Cell, Row  # noqa
 
 HERE = Path(__file__).resolve()
 DATA = HERE.parent.parent.parent.parent / "data"
@@ -20,9 +19,11 @@ class Table:
 
     table_data: list[list[str]] = field(default_factory=list)
     col_widths: list[float] | float = field(default_factory=list)
+    font_face: FontFace = field(default_factory=FontFace)
     line_height: float = 10
     align: Align = Align.C
     heading_font_face: FontFace = field(default_factory=FontFace)
+    heading_line_height: float = 15
 
     fill_alternate: bool = True
     fill_font_face: FontFace = field(default_factory=lambda: FontFace(fill_color = 230))
@@ -76,6 +77,7 @@ class Table:
 
     def _display_line(self, row_n, fill, regrouped_data):
         data_row = self.rows[row_n]
+        line_height = self.heading_line_height if row_n == 0 else self.line_height
 
         if row_n > 0 and self.regroup_check:
             new_regrouped_data = self.regroup_check(row_n - 1)
@@ -84,7 +86,7 @@ class Table:
 
                 # check if the regrouped property AND the next line will trigger a page break
                 # (don't leave the title alone at the bottom of the page...)
-                if self.fpdf.will_page_break(self.regroup_height + self.line_height):
+                if self.fpdf.will_page_break(self.regroup_height + line_height):
                     # add a new page and print the header
                     self.fpdf.add_page()
                     fill, regrouped_data = self._display_line(0, fill, regrouped_data)
@@ -103,43 +105,28 @@ class Table:
                 fill = False
 
         # check if the next line will trigger a page break
-        if self.fpdf.will_page_break(self.line_height):
+        if self.fpdf.will_page_break(line_height):
             # add a new page and print the header
             self.fpdf.add_page()
             fill, regrouped_data = self._display_line(0, fill, regrouped_data)
 
-        font_face = FontFace()
+        font_face = self.font_face
         if fill:
-            font_face = self.fill_font_face
+            font_face_new = self.fill_font_face
+            font_face_new.size_pt = font_face.size_pt
+            font_face = font_face_new
         if row_n == 0:
             font_face = self.heading_font_face
-            fill = True
+            fill = bool(font_face.fill_color)
 
         with self.fpdf.use_font_face(font_face):
             col_n = 0
             for cell in data_row.cells:
                 col_width = self._get_col_width(row_n, col_n, cell.colspan)
-                lines = self.fpdf.multi_cell(
-                    col_width,
-                    self.line_height,
-                    cell.text,
-                    dry_run = True,
-                    output = MethodReturnValue.LINES,
-                )
-                self.fpdf.multi_cell(
-                    col_width,
-                    self.line_height,
-                    cell.text,
-                    border = True,
-                    align = self.align,
-                    fill = fill,
-                    new_x = XPos.RIGHT,
-                    new_y = YPos.TOP,
-                    max_line_height = self.line_height / len(lines),
-                )
+                self._display_cell(cell, row_n, col_n, col_width, line_height, fill)
                 col_n += cell.colspan
 
-            self.fpdf.ln(self.line_height)
+            self.fpdf.ln(line_height)
 
         if self.fill_alternate:
             fill = not fill
@@ -148,6 +135,26 @@ class Table:
                 fill = False
 
         return fill, regrouped_data
+
+    def _display_cell(self, cell: Cell, row_n: int, col_n: int, col_width: float, line_height: float, fill: bool):
+        lines = self.fpdf.multi_cell(
+            col_width,
+            line_height,
+            cell.text,
+            dry_run = True,
+            output = MethodReturnValue.LINES,
+        )
+        self.fpdf.multi_cell(
+            col_width,
+            line_height,
+            cell.text,
+            border = True,
+            align = self.align,
+            fill = fill,
+            new_x = XPos.RIGHT,
+            new_y = YPos.TOP,
+            max_line_height = line_height / len(lines),
+        )
 
 
 class PDF(FPDF):

@@ -31,6 +31,7 @@ urlpatterns = [
     path("inscription", views.subscription, name = "inscription"),
     path("index", views.PageView.as_view(), kwargs = {"slug": "accueil"}),
     path("liste", views.list, name = "list"),
+    path("liste-rapide", views.quick_list, name = "quick-list"),
     path("", views.PageView.as_view(), name = "accueil", kwargs = {"slug": "accueil"}),
     path("<slug:slug>", views.PageView.as_view(), name = "page"),
 ]

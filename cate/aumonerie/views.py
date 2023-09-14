@@ -1,6 +1,6 @@
 from common.pdfs.authorization import authorization_pdf
 from common.pdfs.calendar import calendar_pdf
-from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView, common_list, pdf_response, serve
+from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView, common_list, common_quick_list, pdf_response, serve
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -27,6 +27,9 @@ def authorization(request):
 
 def list(request):
     return common_list(request, "aumonerie")
+
+def quick_list(request):
+    return common_quick_list(request, "aumonerie")
 
 
 class ArticleListView(CommonArticleListView):

@@ -216,6 +216,7 @@ class List(PDF):
             table_data,
             [value[1] for value in fields.values()],
 
+            heading_line_height = 10,
             heading_font_face = FontFace(size_pt = 10, fill_color = (34, 204, 34)),
             regroup_check = regroup_check,
             regroup_font_face = FontFace(emphasis = "B", size_pt = 11, fill_color = (255, 68, 68)),
