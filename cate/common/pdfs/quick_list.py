@@ -153,7 +153,12 @@ class QuickList(PDF):
                 return str(element)  # first name + last name
 
             if key == "groupe":
-                return (str(element.groupe) if element.groupe else "") + " -- " + element.classe
+                classe = element.classe
+                return (
+                    (str(element.groupe) if element.groupe else "")
+                    + " -- "
+                    + (self.classes_dict.get(classe, classe) if classe != "AUTRE" else "")
+                )
 
             ret = getattr(element, key)
 
@@ -169,9 +174,6 @@ class QuickList(PDF):
 
             if isinstance(ret, int):
                 return str(ret) + " €" if ret else ""
-
-            if key == "classe":
-                return self.classes_dict.get(ret, ret)
 
             return str(ret) if ret else ""
 

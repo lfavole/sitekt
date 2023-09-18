@@ -1,11 +1,14 @@
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
 from common.models import Year
 from fpdf import FPDF, FPDF_VERSION, output
-from fpdf.enums import Align, MethodReturnValue, XPos, YPos
+from fpdf.drawing import DeviceRGB
+from fpdf.enums import Align, CharVPos, MethodReturnValue, XPos, YPos
 from fpdf.fonts import FontFace
+from fpdf.line_break import Fragment
 from fpdf.syntax import PDFDate, PDFObject, PDFString
 from fpdf.table import Cell, Row  # noqa
 
@@ -167,6 +170,54 @@ class PDF(FPDF):
         self.set_margin(10)
         self.set_auto_page_break(True, 10)
 
+        self.font_styles = [
+            (r"((?<=[IVX]|\d)(?:e|er|ère|ème|nde)s?\b)", self._superscript),
+            (r"((?:\+\d+ |\d)\d(?: \d\d){4})", self._phone_link),
+            (r"([\w.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", self._email_link),
+            # https://stackoverflow.com/a/3809435
+            (r"(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*)", self._link),
+        ]
+
+    def _superscript(self, frag: Fragment):
+        frag.graphics_state["char_vpos"] = CharVPos.SUP
+
+    def _phone_link(self, frag: Fragment):
+        self._link(frag)
+        frag.link = "tel:" + "".join(c for c in frag.characters if c.isdigit() or c == "+")
+
+    def _email_link(self, frag: Fragment):
+        self._link(frag)
+        frag.link = "mailto:" + frag.string
+
+    def _link(self, frag: Fragment):
+        frag.link = frag.string
+        frag.graphics_state["underline"] = True
+        if self.MARKDOWN_LINK_COLOR:
+            frag.graphics_state["text_color"] = self.MARKDOWN_LINK_COLOR
+
+    def _preload_font_styles(self, txt, markdown):
+        """
+        Apply all the font styles defined above (superscripts, phone numbers and email links).
+        """
+        frags: list[Fragment] = super()._preload_font_styles(txt, markdown)
+        if len(frags) == 1 and not frags[0].characters:
+            return frags
+
+        for regexp, function in self.font_styles:
+            ret = []
+            for frag in frags:
+                parts = re.split(regexp, frag.string)
+                for i, part in enumerate(parts):
+                    if not part:
+                        continue
+                    new_frag = Fragment(part, frag.graphics_state.copy(), frag.k, frag.link)
+                    if i % 2 == 1:  # group captured by the split regex
+                        function(new_frag)
+                    ret.append(new_frag)
+            frags = ret  # re-process the fragments
+
+        return frags
+
     def set_font(self, family = None, style = "", size = 0) -> None:
         styles = {
             "": "Regular",
@@ -189,7 +240,7 @@ class PDF(FPDF):
         return super().set_font(family, style, size)
 
 
-# Fix encryption of metadata
+# Fix encryption of metadata (PyFPDF/fpdf2#865)
 
 class PDFInfo(PDFObject):
     def __init__(

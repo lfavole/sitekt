@@ -101,7 +101,46 @@ class List(PDF):
             return "Oui"
         return ret_str[0].upper() + ret_str[1:]
 
+    def get_childs_and_regroup_check(self, regroup_by=None):
+        childs = self.Child.objects.all()
+        if regroup_by == "groupe":
+            childs = childs.select_related("groupe")
+
+        childs = sorted(childs, key = lambda child: self.classes.index(child.classe))
+
+        regroup_check = None
+
+        if regroup_by == "classe":
+            regroup_check = lambda row_n: self.classes_dict[childs[row_n].classe]  # noqa
+
+        elif regroup_by == "groupe":
+            def get_group(child, sorting = True):
+                # use "" when sorting so the childs appear at the top
+                return child.groupe.name if child.groupe else ("" if sorting else "Aucun groupe")
+
+            regroup_check = lambda row_n: get_group(childs[row_n], False)  # noqa
+            childs = sorted(childs, key = get_group)
+
+        elif regroup_by == "annees" and self.app == "espacecate":
+            def get_years(child):
+                classe = self.classes.index(child.classe)
+                if classe <= 3:  # PS, MS, GS, CP
+                    return -1
+                return child.annees_kt or classe - 3
+
+            def _regroup_check(row_n):
+                years = get_years(childs[row_n])
+                if years == -1:
+                    return "Éveil à la foi"
+                return str(years) + ("ère" if years == 1 else "ème") + " année de caté"
+            regroup_check = _regroup_check
+
+            childs = sorted(childs, key = get_years)
+
+        return list(childs), regroup_check  # fetch the childs
+
     def render(self, app: Literal["espacecate", "aumonerie"], regroup_by: str = ""):
+        self.app = app
         self.Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
         fields: dict[str, tuple[str, int]] = {
             "espacecate": {
@@ -170,40 +209,7 @@ class List(PDF):
 
             return str(ret)
 
-        childs = self.Child.objects.all()
-
-        regroup_check = None
-
-        if regroup_by == "classe":
-            regroup_check = lambda row_n: childs[row_n].classe
-            childs = sorted(childs, key = lambda child: self.classes.index(child.classe))
-
-        if regroup_by == "groupe":
-            childs = childs.select_related("groupe")
-
-            def get_group(child, sorting = True):
-                # use "" when sorting so the childs appear at the top
-                return child.groupe.name if child.groupe else ("" if sorting else "Aucun groupe")
-
-            regroup_check = lambda row_n: get_group(childs[row_n], False)
-            childs = sorted(childs, key = get_group)
-
-        if regroup_by == "annees" and app == "espacecate":
-            def get_years(child):
-                classe = self.classes.index(child.classe)
-                if classe <= 3:  # PS, MS, GS, CP
-                    return -1
-                return child.annees_kt or classe - 3
-
-            def regroup_check(row_n):
-                years = get_years(childs[row_n])
-                if years == -1:
-                    return "Éveil à la foi"
-                return str(years) + ("ère" if years == 1 else "ème") + " année de caté"
-
-            childs = sorted(childs, key = get_years)
-
-        childs = list(childs)  # fetch the childs
+        childs, regroup_check = self.get_childs_and_regroup_check(regroup_by)
 
         table_data: list[tuple[str, ...]] = [
             # ("Nom", "Prénom"),

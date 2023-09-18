@@ -2,12 +2,25 @@
 
 {% block result_list %}
 <ul>
-    <li><a href="{% url cl.opts.app_label|add:":list" %}" target="_blank">Liste récapitulative des enfants</a></li>
-    <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=classe" target="_blank">Liste récapitulative des enfants (par classe)</a></li>
+    {% comment %}
+    <li><a href="{% url cl.opts.app_label|add:":list" %}" target="_blank">Liste récapitulative des enfants, triés par classe</a></li>
+    <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=classe" target="_blank">Liste récapitulative des enfants (regroupés par classe)</a></li>
     {% if cl.opts.app_label == "espacecate" %}
-        <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=annees" target="_blank">Liste récapitulative des enfants (par années)</a></li>
+        <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=annees" target="_blank">Liste récapitulative des enfants (regroupés par années)</a></li>
     {% endif %}
-    <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=groupe" target="_blank">Liste récapitulative des enfants (par groupe)</a></li>
+    <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=groupe" target="_blank">Liste récapitulative des enfants (regroupés par groupe)</a></li>
+    {% endcomment %}
+    <li>
+        Listes récapitulatives des enfants, triés par classe :
+        <ul>
+            <li><a href="{% url cl.opts.app_label|add:":list" %}" target="_blank">Enfants non regroupés</a></li>
+            <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=classe" target="_blank">Enfants regroupés par classe</a></li>
+            {% if cl.opts.app_label == "espacecate" %}
+                <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=annees" target="_blank">Enfants regroupés par années</a></li>
+            {% endif %}
+            <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=groupe" target="_blank">Enfants regroupés par groupe</a></li>
+        </ul>
+    </li>
     <li><a href="{% url cl.opts.app_label|add:":autorisation" %}?exemplaires=2" target="_blank">Modèle d'autorisation à imprimer</a></li>
 </ul>
 {{ block.super }}
