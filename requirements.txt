@@ -1,13 +1,10 @@
-colorama # colorama
+colorama ~= 0.4; sys_platform == "win32" # colorama
 Django ~= 4.2 # django
-Markdown # markdown
-django_betterforms # betterforms
-django-crispy-forms # crispy_forms
-django-admin-sortable2 # adminsortable2
-easy-thumbnails # easy_thumbnails
-django-cleanup # django_cleanup
-minify-html # minify_html
-django_debug_toolbar # debug_toolbar
-user-agents # user_agents
+django-admin-sortable2 ~= 2.1 # adminsortable2
+easy-thumbnails ~= 2.8 # easy_thumbnails
+django-cleanup ~= 8.0 # django_cleanup
+minify-html~= 0.11 # minify_html
+django-debug-toolbar ~= 4.2 # debug_toolbar
+user-agents ~= 2.2 # user_agents
 waitress # waitress
 gunicorn # gunicorn

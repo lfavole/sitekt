@@ -5,6 +5,7 @@ from shutil import which
 import sys
 from pathlib import Path
 
+from .setup import setup
 from .utils import App
 from .utils import cprint as old_cprint
 from .utils import run
@@ -15,6 +16,8 @@ def fetch(apps: list[App] | None = None, pipe = False):
 	"""
 	Fetch changes with `git fetch` and migrate the projects.
 	"""
+	apps = apps or App.all()
+
 	outputs: list[str] = []
 
 	if pipe:
@@ -45,7 +48,7 @@ def fetch(apps: list[App] | None = None, pipe = False):
 		if proc.returncode != 0:
 			cprint("Error while " + expl, "red")
 
-	for app in apps or App.all():
+	for app in apps:
 		print("App " + app)
 		settings = app.settings
 		if not settings:
@@ -58,11 +61,20 @@ def fetch(apps: list[App] | None = None, pipe = False):
 		_run_with_explanation(["git", "reset", "--hard", "origin/main"], "resetting to server state")
 		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "re-fetching changes")
 
-		executable = sys.executable
-		if Path(executable).name == "uwsgi":
+		if Path(sys.executable).name == "uwsgi":
 			# use Python executable (not uwsgi) on PythonAnywhere
-			executable = which("python")
-		manage_py_args = [executable, str(app / "manage.py")]
+			sys.executable = which("python")
+
+	setup(apps)
+
+	for app in apps:
+		print("App " + app)
+		settings = app.settings
+		if not settings:
+			cprint("Can't load settings for app " + app, "red")
+			continue
+
+		manage_py_args = [sys.executable, str(app / "manage.py")]
 
 		_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
 		_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")

@@ -1,9 +1,9 @@
 import argparse
-import sys
+import subprocess as sp
 
 from .create_settings import input_question
 from .get_fonts import get_fonts
-from .utils import BASE_FOLDER, PYTHONANYWHERE, App, cprint, install, parse_packages_list
+from .utils import BASE_FOLDER, PYTHONANYWHERE, App, check_if_installed, cprint
 
 
 def setup(apps: list[App], interactive = False):
@@ -14,26 +14,15 @@ def setup(apps: list[App], interactive = False):
 	print()
 
 	print("Installing modules (if they are not already installed)")
+	requirements = BASE_FOLDER / "requirements.txt"
+	sp.run(["pip", "install", "-r", str(requirements)], check=True)
 
-	with open(BASE_FOLDER / "requirements.txt") as f:
+	with open(requirements) as f:
 		requirements = f.read()
 
-	# TODO: venv
-	for package, version, comment in parse_packages_list(requirements):
-		# Install Colorama only on Windows
-		if sys.platform != "win32" and package == "colorama":
-			continue
-		# Don't install servers on PythonAnywhere
-		if PYTHONANYWHERE:
-			if package == "waitress" or package == "gunicorn":
-				continue
-		# Install Waitress (not Gunicorn) on Windows and Android (Termux)
-		if (sys.platform == "win32" or hasattr(sys, "getandroidapilevel")) and package == "gunicorn":
-			continue
-		# Install Gunicorn (not Waitress) on non-Windows platforms
-		if sys.platform != "win32" and package == "waitress":
-			continue
-		install(package + version, comment.removeprefix("#").strip())
+	for line in requirements.splitlines():
+		_, comment = line.rsplit("#", 1)
+		check_if_installed(comment.strip())
 
 	for app in apps:
 		settings = app.settings

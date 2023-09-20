@@ -327,26 +327,13 @@ def cprint(text: str, color: str | None = None, on_color: str | None = None, att
 	"""
 	print(colored(text, color, on_color, attrs), *args, **kwargs)
 
-def install(package: str, module_name: str):
+def check_if_installed(module_name: str):
 	"""
-	Install a package with `pip`. `package` is the pip package name and `module_name` is the module name to import.
+	Check that the `module_name` is installed and writes it.
 	"""
 	try:
 		importlib.import_module(module_name)
 	except ImportError:
-		print("Installing " + package + "...")
-		run([sys.executable, "-m", "pip", "install", package])
-		print("Checking installation...")
-		if run([sys.executable, "-c", "import " + module_name]).returncode != 0:
-			print("Can't import " + package + " (import " + module_name + ")")
-		else:
-			print(package + " installed")
+		print(f"{module_name} is not installed")
 	else:
-		print(package + " already installed")
-	print()
-
-def parse_packages_list(text: str) -> list[tuple[str, str, str]]:
-	"""
-	Parse a packages list (`requirements.txt` file). Return a list of tuples (package, version, comment)
-	"""
-	return re.findall(r"(.*?)\s*?([=<>~].*?)?\s*?(#\s*?.*?)?\n", text)
+		print(f"{module_name} is installed")

@@ -61,7 +61,6 @@ INSTALLED_APPS = [
 	"django.contrib.messages",
 	"django.contrib.staticfiles",
 	"adminsortable2",
-	"betterforms",
 	"easy_thumbnails",
 	"tinymce",
 	"cate",
