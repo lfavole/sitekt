@@ -7,6 +7,7 @@ django-admin-sortable2 # adminsortable2
 easy-thumbnails # easy_thumbnails
 django-cleanup # django_cleanup
 minify-html # minify_html
+django_debug_toolbar # debug_toolbar
 user-agents # user_agents
 waitress # waitress
 gunicorn # gunicorn

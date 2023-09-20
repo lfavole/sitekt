@@ -1,0 +1,14 @@
+<style>
+#GitInfoPanel img {
+    width:4em;
+    border-radius:0.5em;
+}
+</style>
+{% for title, items in parts.items %}
+<h2>{{ title }}</h2>
+<table>
+{% for label, data in items %}
+<tr><td>{{ label }}</td><td>{{ data|linebreaks }}</td></tr>
+{% endfor %}
+</table>
+{% endfor %}

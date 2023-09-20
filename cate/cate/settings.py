@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import sys
 from pathlib import Path
 
+from debug_toolbar.settings import PANELS_DEFAULTS
+from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.functional import lazy
@@ -59,6 +61,7 @@ INSTALLED_APPS = [
 	"django.contrib.staticfiles",
 	"adminsortable2",
 	"betterforms",
+	"debug_toolbar",
 	"easy_thumbnails",
 	"tinymce",
 	"cate",
@@ -67,6 +70,7 @@ INSTALLED_APPS = [
 	"tracking",
 	"aumonerie",
 	"common",
+	"debug",
 	"errors",
 	"espacecate",
 	"calendrier_avent_2022",
@@ -86,7 +90,25 @@ MIDDLEWARE = [
 	"django.contrib.messages.middleware.MessageMiddleware",
 	"django.middleware.clickjacking.XFrameOptionsMiddleware",
 	"tracking.middleware.VisitorTrackingMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": "cate.settings.show_toolbar",
+}
+DEBUG_TOOLBAR_PANELS = [
+    *PANELS_DEFAULTS,
+    "debug.panels.ErrorPanel",
+    "debug.panels.GitInfoPanel",
+]
+
+
+def show_toolbar(request: HttpRequest):
+    """
+	Should we show the toolbar?
+	"""
+    return request.user.is_authenticated and request.user.has_perm("users.can_see_debug_toolbar")  # type: ignore
+
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 

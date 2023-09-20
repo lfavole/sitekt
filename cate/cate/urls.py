@@ -32,6 +32,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     add_website("aumonerie"),
     add_website("calendrier_avent_2022"),
+    path("debug/", include("debug_toolbar.urls")),
     add_website("errors"),
     add_website("espacecate"),
     path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name = "export"),
