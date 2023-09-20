@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 from debug_toolbar.settings import PANELS_DEFAULTS
+from debug_toolbar.toolbar import DebugToolbar
 from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse_lazy
@@ -61,7 +62,6 @@ INSTALLED_APPS = [
 	"django.contrib.staticfiles",
 	"adminsortable2",
 	"betterforms",
-	"debug_toolbar",
 	"easy_thumbnails",
 	"tinymce",
 	"cate",
@@ -71,6 +71,7 @@ INSTALLED_APPS = [
 	"aumonerie",
 	"common",
 	"debug",
+	"debug_toolbar",
 	"errors",
 	"espacecate",
 	"calendrier_avent_2022",
@@ -84,30 +85,44 @@ MIDDLEWARE = [
 	"django.contrib.sessions.middleware.SessionMiddleware",
 	"django.middleware.http.ConditionalGetMiddleware",
 	"django.middleware.common.CommonMiddleware",
-    "cate.middleware.MinifyHtmlMiddleware",
+	"cate.middleware.MinifyHtmlMiddleware",
 	"django.middleware.csrf.CsrfViewMiddleware",
 	"django.contrib.auth.middleware.AuthenticationMiddleware",
 	"django.contrib.messages.middleware.MessageMiddleware",
 	"django.middleware.clickjacking.XFrameOptionsMiddleware",
 	"tracking.middleware.VisitorTrackingMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
+	"debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 DEBUG_TOOLBAR_CONFIG = {
-    "SHOW_TOOLBAR_CALLBACK": "cate.settings.show_toolbar",
+	"SHOW_TOOLBAR_CALLBACK": "cate.settings.show_toolbar",
+	"SHOW_COLLAPSED": True,
+	"RENDER_PANELS": False,
+	"OBSERVE_REQUEST_CALLBACK": "cate.settings.observe_request",
 }
 DEBUG_TOOLBAR_PANELS = [
-    *PANELS_DEFAULTS,
-    "debug.panels.ErrorPanel",
-    "debug.panels.GitInfoPanel",
+	*PANELS_DEFAULTS,
+	"debug.panels.ErrorPanel",
+	"debug.panels.GitInfoPanel",
 ]
 
 
 def show_toolbar(request: HttpRequest):
-    """
+	"""
 	Should we show the toolbar?
 	"""
-    return request.user.is_authenticated and request.user.has_perm("users.can_see_debug_toolbar")  # type: ignore
+	return request.user.is_authenticated and request.user.has_perm("users.can_see_debug_toolbar")  # type: ignore
+
+
+def observe_request(request: HttpRequest):
+	"""
+	Should we observe the request with the toolbar?
+	"""
+	if not DebugToolbar.is_toolbar_request(request):
+		return False
+	if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+		return False
+	return True
 
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
@@ -147,12 +162,12 @@ TRACK_PAGEVIEWS = True
 
 
 STORAGES = {
-    "default": {
-        "BACKEND": "storage.storages.CustomFileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
-    },
+	"default": {
+		"BACKEND": "storage.storages.CustomFileSystemStorage",
+	},
+	"staticfiles": {
+		"BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+	},
 }
 
 # Database
@@ -195,8 +210,8 @@ AUTH_PASSWORD_VALIDATORS = [
 	{
 		"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
 	},
-    {
-	    "NAME": "cate.password_validation.PwnedPasswordValidator",
+	{
+		"NAME": "cate.password_validation.PwnedPasswordValidator",
 	},
 ]
 

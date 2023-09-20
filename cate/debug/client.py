@@ -6,6 +6,7 @@ from typing import Any
 
 import requests
 from cate import settings
+from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 
 
@@ -163,10 +164,10 @@ class GitHubClient:
         picture_url = data.get("avatar_url", "")
         ret = html.escape(data.get("login", ""))
         if picture_url:
-            ret += f' <img src="{html.escape(picture_url)}">'
+            ret += f'<img src="{html.escape(picture_url)}">'
         if url:
-            ret = f'<a href="{html.escape(url)}">{ret}</a>'
-        return ret
+            ret = f'<a href="{html.escape(url)}" target="_blank">{ret}</a>'
+        return SafeString(ret)
 
     @property
     def author_info(self):
