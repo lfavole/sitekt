@@ -14,7 +14,9 @@ def get_fonts():
         req = requests.get(url, stream = True)
         with open(FONTS / filename, "wb") as f:
             for chunk in req.iter_content(64 * 1024):
+                print("#", end="")
                 f.write(chunk)
+        print()
 
 def main(args):
     get_fonts()

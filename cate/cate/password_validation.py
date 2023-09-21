@@ -39,7 +39,7 @@ class PwnedPasswordValidator:
         :return: True if the password is valid. Else, False.
         """
 
-        if settings.settings.OFFLINE:
+        if settings.custom_settings.OFFLINE:
             return True
 
         error_fail_msg = _(

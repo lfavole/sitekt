@@ -1,13 +1,11 @@
 import getpass
 import importlib
 import os
-import re
 import shlex
-import socket
 import subprocess as sp
 import sys
 from pathlib import Path
-from typing import Any, Type, TypeVar
+from typing import Any, TypeVar
 
 Self = TypeVar("Self")
 
@@ -18,6 +16,9 @@ PYTHONANYWHERE = PYTHONANYWHERE_SITE != ""
 
 FOLDER = Path(__file__).resolve().parent
 BASE_FOLDER = FOLDER.parent
+
+APP_NAME = "cate"
+
 
 def import_path(path: Path | str, module: str, package: str | None = None):
 	"""
@@ -30,85 +31,6 @@ def import_path(path: Path | str, module: str, package: str | None = None):
 	finally:
 		sys.path = old_path
 
-class Namespace(dict):
-	"""
-	Namespace that provides access to attributes with dot syntax: `ns["key"] == ns.key`.
-	"""
-	def __getattr__(self, attr):
-		return self[attr]
-
-	def __setattr__(self, attr, value):
-		self[attr] = value
-
-	def __delattr__(self, attr):
-		del self[attr]
-
-	def __repr__(self):
-		return "<Namespace " + super().__repr__() + ">"
-
-class Settings(Namespace):
-	"""
-	Settings object
-	"""
-	def __init__(self, *args, **kwargs):
-		# pylint: disable=C0103
-		super().__init__(*args, **kwargs)
-
-		if not self:
-			return
-
-		self._offline = None
-
-		self.HOST = self.HOST or (USERNAME + "." + PYTHONANYWHERE_SITE)
-
-		if PYTHONANYWHERE:
-			self.DB_NAME: str | None = USERNAME + "$" + self.DB_NAME if self.DB_NAME else None
-			self.DB_HOST = (USERNAME + ".mysql." + PYTHONANYWHERE_SITE.replace("pythonanywhere.com", "pythonanywhere-services.com"))
-			self.DB_USER = self.DB_USER or USERNAME
-
-			self.PYTHONANYWHERE_SITE = PYTHONANYWHERE_SITE if PYTHONANYWHERE else None
-			self.WSGI_FILE = None if not self.HOST else Path("/var/www") / (self.HOST.replace(".", "_").lower().strip() + "_wsgi.py")
-		else:
-			self.DB_NAME = None
-			self.DB_HOST = None
-
-			self.PYTHONANYWHERE_SITE = None
-			self.WSGI_FILE = None
-
-	@classmethod
-	def create(cls: Type[Self]) -> Self:
-		"""
-		Create the settings with `create_settings.py` and return the created settings.
-
-		Usage: `settings = settings.create()`
-		"""
-		create = import_path(FOLDER, "create_settings").create_settings_file
-		return create()
-
-	def is_offline(self):
-		"""
-		Check the Internet connectivity.
-
-		Host: 8.8.8.8 (google-public-dns-a.google.com)
-		OpenPort: 53/tcp
-		Service: domain (DNS/TCP)
-		"""
-		try:
-			socket.setdefaulttimeout(3)
-			socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
-			return False
-		except socket.error:
-			return True
-
-	@property
-	def PYTHONANYWHERE(self):
-		return bool(self.PYTHONANYWHERE_SITE)
-
-	@property
-	def OFFLINE(self):
-		if self._offline is None:
-			self._offline = not self.PYTHONANYWHERE and self.is_offline()
-		return self._offline
 
 def get_vars(obj: Any) -> dict[str, Any]:
 	"""
@@ -116,112 +38,6 @@ def get_vars(obj: Any) -> dict[str, Any]:
 	"""
 	return {name: getattr(obj, name) for name in dir(obj) if not name.startswith("__") and not name.endswith("__")}
 
-class App:
-	"""
-	Object representing an app
-	"""
-	BASE_FOLDER = BASE_FOLDER
-
-	def __init__(self, folder: str | Path):
-		self.folder = (self.BASE_FOLDER / folder) if isinstance(folder, str) else folder
-		self._settings = None
-
-	@property
-	def settings(self):
-		"""
-		Settings of the app
-		"""
-		if self._settings is not None:
-			return self._settings
-
-		try:
-			settings_module = import_path(self.folder, "settings")
-		except ImportError:
-			self._settings = Settings()
-		else:
-			self._settings = Settings(get_vars(settings_module))
-		return self._settings
-
-	def __str__(self):
-		return self.folder.name
-
-	def __repr__(self):
-		return "<App " + repr(str(self)) + ">"
-
-	# Methods for comparing Apps with sorted() in App.all()
-	def __lt__(self, other):
-		return str(self) < str(other)
-
-	def __gt__(self, other):
-		return str(self) > str(other)
-
-	def __eq__(self, other):
-		return str(self) == str(other)
-
-	# Shorthand for addition: print("Deleting app " + app + "...")
-	def __add__(self, other):
-		return str(self) + other
-
-	def __radd__(self, other):
-		return other + str(self)
-
-	# Implementation of the slash: app / "manage.py"
-	def __truediv__(self, other):
-		return self.folder / other
-
-	@classmethod
-	def all(cls):
-		"""
-		Get all apps.
-		"""
-		return sorted(
-			cls(path) for path in cls.BASE_FOLDER.iterdir()
-			if path.is_dir()
-			and not path.name.startswith(".") # Don't include hidden folders like .vscode
-			and path.name != "data" # Don't include data folder
-			and path.name != "scripts" # Don't include scripts folder
-			and not path.name.startswith("_") # Don't include __pycache__
-		)
-
-	@classmethod
-	def get_list_from_argparse(cls, argument: list[str]):
-		"""
-		Get the `App` objects from an `argparse` list argument.
-		"""
-		return [cls(app) for app in argument]
-
-	@classmethod
-	def get_from_argparse(cls, argument: str | None):
-		"""
-		Get the `App` object from an `argparse` argument.
-		"""
-		if argument:
-			return cls(argument)
-
-		apps = cls.all()
-		if not apps:
-			cprint("No app could be found", "red")
-			sys.exit()
-
-		if len(apps) > 2:
-			cprint("Multiple apps have been found:", "red")
-			for app in apps:
-				print("- " + app)
-			cprint("Please choose an app from this list and provide it as the first argument.", "red")
-			sys.exit()
-		return apps[0]
-
-def is_sensitive(key_name: str):
-	"""
-	Return True if the key name is the name of a sensitive information.
-	"""
-	sensitive_names = "API TOKEN KEY SECRET PASS SIGNATURE".split(" ")
-
-	for name in sensitive_names:
-		if name in key_name.upper():
-			return True
-
-	return False
 
 def run(args: list[str] | str, pipe = False, capture = False, **kwargs) -> sp.CompletedProcess[str]:
 	"""
@@ -281,18 +97,15 @@ def colored(text: str, color: str | None = None, on_color: str | None = None, at
 		colored("Hello world!", "red", "grey", ["bold", "blink"])
 		colored("Hello world!", "green")
 	"""
-	global colorama_inited # pylint: disable=C0103
 	if os.environ.get("COLORED") == "0":
 		return text
 
+	global colorama_inited  # pylint: disable=C0103
 	if not colorama_inited:
 		try:
 			from colorama import init
 		except ImportError:
-			install("colorama", "colorama")
-		try:
-			from colorama import init
-		except ImportError:
+			print("Colorama is not installed, falling back to plain text")
 			os.putenv("COLORED", "0")
 			return text
 		init()

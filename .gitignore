@@ -1,5 +1,5 @@
 cate/db.sqlite3
-cate/settings.py
+cate/custom_settings_overrides.py
 *.mo
 cate/src/vendor/tinymce/**
 **/__pycache__/**

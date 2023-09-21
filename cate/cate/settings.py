@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-import sys
 from pathlib import Path
 
 from debug_toolbar.settings import PANELS_DEFAULTS
@@ -20,35 +19,31 @@ from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.functional import lazy
 from django.utils.translation import gettext
+import custom_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA = BASE_DIR.parent / "data"
 
-sys.path.insert(0, str(BASE_DIR.parent / "scripts"))
-from utils import App
-
-settings = App(BASE_DIR.name).settings
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = settings.SECRET_KEY or "+jt!%+%erdp^y7h37v#68x31+u9ut6^8zryj@#zmu5p$_!u2)u"
+SECRET_KEY = custom_settings.SECRET_KEY or "+jt!%+%erdp^y7h37v#68x31+u9ut6^8zryj@#zmu5p$_!u2)u"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = settings.DEBUG
+DEBUG = custom_settings.DEBUG
 
 if not DEBUG:
 	CSRF_COOKIE_SECURE = True
 	SESSION_COOKIE_SECURE = True
 	CONN_MAX_AGE = 600
-	ALLOWED_HOSTS = [settings.HOST]
+	ALLOWED_HOSTS = [custom_settings.HOST]
 	SECURE_SSL_REDIRECT = True
 else:
 	ALLOWED_HOSTS = ["*"]
 
-GITHUB_WEBHOOK_KEY = settings.GITHUB_WEBHOOK_KEY
+GITHUB_WEBHOOK_KEY = custom_settings.GITHUB_WEBHOOK_KEY
 
 # Application definition
 
@@ -177,13 +172,13 @@ DATABASES = {
 		"ENGINE": "django.db.backends.sqlite3",
 		"NAME": BASE_DIR / "db.sqlite3",
 	}
-} if settings.USE_SQLITE else {
+} if custom_settings.USE_SQLITE else {
 	"default": {
 		"ENGINE": "django.db.backends.mysql",
-		"NAME": settings.DB_NAME,
-		"USER": settings.DB_USER,
-		"PASSWORD": settings.DB_PASSWORD,
-		"HOST": settings.DB_HOST,
+		"NAME": custom_settings.DB_NAME,
+		"USER": custom_settings.DB_USER,
+		"PASSWORD": custom_settings.DB_PASSWORD,
+		"HOST": custom_settings.DB_HOST,
 		"OPTIONS": {
 			"charset": "utf8mb4",
 			"init_command": "SET sql_mode=\"STRICT_TRANS_TABLES\"",
@@ -259,7 +254,7 @@ def add_url(text, url):
 
 add_url_lazy = lazy(add_url)
 static_lazy = lazy(static)
-TINYMCE_JS_URL = STATIC_URL + "vendor/tinymce/tinymce.min.js" if settings.OFFLINE else "https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"
+TINYMCE_JS_URL = STATIC_URL + "vendor/tinymce/tinymce.min.js" if custom_settings.OFFLINE else "https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"
 TINYMCE_EXTRA_MEDIA = {
 	"css": {
 		"all": (

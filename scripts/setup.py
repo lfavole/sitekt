@@ -1,21 +1,20 @@
-import argparse
 import subprocess as sp
+import sys
 
-from .create_settings import input_question
 from .get_fonts import get_fonts
-from .utils import BASE_FOLDER, PYTHONANYWHERE, App, check_if_installed, cprint
+from .utils import APP_NAME, BASE_FOLDER, PYTHONANYWHERE, check_if_installed, cprint, import_path
 
 
-def setup(apps: list[App], interactive = False):
+def setup():
 	"""
 	Set up the environment for the specified Django apps interactively or not.
 	"""
-	cprint("Configuration du site du caté Django", "blue")
+	cprint("Configuration du site du caté Django", "blue", attrs=["bold"])
 	print()
 
-	print("Installing modules (if they are not already installed)")
+	cprint("Installing modules (if they are not already installed)", "blue")
 	requirements = BASE_FOLDER / "requirements.txt"
-	sp.run(["pip", "install", "-r", str(requirements)], check=True)
+	sp.run([sys.executable, "-m", "pip", "install", "-r", str(requirements)], check=True)
 
 	with open(requirements) as f:
 		requirements = f.read()
@@ -24,42 +23,36 @@ def setup(apps: list[App], interactive = False):
 		_, comment = line.rsplit("#", 1)
 		check_if_installed(comment.strip())
 
-	for app in apps:
-		settings = app.settings
-		if not settings:
-			cprint("The app " + app + "doesn't have a settings.py file" + ("." if interactive else ", skipping it."), "red")
-			if not interactive:
-				continue
-			answer = input_question("Do you want to create it?")
-			if answer:
-				settings = settings.create()
-			else:
-				cprint("Skipping app " + app, "red")
-				continue
-		print("Setting up app " + app)
-		if PYTHONANYWHERE:
-			if settings.HOST is None:
-				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
-				return
+	APP_FOLDER = BASE_FOLDER / APP_NAME
+	if not (APP_FOLDER / "custom_settings_overrides.py").exists():
+		cprint("The app doesn't have a custom_settings_overrides.py file. Please create one.", "red")
+		return
 
-			if settings.WSGI_FILE:
-				print("Creating WSGI file " + str(settings.WSGI_FILE))
-				with open(settings.WSGI_FILE, "w") as f:
-					f.write(f"""\
+	settings = import_path(APP_FOLDER, "custom_settings")
+
+	cprint("Setting up app", "blue")
+	if PYTHONANYWHERE:
+		if settings.HOST is None:
+			cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
+			return
+
+		if settings.WSGI_FILE:
+			print("Creating WSGI file " + str(settings.WSGI_FILE))
+			with open(settings.WSGI_FILE, "w") as f:
+				f.write(f"""\
 import sys
-sys.path.insert(0, {repr(str(app.folder))})
+sys.path.insert(0, {repr(str(APP_FOLDER))})
 
-from {settings.APP_NAME}.wsgi import application
+from {APP_NAME}.wsgi import application
 """)
 
-	print("Getting fonts")
+	cprint("Getting fonts", "blue")
 	get_fonts()
 
 	cprint("OK", "green")
 
 def main(args):
-	setup(App.get_list_from_argparse(args.APP), args.interactive)
+	setup()
 
-def contribute_to_argparse(parser: argparse.ArgumentParser):
-	parser.add_argument("APP", nargs = "*", help = "App name (folder directly in the git repository)")
-	parser.add_argument("--yes", "-y", "--no-interactive", action = "store_false", dest = "interactive", help = "Don't ask questions")
+def contribute_to_argparse(parser):
+	pass

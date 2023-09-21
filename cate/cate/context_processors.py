@@ -1,7 +1,7 @@
 import importlib
 from typing import Any, Type
 
-from cate import settings
+import custom_settings
 from common.models import CommonPage
 from common.views import CommonPageView
 from django.http import HttpRequest
@@ -12,7 +12,7 @@ def now_variable(_request: HttpRequest):
     return {"now": now()}
 
 def offline(_request: HttpRequest):
-    return {"offline": settings.settings.OFFLINE}
+    return {"offline": custom_settings.OFFLINE}
 
 def app_name(request: HttpRequest):
     match = request.resolver_match

@@ -6,18 +6,14 @@ import sys
 from pathlib import Path
 
 from .setup import setup
-from .utils import App
+from .utils import APP_NAME, BASE_FOLDER, import_path
 from .utils import cprint as old_cprint
 from .utils import run
 
-FOLDER = Path(__file__).parent.parent
-
-def fetch(apps: list[App] | None = None, pipe = False):
+def fetch(pipe = False):
 	"""
 	Fetch changes with `git fetch` and migrate the projects.
 	"""
-	apps = apps or App.all()
-
 	outputs: list[str] = []
 
 	if pipe:
@@ -41,13 +37,19 @@ def fetch(apps: list[App] | None = None, pipe = False):
 	cprint("Fetching script", "blue")
 	print()
 
-	def _run_with_explanation(cmd: str | list[str], expl: str, cwd = FOLDER):
+	def _run_with_explanation(cmd: str | list[str], expl: str, cwd = BASE_FOLDER):
 		print(expl.capitalize())
 		proc = run(cmd, capture = pipe, cwd = cwd)
 		outputs.append(proc.stdout)
 		if proc.returncode != 0:
 			cprint("Error while " + expl, "red")
 
+	APP_FOLDER = BASE_FOLDER / APP_NAME
+	if not (APP_FOLDER / "custom_settings_overrides.py").exists():
+		cprint("The app doesn't have a custom_settings_overrides.py file. Please create one.", "red")
+		return
+
+	settings = import_path(APP_FOLDER, "custom_settings")
 	for app in apps:
 		print("App " + app)
 		settings = app.settings

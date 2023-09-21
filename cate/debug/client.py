@@ -5,7 +5,7 @@ from time import time
 from typing import Any
 
 import requests
-from cate import settings
+import custom_settings
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 
@@ -133,13 +133,13 @@ class GitHubClient:
 
     @property
     def api_data(self) -> dict[str, Any]:
-        if settings.settings.OFFLINE:
+        if custom_settings.OFFLINE:
             return {}
 
         if time() - self._data[0] < 60 and self._data[1]:
             return self._data[1]
 
-        parts = settings.settings.GITHUB_REPO.rstrip("/").split("/")
+        parts = custom_settings.GITHUB_REPO.rstrip("/").split("/")
         req = requests.get(f"https://api.github.com/repos/{parts[-2]}/{parts[-1]}/commits/HEAD")
         ts = time()
         data = req.json()
