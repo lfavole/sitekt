@@ -41,6 +41,8 @@ class CustomSettings(ModuleType):
 
         if name == "OFFLINE":
             # return the current value of OFFLINE
+            if PYTHONANYWHERE:
+                return False
             return not internet()
 
         try:
