@@ -1,14 +1,14 @@
-import argparse
 import builtins
 import io
-from shutil import which
 import sys
 from pathlib import Path
+from shutil import which
 
 from .setup import setup
-from .utils import APP_NAME, BASE_FOLDER, import_path
+from .utils import APP_NAME, BASE_FOLDER
 from .utils import cprint as old_cprint
-from .utils import run
+from .utils import import_path, run
+
 
 def fetch(pipe = False):
 	"""
@@ -50,41 +50,28 @@ def fetch(pipe = False):
 		return
 
 	settings = import_path(APP_FOLDER, "custom_settings")
-	for app in apps:
-		print("App " + app)
-		settings = app.settings
-		if not settings:
-			cprint("Can't load settings for app " + app, "red")
-			continue
 
-		_run_with_explanation("git init", "creating git repo")
-		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "fetching changes")
-		_run_with_explanation(["git", "stash"], "backing up changes")
-		_run_with_explanation(["git", "reset", "--hard", "origin/main"], "resetting to server state")
-		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "re-fetching changes")
+	_run_with_explanation("git init", "creating git repo")
+	_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "fetching changes")
+	_run_with_explanation(["git", "stash"], "backing up changes")
+	_run_with_explanation(["git", "reset", "--hard", "origin/main"], "resetting to server state")
+	_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "re-fetching changes")
 
-		if Path(sys.executable).name == "uwsgi":
-			# use Python executable (not uwsgi) on PythonAnywhere
-			sys.executable = which("python")
+	if Path(sys.executable or "").name == "uwsgi":
+		# use Python executable (not uwsgi) on PythonAnywhere
+		sys.executable = which("python")
 
-	setup(apps)
+	setup()
 
-	for app in apps:
-		print("App " + app)
-		settings = app.settings
-		if not settings:
-			cprint("Can't load settings for app " + app, "red")
-			continue
+	manage_py_args = [sys.executable, str(APP_FOLDER / "manage.py")]
 
-		manage_py_args = [sys.executable, str(app / "manage.py")]
+	_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
+	_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")
+	_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "copying static files")
 
-		_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
-		_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")
-		_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "copying static files")
-
-		if settings.WSGI_FILE:
-			print("Touching WSGI file for app " + app)
-			Path(settings.WSGI_FILE).touch()
+	if settings.WSGI_FILE:
+		print("Touching WSGI file for app " + APP_NAME)
+		Path(settings.WSGI_FILE).touch()
 
 	cprint("OK", "green")
 
@@ -93,7 +80,7 @@ def fetch(pipe = False):
 		return "".join(outputs)
 
 def main(args):
-	fetch(App.get_list_from_argparse(args.APP))
+	fetch()
 
-def contribute_to_argparse(parser: argparse.ArgumentParser):
-	parser.add_argument("APP", nargs = "*", help = "App name (folders directly in the git repository)")
+def contribute_to_argparse(parser):
+	pass
