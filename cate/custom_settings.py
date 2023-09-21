@@ -13,7 +13,7 @@ from typing import Any
 
 from cate.utils.connectivity import internet
 
-PA_SITE = os.environ.get("PA_SITE", "")
+PA_SITE = os.environ.get("PYTHONANYWHERE_SITE", "")
 PYTHONANYWHERE = bool(PA_SITE)
 USERNAME = getuser()
 
@@ -65,7 +65,10 @@ class CustomSettings(ModuleType):
                 return USERNAME + ".mysql." + PA_SITE.replace("pythonanywhere.com", "pythonanywhere-services.com")
 
             if name == "DB_USER":
-                return super().__getattribute__(name) or USERNAME
+                try:
+                    return super().__getattribute__(name)
+                except AttributeError:
+                    return USERNAME
 
             if name == "PA_SITE":
                 return PA_SITE if PYTHONANYWHERE else None
