@@ -49,29 +49,28 @@ def fetch(pipe = False):
 		cprint("The app doesn't have a custom_settings_overrides.py file. Please create one.", "red")
 		return
 
-	settings = import_path(APP_FOLDER, "custom_settings")
+	with import_path(APP_FOLDER, "custom_settings", remove_sys_path=False) as settings:
+		_run_with_explanation("git init", "creating git repo")
+		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "fetching changes")
+		_run_with_explanation(["git", "stash"], "backing up changes")
+		_run_with_explanation(["git", "reset", "--hard", "origin/main"], "resetting to server state")
+		_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "re-fetching changes")
 
-	_run_with_explanation("git init", "creating git repo")
-	_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "fetching changes")
-	_run_with_explanation(["git", "stash"], "backing up changes")
-	_run_with_explanation(["git", "reset", "--hard", "origin/main"], "resetting to server state")
-	_run_with_explanation(["git", "pull", settings.GITHUB_REPO + ".git"], "re-fetching changes")
+		if Path(sys.executable or "").name == "uwsgi":
+			# use Python executable (not uwsgi) on PythonAnywhere
+			sys.executable = which("python")
 
-	if Path(sys.executable or "").name == "uwsgi":
-		# use Python executable (not uwsgi) on PythonAnywhere
-		sys.executable = which("python")
+		setup()
 
-	setup()
+		manage_py_args = [sys.executable, str(APP_FOLDER / "manage.py")]
 
-	manage_py_args = [sys.executable, str(APP_FOLDER / "manage.py")]
+		_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
+		_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")
+		_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "copying static files")
 
-	_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
-	_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")
-	_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "copying static files")
-
-	if settings.WSGI_FILE:
-		print("Touching WSGI file for app " + APP_NAME)
-		Path(settings.WSGI_FILE).touch()
+		if settings.WSGI_FILE:
+			print("Touching WSGI file for app " + APP_NAME)
+			Path(settings.WSGI_FILE).touch()
 
 	cprint("OK", "green")
 
