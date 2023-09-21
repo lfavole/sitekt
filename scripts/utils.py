@@ -5,7 +5,8 @@ import shlex
 import subprocess as sp
 import sys
 from pathlib import Path
-from typing import Any, TypeVar
+from types import ModuleType
+from typing import Any, Literal, TypeVar, overload
 
 Self = TypeVar("Self")
 
@@ -20,16 +21,50 @@ BASE_FOLDER = FOLDER.parent
 APP_NAME = "cate"
 
 
-def import_path(path: Path | str, module: str, package: str | None = None):
+class ModuleContextManager:
+	__slots__ = ("module", "old_path")
+
+	def __init__(self, module, old_path):
+		self.module = module
+		self.old_path = old_path
+
+	def __enter__(self):
+		return self.module
+
+	def __getattr__(self, key):
+		return getattr(self.module, key)
+
+	def __exit__(self, exc_type, exc_val, exc_tb):
+		sys.path = self.old_path
+
+
+@overload
+def import_path(path: Path | str, module: str, package: str | None = None, *, remove_sys_path: Literal[True] = True) -> ModuleType:
+	...
+
+
+@overload
+def import_path(path: Path | str, module: str, package: str | None = None, *, remove_sys_path: Literal[False] = False) -> ModuleContextManager:
+	...
+
+
+def import_path(path: Path | str, module: str, package: str | None = None, *, remove_sys_path = True):
 	"""
 	Import the `module` that is in the specified `path` by adding and removing the `path` to `sys.path`.
+
+	If `remove_sys_path` is False, the `path` will be removed when exiting from the context manager.
 	"""
 	old_path = sys.path.copy()
 	sys.path.append(str(path))
+
 	try:
-		return importlib.import_module(module, package)
+		ret = importlib.import_module(module, package)
+		if remove_sys_path:
+			return ret
+		return ModuleContextManager(ret, old_path)
 	finally:
-		sys.path = old_path
+		if remove_sys_path:
+			sys.path = old_path
 
 
 def get_vars(obj: Any) -> dict[str, Any]:

@@ -28,18 +28,17 @@ def setup():
 		cprint("The app doesn't have a custom_settings_overrides.py file. Please create one.", "red")
 		return
 
-	settings = import_path(APP_FOLDER, "custom_settings")
+	with import_path(APP_FOLDER, "custom_settings", remove_sys_path=False) as settings:
+		cprint("Setting up app", "blue")
+		if PYTHONANYWHERE:
+			if settings.HOST is None:
+				cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
+				return
 
-	cprint("Setting up app", "blue")
-	if PYTHONANYWHERE:
-		if settings.HOST is None:
-			cprint("The HOST setting is required when we're not on a PythonAnywhere server.", "red")
-			return
-
-		if settings.WSGI_FILE:
-			print("Creating WSGI file " + str(settings.WSGI_FILE))
-			with open(settings.WSGI_FILE, "w") as f:
-				f.write(f"""\
+			if settings.WSGI_FILE:
+				print("Creating WSGI file " + str(settings.WSGI_FILE))
+				with open(settings.WSGI_FILE, "w") as f:
+					f.write(f"""\
 import sys
 sys.path.insert(0, {repr(str(APP_FOLDER))})
 

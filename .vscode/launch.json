@@ -1,20 +1,14 @@
 {
     "configurations": [
         {
-            "name": "Django",
+            "name": "Development server",
             "type": "python",
             "request": "launch",
             "stopOnEntry": false,
-            "python": "${config.python.pythonPath}",
+            "python": "${config:python.defaultInterpreterPath}",
             "program": "${workspaceRoot}/cate/manage.py",
             "args": [
                 "runserver"
-            ],
-            "debugOptions": [
-                "WaitOnAbnormalExit",
-                "WaitOnNormalExit",
-                "RedirectOutput",
-                "DjangoDebugging"
             ]
         }
     ]
