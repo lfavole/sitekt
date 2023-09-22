@@ -9,7 +9,8 @@
             "program": "${workspaceRoot}/cate/manage.py",
             "args": [
                 "runserver"
-            ]
+            ],
+            "justMyCode": false
         }
     ]
 }
