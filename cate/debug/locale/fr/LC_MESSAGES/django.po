@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 09:22+0200\n"
+"POT-Creation-Date: 2023-09-22 19:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,99 +18,99 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\debug\client.py:89 .\debug\client.py:217
+#: .\debug\client.py:90 .\debug\client.py:218
 msgid "Valid signature"
 msgstr "Signature valide"
 
-#: .\debug\client.py:90 .\debug\client.py:216
+#: .\debug\client.py:91 .\debug\client.py:217
 msgid "Invalid signature"
 msgstr "Signature invalide"
 
-#: .\debug\client.py:91
+#: .\debug\client.py:92
 msgid "Unknown validity"
 msgstr "Validité inconnue"
 
-#: .\debug\client.py:92
+#: .\debug\client.py:93
 msgid "Expired signature"
 msgstr "Signature expirée"
 
-#: .\debug\client.py:93 .\debug\client.py:205
+#: .\debug\client.py:94 .\debug\client.py:206
 msgid "Expired key"
 msgstr "Clé expirée"
 
-#: .\debug\client.py:94
+#: .\debug\client.py:95
 msgid "Revoked key"
 msgstr "Clé révoquée"
 
-#: .\debug\client.py:95 .\debug\client.py:208
+#: .\debug\client.py:96 .\debug\client.py:209
 msgid "Can't check for validity"
 msgstr "Impossible de vérifier la validité"
 
-#: .\debug\client.py:96 .\debug\client.py:209
+#: .\debug\client.py:97 .\debug\client.py:210
 msgid "No signature"
 msgstr "Pas de signature"
 
-#: .\debug\client.py:99 .\debug\client.py:222
+#: .\debug\client.py:100 .\debug\client.py:223
 msgid "Status"
 msgstr "État"
 
-#: .\debug\client.py:100
+#: .\debug\client.py:101
 msgid "Key"
 msgstr "Clé"
 
-#: .\debug\client.py:101
+#: .\debug\client.py:102
 msgid "Key fingerprint"
 msgstr "Empreinte de la clé"
 
-#: .\debug\client.py:102
+#: .\debug\client.py:103
 msgid "Trust level"
 msgstr "Niveau de sécurité"
 
-#: .\debug\client.py:206
+#: .\debug\client.py:207
 msgid "The key is not a signing key"
 msgstr "La clé ne sert pas à signer"
 
-#: .\debug\client.py:207
+#: .\debug\client.py:208
 msgid "Error while checking for validity"
 msgstr "Erreur lors de la vérification de la validité"
 
-#: .\debug\client.py:210
+#: .\debug\client.py:211
 msgid "Unknown signature type"
 msgstr "Type de signature inconnu"
 
-#: .\debug\client.py:211
+#: .\debug\client.py:212
 msgid "No user associated"
 msgstr "Pas d'utilisateur associé"
 
-#: .\debug\client.py:212
+#: .\debug\client.py:213
 msgid "Unverified email address"
 msgstr "Adresse mail non vérifiée"
 
-#: .\debug\client.py:213
+#: .\debug\client.py:214
 msgid "Bad email address"
 msgstr "Adresse mail invalide"
 
-#: .\debug\client.py:214
+#: .\debug\client.py:215
 msgid "Unknown key"
 msgstr "Clé inconnue"
 
-#: .\debug\client.py:215
+#: .\debug\client.py:216
 msgid "Malformed signature"
 msgstr "Signature malformée"
 
-#: .\debug\client.py:219
+#: .\debug\client.py:220
 msgid "yes"
 msgstr "oui"
 
-#: .\debug\client.py:219
+#: .\debug\client.py:220
 msgid "no"
 msgstr "non"
 
-#: .\debug\client.py:219
+#: .\debug\client.py:220
 msgid "unknown"
 msgstr "inconnu"
 
-#: .\debug\client.py:221
+#: .\debug\client.py:222
 msgid "Verified"
 msgstr "Vérifié"
 
@@ -187,6 +187,18 @@ msgid "GitHub information"
 msgstr "Informations de GitHub"
 
 #. Translators: add a space before colon if needed
-#: .\debug\panels.py:153
+#: .\debug\panels.py:156
 msgid ":"
 msgstr " :"
+
+#: .\debug\templates\debug_toolbar\base.html:20
+msgid "Hide toolbar"
+msgstr ""
+
+#: .\debug\templates\debug_toolbar\base.html:20
+msgid "Hide"
+msgstr ""
+
+#: .\debug\templates\debug_toolbar\base.html:24
+msgid "Show toolbar"
+msgstr ""

@@ -1,7 +1,10 @@
-{% extends "cate/site_base.html" %}
+{% extends base_template %}
 {% load i18n %}
+
+{% block title %}{% trans "Server error" %}{% endblock title %}
 
 {% block content %}
 <h1>{% trans "Server error" %}</h1>
 <p>{% blocktrans %}The error has been saved with the number {{ error_id }}.{% endblocktrans %}</p>
+{{ djdt_message }}
 {% endblock content %}

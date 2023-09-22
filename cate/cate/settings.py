@@ -35,13 +35,15 @@ SECRET_KEY = custom_settings.SECRET_KEY or "+jt!%+%erdp^y7h37v#68x31+u9ut6^8zryj
 DEBUG = custom_settings.DEBUG
 
 if not DEBUG:
-	CSRF_COOKIE_SECURE = True
-	SESSION_COOKIE_SECURE = True
 	CONN_MAX_AGE = 600
 	ALLOWED_HOSTS = [custom_settings.HOST]
-	SECURE_SSL_REDIRECT = True
 else:
 	ALLOWED_HOSTS = ["*"]
+
+if custom_settings.PYTHONANYWHERE:
+	CSRF_COOKIE_SECURE = True
+	SESSION_COOKIE_SECURE = True
+	SECURE_SSL_REDIRECT = True
 
 GITHUB_WEBHOOK_KEY = custom_settings.GITHUB_WEBHOOK_KEY
 
