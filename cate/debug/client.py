@@ -225,5 +225,4 @@ class GitHubClient:
 
     @property
     def url(self):
-        return "https://github.com/lfavole/sitekt/commit/31a208e63a8360307b630b9c7385432545c32227"
         return self.api_data.get("html_url", "")
