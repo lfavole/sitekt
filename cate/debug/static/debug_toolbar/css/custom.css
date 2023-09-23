@@ -28,3 +28,61 @@
     color: #cf9;
     font-size: 16px;
 }
+
+/* Fix layout on smartphones */
+@media (max-width: 500px) {
+    #djDebug #djDebugToolbar {
+        width: unset;
+        height: 100px;
+        left: 0;
+        right: 0;
+        top: unset;
+        bottom: 0;
+        overflow-x: auto;
+        overflow-y: unset;
+    }
+    #djDebug #djDebugToolbar ul {
+        display: flex;
+        height: 100%;
+    }
+    #djDebug #djDebugToolbar li {
+        flex-shrink: 0;
+        border: none;
+        border-right: 1px solid #222;
+    }
+    #djDebug .djdt-panelContent {
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 100px;
+    }
+    #djDebug .djDebugPanelContent {
+        padding: 10px 0 0 5px;
+    }
+    #djDebug #djDebugToolbar li {
+        width: 100px;
+        word-break: break-word;
+    }
+    #djDebug #djDebugToolbar li:first-child {
+        writing-mode: tb;
+        width: 3em;
+    }
+    #djDebug #djDebugToolbar li.djdt-active::before {
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        transform-origin: left center;
+        border-width: 15px 10px;
+        border-color: #eee transparent transparent transparent;
+    }
+    #djDebug #djDebugToolbar input[type="checkbox"] {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        margin: 0;
+    }
+    #djDebug #djDebugToolbar li > a, #djDebug #djDebugToolbar li > div.djdt-contentless {
+        height: 100%;
+        padding: 5px;
+    }
+}
