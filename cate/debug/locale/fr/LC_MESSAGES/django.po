@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-22 19:00+0200\n"
+"POT-Creation-Date: 2023-09-23 09:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,87 +118,91 @@ msgstr "Vérifié"
 msgid "Error"
 msgstr "Erreur"
 
-#: .\debug\panels.py:50
+#: .\debug\panels.py:32
+msgid "No error"
+msgstr "Aucune erreur"
+
+#: .\debug\panels.py:57
 msgid "There is no error on this page."
 msgstr "Il n'y a aucune erreur sur cette page."
 
-#: .\debug\panels.py:94
+#: .\debug\panels.py:101
 msgid "Revision"
 msgstr "Révision"
 
-#: .\debug\panels.py:115
+#: .\debug\panels.py:122
 msgid "No repository was detected."
 msgstr "Aucun dépôt n'a été détecté."
 
-#: .\debug\panels.py:124
+#: .\debug\panels.py:131
 msgid "Short hash"
 msgstr "Hash court"
 
-#: .\debug\panels.py:125
+#: .\debug\panels.py:132
 msgid "Hash"
 msgstr "Hash"
 
-#: .\debug\panels.py:126
+#: .\debug\panels.py:133
 msgid "Author"
 msgstr "Auteur"
 
-#: .\debug\panels.py:127
+#: .\debug\panels.py:134
 msgid "Committer"
 msgstr "Auteur du commit"
 
-#: .\debug\panels.py:128
+#: .\debug\panels.py:135
 msgid "Updated at"
 msgstr "Modifié le"
 
-#: .\debug\panels.py:129
+#: .\debug\panels.py:136
 msgid "Subject"
 msgstr "Objet"
 
-#: .\debug\panels.py:130
+#: .\debug\panels.py:137
 msgid "Body"
 msgstr "Message"
 
-#: .\debug\panels.py:131
+#: .\debug\panels.py:138
 msgid "Branch name"
 msgstr "Nom de la branche"
 
-#: .\debug\panels.py:132
+#: .\debug\panels.py:139
 msgid "Signature status"
 msgstr "État de la signature"
 
-#: .\debug\panels.py:133
+#: .\debug\panels.py:140
 msgid "Author profile"
 msgstr "Profil de l'auteur"
 
-#: .\debug\panels.py:134
+#: .\debug\panels.py:141
 msgid "Committer profile"
 msgstr "Profil de l'auteur du commit"
 
-#: .\debug\panels.py:135
+#: .\debug\panels.py:142
 msgid "URL"
 msgstr "URL"
 
-#: .\debug\panels.py:140
+#: .\debug\panels.py:147
 msgid "Git information"
 msgstr "Informations de Git"
 
-#: .\debug\panels.py:141
+#: .\debug\panels.py:148
 msgid "GitHub information"
 msgstr "Informations de GitHub"
 
 #. Translators: add a space before colon if needed
-#: .\debug\panels.py:156
+#: .\debug\panels.py:163
 msgid ":"
 msgstr " :"
 
-#: .\debug\templates\debug_toolbar\base.html:20
+#: .\debug\templates\debug_toolbar\base.html:21
 msgid "Hide toolbar"
 msgstr ""
 
-#: .\debug\templates\debug_toolbar\base.html:20
+#: .\debug\templates\debug_toolbar\base.html:21
 msgid "Hide"
 msgstr ""
 
-#: .\debug\templates\debug_toolbar\base.html:24
+#: .\debug\templates\debug_toolbar\base.html:25
 msgid "Show toolbar"
 msgstr ""

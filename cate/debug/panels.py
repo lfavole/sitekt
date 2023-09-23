@@ -25,8 +25,23 @@ class ErrorPanel(Panel):
     title = _("Error")  # type: ignore
     template = "debug_toolbar/panels/error.html"  # type: ignore
 
+    @property
+    def nav_subtitle(self):
+        exc_info = self.get_stats().get("exc_info")
+        if exc_info is None:
+            return _("No error")
+        return f"{exc_info[0].__name__}: {exc_info[1]}"
+
+    @property
+    def has_content(self):
+        return self.get_stats().get("exc_info") is not None
+
     def generate_stats(self, request, response):
-        self.record_stats({"request": request})
+        self.toolbar.store()  # ensure that store_id exists
+        self.record_stats({
+            "request": request,
+            "store_id": self.toolbar.store_id,
+        })
 
     def enable_instrumentation(self):
         exception._old_response_for_exception = response_for_exception  # type: ignore
@@ -42,14 +57,6 @@ class ErrorPanel(Panel):
 
     def disable_instrumentation(self):
         exception.response_for_exception = exception._old_response_for_exception  # type: ignore
-
-    @property
-    def content(self):
-        stats = self.get_stats()
-        if stats.get("exc_info") is None:
-            return _("There is no error on this page.")
-        params = urlencode({"store_id": self.toolbar.store_id})
-        return render_to_string(self.template, {"params": params})
 
     @property
     def error_content(self):

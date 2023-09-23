@@ -114,7 +114,7 @@ def observe_request(request: HttpRequest):
 	"""
 	Should we observe the request with the toolbar?
 	"""
-	if not DebugToolbar.is_toolbar_request(request):
+	if DebugToolbar.is_toolbar_request(request):
 		return False
 	if request.headers.get("X-Requested-With") == "XMLHttpRequest":
 		return False

@@ -1,0 +1,30 @@
+#djDebug #djDebugToolbar li.djdt-active:before {
+    content: "";
+    border-style: solid;
+    border-width: 10px 15px;
+    border-color: transparent transparent transparent #eee;
+}
+#djDebug #djDebugToolbar li small {
+    display: block;
+    margin-top: 0.5em;
+}
+.djdt-logo {
+    padding: 0 5px;
+    margin: 0 2px;
+    color: #fff;
+    background: #000;
+    opacity: 0.5;
+    font-family: var(--djdt-font-family-primary);
+    font-size: 22px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+.djdt-logo span:first-child {
+    color: #cf9;
+    font-size: 22px;
+}
+.djdt-logo span:nth-child(2) {
+    color: #cf9;
+    font-size: 16px;
+}

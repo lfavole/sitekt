@@ -107,23 +107,39 @@ DEBUG_ENGINE = Engine(
 
 def _render_for_status(request, status, context=None):
 	dirs = DEBUG_ENGINE.dirs
+	base_template = "cate/site_base.html"
+
 	app_name = request.resolver_match.app_name if request.resolver_match else ""
 	if app_name:
-		dirs.append(settings.BASE_DIR / app_name / "templates")
-	with (Path(__file__).parent / f"templates/cate/{status}.html").open() as f:
-		template = DEBUG_ENGINE.from_string(f.read())
+		dir = settings.BASE_DIR / app_name / "templates"
+		if (dir / app_name / "page_base.html").exists():
+			base_template = f"{app_name}/page_base.html"
+			dirs.append(dir)
+
+	template = DEBUG_ENGINE.get_template(f"cate/{status}.html")
 	DEBUG_ENGINE.dirs = dirs
 
+	djdt_logo = '<span class="djdt-logo"><span>D</span><span>j</span>DT</span>'
+	djdt_script = """\
+<script>
+$(function() {
+	console.log("load");
+	$(".djdt-logo").click(djdt.show_toolbar);
+});
+</script>
+"""
 	djdt_message = SafeString(
-		"<p>"
+		djdt_script
+		+ "<p>"
 		+ _("You have the permission to view the error details!")
 		+ "<br>"
-		+ _("Open the debug toolbar (DjDT at top-right) and click on the Error tab.")
+		# Translators: %(djdt)s is the DjDT logo
+		+ _("Open the debug toolbar (%(djdt)s at top-right) and click on the Error tab.") % {"djdt": djdt_logo}
 		+ "</p>"
 	) if request.user.has_perm("can_see_debug_toolbar") else ""  # type: ignore
 
 	context = RequestContext(request, {
-		"base_template": app_name + "/page_base.html" if app_name else "cate/site_base.html",
+		"base_template": base_template,
 		"djdt_message": djdt_message,
 		**(context or {}),
 	}, processors=[

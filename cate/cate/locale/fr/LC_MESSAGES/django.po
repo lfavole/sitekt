@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-22 19:00+0200\n"
+"POT-Creation-Date: 2023-09-23 09:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,10 +90,15 @@ msgstr ", "
 msgid "and"
 msgstr "et"
 
-#: .\cate\views.py:119
+#: .\cate\views.py:124
 msgid "You have the permission to view the error details!"
 msgstr "Vous avez la permission de voir les détails de l'erreur !"
 
-#: .\cate\views.py:121
-msgid "Open the debug toolbar (DjDT at top-right) and click on the Error tab."
-msgstr "Ouvrez le volet de débogage (DjDT en haut à droite) et cliquez sur l'onglet Erreur."
+#. Translators: %(djdt)s is the DjDT logo
+#: .\cate\views.py:127
+#, python-format
+msgid ""
+"Open the debug toolbar (%(djdt)s at top-right) and click on the Error tab."
+msgstr ""
+"Ouvrez le volet de débogage (%(djdt)s en haut à droite) et cliquez sur "
+"l'onglet Erreur."
