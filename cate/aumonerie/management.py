@@ -1,8 +1,9 @@
+from django.apps import AppConfig
 from django.db import DEFAULT_DB_ALIAS
 
 
 def create_groups(
-    app_config,
+    app_config: AppConfig,
     verbosity=2,
     using=DEFAULT_DB_ALIAS,
     **_kwargs,
