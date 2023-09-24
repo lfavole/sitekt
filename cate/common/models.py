@@ -246,7 +246,7 @@ class CommonGroup(models.Model):
 	"""
 	Common group class for all apps.
 	"""
-	name = models.fields.CharField(_("Name"), max_length = 100)
+	name = models.fields.CharField(_("Name"), max_length = 100, unique = True)
 
 	def __str__(self):
 		return self.name
