@@ -421,6 +421,7 @@ class CommonMeeting(models.Model):
 
 	class Meta:
 		verbose_name = _("meeting")
+		ordering = ["date"]
 		abstract = True
 
 class CommonAttendance(models.Model):
