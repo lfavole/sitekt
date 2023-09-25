@@ -165,8 +165,8 @@ class Meeting(CommonMeeting):
 		kind = self.kind
 		objs = Child.objects.all()
 
-		if kind in (Meeting.Kind.CATE, Meeting.Kind.TEMPS_FORT):
-			groups_ok = ["Giang", "Eliane", "Carine", "Mélanie"]
+		if kind == Meeting.Kind.CATE:
+			groups_ok = ["Giang", "Eliane", "Carine"]
 			return objs.filter(groupe__name__in=groups_ok)
 
 		if kind == Meeting.Kind.EVF:
