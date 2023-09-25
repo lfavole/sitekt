@@ -29,6 +29,10 @@
     font-size: 16px;
 }
 
+#djDebug #djDebugToolbar li {
+    word-break: break-word;
+}
+
 /* Fix layout on smartphones */
 @media (max-width: 500px) {
     #djDebug #djDebugToolbar {
@@ -61,7 +65,6 @@
     }
     #djDebug #djDebugToolbar li {
         width: 100px;
-        word-break: break-word;
     }
     #djDebug #djDebugToolbar li:first-child {
         writing-mode: tb;
