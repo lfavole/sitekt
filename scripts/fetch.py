@@ -1,4 +1,5 @@
 import builtins
+from concurrent.futures import ThreadPoolExecutor
 import io
 import sys
 from pathlib import Path
@@ -60,13 +61,17 @@ def fetch(pipe = False):
 			# use Python executable (not uwsgi) on PythonAnywhere
 			sys.executable = which("python")
 
-		setup()
-
 		manage_py_args = [sys.executable, str(APP_FOLDER / "manage.py")]
 
-		_run_with_explanation([*manage_py_args, "migrate"], "migrating database")
-		_run_with_explanation([*manage_py_args, "compilemessages"], "compiling translations")
-		_run_with_explanation([*manage_py_args, "collectstatic", "--noinput"], "copying static files")
+		# This code is executed from a webpage
+		# so we must do everything in less than 30 seconds
+		# otherwise the execution will be stopped
+		with ThreadPoolExecutor() as executor:
+			executor.submit(setup)
+
+			executor.submit(_run_with_explanation, [*manage_py_args, "migrate"], "migrating database")
+			executor.submit(_run_with_explanation, [*manage_py_args, "compilemessages"], "compiling translations")
+			executor.submit(_run_with_explanation, [*manage_py_args, "collectstatic", "--noinput"], "copying static files")
 
 		if settings.WSGI_FILE:
 			print("Touching WSGI file for app " + APP_NAME)
