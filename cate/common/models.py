@@ -107,7 +107,7 @@ class PageBase(models.Model):
 	"""
 	Base class for pages and articles.
 	"""
-	slug = models.fields.SlugField(_("Slug"), max_length = 100, editable = False, primary_key = True)
+	slug = models.fields.SlugField(_("Slug"), max_length = 100, unique = True, editable = False)
 	title = models.fields.CharField(_("Title"), max_length = 100)
 	content = models.fields.TextField(_("Content"), blank = True)
 	hidden = models.fields.BooleanField(_("Hidden page"), default = False)
@@ -115,9 +115,12 @@ class PageBase(models.Model):
 	class Meta:
 		abstract = True
 
-	def _generate_slug(self):
+	def _generate_slug(self, try_slugs=True):
 		value = self.title
 		slug_candidate = slug_original = slugify(value)
+		if not try_slugs:
+			return slug_candidate
+
 		i = 0
 		while True:
 			i += 1

@@ -35,7 +35,7 @@ def create_pages(
         Page(title="Articles / Photos", content=f"{app}:articles"),
     ]
     for i, page in enumerate(pages):
-        page.slug = page._generate_slug()
+        page.slug = page._generate_slug(False)
         page.order = i
     Page.objects.using(using).bulk_create(pages, ignore_conflicts=True)
 
