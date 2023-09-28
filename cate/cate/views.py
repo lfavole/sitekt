@@ -1,6 +1,7 @@
 import datetime as dt
 import hmac
 import importlib
+import mimetypes
 import sys
 from hashlib import sha1
 from ipaddress import ip_address, ip_network
@@ -53,11 +54,13 @@ def export(request, format: str, app_label: str, model_name: str, elements_pk: s
 	# import this now because it is assigned during serializers loading
 	from django.core.serializers import _serializers
 	for ext, module in _serializers.items():
-		if module == serializer.__module__:
+		if module.__name__ == serializer.__module__:
 			extension = ext
 			break
 	else:
 		extension = "txt"
+	if extension == "python":
+		extension = "py"
 
 	content_type = get_object_or_404(ContentType, app_label=app_label, model=model_name)
 	model = content_type.model_class()
@@ -74,12 +77,18 @@ def export(request, format: str, app_label: str, model_name: str, elements_pk: s
 	queryset = model.objects.all()
 	if pk_list:
 		queryset = queryset.filter(pk__in=pk_list)
+	if queryset.model.__name__.lower() == "meeting":
+		queryset2 = apps.get_model(queryset.model._meta.app_label, "Attendance").objects.filter(meeting__in=queryset)
+		queryset = list(queryset) + list(queryset2)
+	if not isinstance(queryset, list):
+		queryset = list(queryset)
 
 	response = HttpResponse()
 
 	date = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
 	filename = f"export_{content_type.app_label}_{content_type.model}_{date}.{extension}"
-	response.headers["Content-Disposition"] = "attachment; " + _encode_filename(filename)
+	response.headers["Content-Type"] = mimetypes.guess_type(f"x.{extension}")[0]  # type: ignore
+	response.headers["Content-Disposition"] = "attachment; " + _encode_filename(filename)  # type: ignore
 
 	serializer.serialize(queryset, stream=response)
 	return response
