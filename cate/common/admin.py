@@ -201,6 +201,8 @@ class CommonMeetingAdmin(admin.ModelAdmin):
 	"""
 	Admin interface for meetings.
 	"""
+	change_list_template = "admin/change_list_meeting.html"
+
 	fields = ("date", "kind", "name")
 	list_display = ("__str__", "date")
 	# inlines = [CommonAttendancesInline]

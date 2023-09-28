@@ -4,6 +4,7 @@ from typing import Literal, Type
 from urllib.parse import quote
 
 from common.pdfs.list import list_pdf
+from common.pdfs.meetings import meetings_pdf
 from common.pdfs.quick_list import quick_list_pdf
 from django.apps import apps
 from django.conf import settings
@@ -18,7 +19,7 @@ from django.utils.timezone import now
 from django.views import generic
 from django.views.static import was_modified_since
 
-from .models import CommonArticle, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonPage
+from .models import CommonArticle, CommonChild, CommonDate, CommonDocument, CommonDocumentCategory, CommonMeeting, CommonPage
 
 
 def _encode_filename(filename: str):
@@ -60,6 +61,13 @@ def common_quick_list(request: HttpRequest, app: Literal["espacecate", "aumoneri
     if not has_permission(request, Child):
         return HttpResponseForbidden("You don't have the permission to see this list." if settings.DEBUG else "")
     return pdf_response(request, quick_list_pdf(request, app), "liste")
+
+def common_meetings(request: HttpRequest, app: Literal["espacecate", "aumonerie"]):
+    Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
+    Meeting: Type[CommonMeeting] = apps.get_model(app, "Meeting")  # type: ignore
+    if not has_permission(request, Child) or not has_permission(request, Meeting):
+        return HttpResponseForbidden("You don't have the permission to see this list." if settings.DEBUG else "")
+    return pdf_response(request, meetings_pdf(request, app), "rencontres")
 
 class BaseView(generic.View):
     """

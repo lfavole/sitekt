@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -218,6 +219,18 @@ class PDF(FPDF):
 
         return frags
 
+    @property
+    def current_font(self):
+        ret = super().current_font
+        if ret:
+            return ret
+        self.set_font()
+        return super().current_font
+
+    @current_font.setter
+    def current_font(self, value):
+        self._GraphicsStateMixin__statestack[-1]["current_font"] = value  # type: ignore
+
     def set_font(self, family = None, style = "", size = 0) -> None:
         styles = {
             "": "Regular",
@@ -228,6 +241,8 @@ class PDF(FPDF):
 
         key_style = "".join(c for c in style.upper() if c in "BI")
         key_family = (family or self.font_family).lower()
+        if key_family == "":
+            key_family = "montserrat"
         if key_family == "montserrat":
             key = key_family + key_style
             if key not in self.fonts:
@@ -237,7 +252,21 @@ class PDF(FPDF):
                     str(DATA / f"fonts/Montserrat-{styles[key_style]}.ttf"),
                 )
 
-        return super().set_font(family, style, size)
+        return super().set_font(key_family, style, size)
+
+    def set_font_size(self, size):
+        if not self.current_font:
+            self.set_font()
+        super().set_font_size(size)
+
+    @contextmanager
+    def go_back(self):
+        try:
+            x, y, page = self.x, self.y, self.page
+            yield
+        finally:
+            if self.page == page:
+                self.x, self.y = x, y
 
 
 # Fix encryption of metadata (PyFPDF/fpdf2#865)

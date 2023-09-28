@@ -102,6 +102,22 @@ class Year(models.Model):
 			cache.set("current_year", year)
 		return year
 
+	@property
+	def trs(self):
+		return [self.tr1, self.tr2, self.tr3]
+
+	@property
+	def tr1(self):
+		return (dt.date(self.start_year, 9, 1), dt.date(self.end_year, 1, 1))
+
+	@property
+	def tr2(self):
+		return (dt.date(self.end_year, 1, 1), dt.date(self.end_year, 4, 1))
+
+	@property
+	def tr3(self):
+		return (dt.date(self.end_year, 4, 1), dt.date(self.end_year, 7, 1))
+
 
 class PageBase(models.Model):
 	"""
@@ -286,6 +302,10 @@ class CommonChild(models.Model):
 	def __str__(self):
 		return f"{self.prenom} {self.nom}"
 
+	@property
+	def official_name(self):
+		return f"{self.nom} {self.prenom}"
+
 	sacraments_checks: dict[str, str] = {}
 
 	def clean(self):
@@ -431,8 +451,8 @@ class CommonAttendance(models.Model):
 	"""
 	Common attendance class for all apps.
 	"""
-	child: "models.ForeignKey[CommonChild]" = models.ForeignKey("Child", on_delete=models.CASCADE, verbose_name=_("Child"))
-	meeting: "models.ForeignKey[CommonMeeting]" = models.ForeignKey("Meeting", on_delete=models.CASCADE, verbose_name=_("Meeting"))
+	child: "models.ForeignKey[CommonChild]" = models.ForeignKey("Child", on_delete=models.CASCADE, related_name="attendances", related_query_name="attendance", verbose_name=_("Child"))
+	meeting: "models.ForeignKey[CommonMeeting]" = models.ForeignKey("Meeting", on_delete=models.CASCADE, related_name="attendances", related_query_name="attendance", verbose_name=_("Meeting"))
 	is_present = models.BooleanField(_("Present"))
 	has_warned = models.BooleanField(_("Has warned"))
 

@@ -77,8 +77,8 @@ def export(request, format: str, app_label: str, model_name: str, elements_pk: s
 	queryset = model.objects.all()
 	if pk_list:
 		queryset = queryset.filter(pk__in=pk_list)
-	if queryset.model.__name__.lower() == "meeting":
-		queryset2 = apps.get_model(queryset.model._meta.app_label, "Attendance").objects.filter(meeting__in=queryset)
+	if model.__name__.lower() == "meeting":
+		queryset2 = apps.get_model(model._meta.app_label, "Attendance").objects.filter(meeting__in=queryset)
 		queryset = list(queryset) + list(queryset2)
 	if not isinstance(queryset, list):
 		queryset = list(queryset)
