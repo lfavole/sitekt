@@ -67,10 +67,10 @@ $(function() {
 <div class="dates">
 <table cellspacing="0">
 	<tr>
-		<th>{% translate "Date" %}</th>
-		<th>{% translate "Time" %}</th>
-		<th>{% translate "Name" %}</th>
-		<th>{% translate "Place" %}</th>
+		<th>{% translate "date"|capfirst %}</th>
+		<th>{% translate "time"|capfirst %}</th>
+		<th>{% translate "name"|capfirst %}</th>
+		<th>{% translate "place"|capfirst %}</th>
 	</tr>
 	{% for date in dates %}
 	{% define_addable as classes %}

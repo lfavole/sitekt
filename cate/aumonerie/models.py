@@ -196,7 +196,7 @@ class Meeting(CommonMeeting):
         PROFESSION = "PF", "Profession de Foi"
         CONFIRMATION = "CONF", "Confirmation"
 
-    kind = models.CharField(_("Kind"), max_length=5, blank=True, choices=Kind.choices)
+    kind = models.CharField(_("kind"), max_length=5, blank=True, choices=Kind.choices)
 
     def get_childs(self):
         """

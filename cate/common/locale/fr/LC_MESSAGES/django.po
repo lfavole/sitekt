@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-03 19:06+0200\n"
+"POT-Creation-Date: 2023-09-29 15:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,289 +14,281 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\common\admin.py:21
+#: .\common\admin.py:27
 msgid "Homepage"
 msgstr "Page d'accueil"
 
-#: .\common\admin.py:24
+#: .\common\admin.py:30
 msgctxt "admin action message"
 msgid "changed"
 msgstr "La modification"
 
-#: .\common\admin.py:32
+#: .\common\admin.py:38
 #, python-format
 msgid "Successfully %(action)s %(count)d %(items)s."
 msgstr "%(action)s de %(count)d %(items)s a réussi."
 
-#: .\common\admin.py:41
+#: .\common\admin.py:48
 #, python-format
 msgid "Export selected %(verbose_name_plural)s"
 msgstr "Exporter les %(verbose_name_plural)s sélectionnés"
 
-#: .\common\admin.py:140
+#: .\common\admin.py:165
 msgid "Mark as paid"
 msgstr "Marquer comme payé"
 
-#: .\common\admin.py:141
+#: .\common\admin.py:166
 msgctxt "admin action message"
 msgid "marked as paid"
 msgstr "Le changement de l'attribut « payé »"
 
-#: .\common\admin.py:145
+#: .\common\admin.py:170
 msgid "Mark as signed"
 msgstr "Marquer comme signé"
 
-#: .\common\admin.py:146
+#: .\common\admin.py:171
 msgctxt "admin action message"
 msgid "marked as signed"
 msgstr "Le changement de l'attribut « signé »"
 
-#: .\common\admin.py:150 .\common\admin.py:169
+#: .\common\admin.py:175 .\common\admin.py:194
 #: .\common\templates\admin\change_group.html:20
 msgid "Change group"
 msgstr "Changer de groupe"
 
-#: .\common\admin.py:151
+#: .\common\admin.py:176
 msgctxt "admin action message"
 msgid "changed group"
 msgstr "Le changement de groupe"
 
-#: .\common\models.py:25
-msgid "Start year"
-msgstr "Année de début"
+#: .\common\models.py:33
+msgid "start year"
+msgstr "année de début"
 
-#: .\common\models.py:26
-msgid "Active year"
-msgstr "Année active"
+#: .\common\models.py:34
+msgid "active year"
+msgstr "année active"
 
-#: .\common\models.py:29
+#: .\common\models.py:37
 msgid "school year"
 msgstr "année scolaire"
 
-#: .\common\models.py:34
+#: .\common\models.py:43
 msgid "End year"
 msgstr "Année de fin"
 
-#: .\common\models.py:39
+#: .\common\models.py:49
 msgid "School year"
 msgstr "Année scolaire"
 
-#: .\common\models.py:43
+#: .\common\models.py:53
 #, python-format
 msgid "School year %s"
 msgstr "Année scolaire %s"
 
-#: .\common\models.py:103
-msgid "Slug"
+#: .\common\models.py:130
+msgid "slug"
 msgstr "ID"
 
-#: .\common\models.py:104 .\common\models.py:405
-msgid "Title"
-msgstr "Titre"
+#: .\common\models.py:131 .\common\models.py:529
+msgid "title"
+msgstr "titre"
 
-#: .\common\models.py:105
-msgid "Content"
-msgstr "Contenu"
+#: .\common\models.py:132
+msgid "content"
+msgstr "contenu"
 
-#: .\common\models.py:106
-msgid "Hidden page"
-msgstr "Page cachée"
+#: .\common\models.py:133
+msgid "hidden page"
+msgstr "page cachée"
 
-#: .\common\models.py:136
-msgid "Image"
-msgstr "Image"
+#: .\common\models.py:212
+msgid "image"
+msgstr "image"
 
-#: .\common\models.py:140
+#: .\common\models.py:216
 #, python-format
 msgid "Image '%s' in %s"
 msgstr "Image '%s' dans %s"
 
-#: .\common\models.py:149
-msgid "Order"
-msgstr "Ordre"
+#: .\common\models.py:227
+msgid "order"
+msgstr "ordre"
 
-#: .\common\models.py:150
+#: .\common\models.py:229
 msgid "Previous page"
 msgstr "Page précédente"
 
-#: .\common\models.py:153
+#: .\common\models.py:233
 msgid "page"
 msgstr "page"
 
-#: .\common\models.py:164
+#: .\common\models.py:246
 msgid "Page"
 msgstr "Page"
 
-#: .\common\models.py:167
+#: .\common\models.py:249
 msgid "page image"
 msgstr "image dans une page"
 
-#: .\common\models.py:168
+#: .\common\models.py:250
 msgid "page images"
 msgstr "images dans une page"
 
-#: .\common\models.py:175 .\common\models.py:355
+#: .\common\models.py:259 .\common\models.py:398 .\common\models.py:462
 #: .\common\templates\common\dates.html:70
-msgid "Date"
-msgstr "Date"
-
-#: .\common\models.py:176
-msgid "Hidden article"
-msgstr "Article caché"
-
-#: .\common\models.py:179
-msgid "article"
-msgstr "article"
-
-#: .\common\models.py:187
-msgid "Article"
-msgstr "Article"
-
-#: .\common\models.py:190
-msgid "article image"
-msgstr "image dans un article"
-
-#: .\common\models.py:191
-msgid "article images"
-msgstr "images dans un article"
-
-#: .\common\models.py:198 .\common\models.py:287 .\common\models.py:356
-#: .\common\templates\common\dates.html:72
-msgid "Name"
-msgstr "Nom"
-
-#: .\common\models.py:204
-msgid "group"
-msgstr "groupe"
-
-#: .\common\models.py:228
-msgid "child"
-msgstr "enfant"
-
-#: .\common\models.py:282
-msgid "Start date"
-msgstr "Date de début"
-
-#: .\common\models.py:283
-msgid "End date"
-msgstr "Date de fin"
-
-#: .\common\models.py:284
-msgid "Start time"
-msgstr "Heure de début"
-
-#: .\common\models.py:285
-msgid "End time"
-msgstr "Heure de fin"
-
-#: .\common\models.py:286
-msgid "Time (as text)"
-msgstr "Heure (en tant que texte)"
-
-#: .\common\models.py:288
-msgid "Short name"
-msgstr "Nom abrégé"
-
-#: .\common\models.py:289 .\common\templates\common\dates.html:73
-msgid "Place"
-msgstr "Lieu"
-
-#: .\common\models.py:290
-msgid "Cancelled"
-msgstr "Annulé"
-
-#: .\common\models.py:293
 msgid "date"
 msgstr "date"
 
-#: .\common\models.py:299
+#: .\common\models.py:260
+msgid "hidden article"
+msgstr "article caché"
+
+#: .\common\models.py:263
+msgid "article"
+msgstr "article"
+
+#: .\common\models.py:273
+msgid "Article"
+msgstr "Article"
+
+#: .\common\models.py:276
+msgid "article image"
+msgstr "image dans un article"
+
+#: .\common\models.py:277
+msgid "article images"
+msgstr "images dans un article"
+
+#: .\common\models.py:286 .\common\models.py:392 .\common\models.py:463
+#: .\common\templates\common\dates.html:72
+msgid "name"
+msgstr "nom"
+
+#: .\common\models.py:292
+msgid "group"
+msgstr "groupe"
+
+#: .\common\models.py:323
+msgid "child"
+msgstr "enfant"
+
+#: .\common\models.py:385
+msgid "start date"
+msgstr "date de début"
+
+#: .\common\models.py:386
+msgid "end date"
+msgstr "date de fin"
+
+#: .\common\models.py:387
+msgid "start time"
+msgstr "heure de début"
+
+#: .\common\models.py:388
+msgid "end time"
+msgstr "heure de fin"
+
+#: .\common\models.py:390
+msgid "Time (as text)"
+msgstr "Heure (en tant que texte)"
+
+#: .\common\models.py:393
+msgid "short name"
+msgstr "nom abrégé"
+
+#: .\common\models.py:394 .\common\templates\common\dates.html:73
+msgid "place"
+msgstr "lieu"
+
+#: .\common\models.py:395
+msgid "cancelled"
+msgstr "annulé"
+
+#: .\common\models.py:404
 msgid "The end date must be after the start date."
 msgstr "La date de fin doit être avant la date de début."
 
-#: .\common\models.py:302
+#: .\common\models.py:407
 msgid "The start time must be specified when the end time is specified."
 msgstr ""
 "L'heure de début doit être spécifiée quand l'heure de fin est spécifiée."
 
-#: .\common\models.py:306
+#: .\common\models.py:411
 msgid "The end time must be after the start time."
 msgstr "L'heure de fin doit être avant l'heure de début."
 
-#: .\common\models.py:309
+#: .\common\models.py:414
 msgid ""
 "The start time / end time or the time as text must be specified, not both."
 msgstr ""
 "L'heure de début / de fin ou l'heure en tant que texte doivent être "
 "spécifiées, pas les deux."
 
-#: .\common\models.py:356
+#: .\common\models.py:463
 msgid "Replaces the meeting kind"
 msgstr "Remplace le type de rencontre"
 
-#: .\common\models.py:372
+#: .\common\models.py:479
 msgid "meeting"
 msgstr "rencontre"
 
-#: .\common\models.py:379
+#: .\common\models.py:494
 msgid "Child"
 msgstr "Enfant"
 
-#: .\common\models.py:380
+#: .\common\models.py:501
 msgid "Meeting"
 msgstr "Rencontre"
 
-#: .\common\models.py:381
-msgid "Present"
-msgstr "Présent"
+#. Translators: use inclusive writing
+#: .\common\models.py:503 .\common\models.py:511
+msgid "present"
+msgstr "présent·e"
 
-#: .\common\models.py:382
-msgid "Has warned"
-msgstr "A prévenu"
+#: .\common\models.py:504
+msgid "has warned"
+msgstr "a prévenu"
 
-#: .\common\models.py:385
+#: .\common\models.py:507
 #, python-format
 msgid "%s was %s%s"
 msgstr "%s était %s%s"
 
 #. Translators: use inclusive writing
-#: .\common\models.py:389
-msgid "present"
-msgstr "présent·e"
-
-#. Translators: use inclusive writing
-#: .\common\models.py:392
+#: .\common\models.py:514
 msgid "absent"
 msgstr "absent·e"
 
-#: .\common\models.py:394
+#: .\common\models.py:516
 msgid "and has warned"
 msgstr "et a prévenu"
 
-#: .\common\models.py:398
+#: .\common\models.py:520
 msgid "attendance"
 msgstr "présence"
 
-#: .\common\models.py:411
+#: .\common\models.py:535
 msgid "document category"
 msgstr "catégorie de document"
 
-#: .\common\models.py:412
+#: .\common\models.py:536
 msgid "document categories"
 msgstr "catégories de document"
 
-#: .\common\models.py:419
-msgid "Document title"
-msgstr "Titre du document"
+#: .\common\models.py:545
+msgid "document title"
+msgstr "titre du document"
 
-#: .\common\models.py:420
-msgid "File"
-msgstr "Fichier"
+#: .\common\models.py:546
+msgid "file"
+msgstr "fichier"
 
-#: .\common\models.py:421
+#: .\common\models.py:548
 msgid "Categories"
 msgstr "Catégories"
 
-#: .\common\models.py:424
+#: .\common\models.py:552
 msgid "document"
 msgstr "document"
 
@@ -313,8 +305,8 @@ msgid "Please select the group in the list below."
 msgstr "Veuillez sélectionner le groupe dans la liste ci-dessous."
 
 #: .\common\templates\common\dates.html:71
-msgid "Time"
-msgstr "Heure"
+msgid "time"
+msgstr "heure"
 
 #: .\common\templates\common\dates.html:82
 msgid "Show past dates"
@@ -323,6 +315,3 @@ msgstr "Afficher les dates passées"
 #: .\common\templates\common\dates.html:85
 msgid "Hide past dates"
 msgstr "Cacher les dates passées"
-
-#~ msgid "Date item"
-#~ msgstr "Élément date"

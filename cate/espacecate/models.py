@@ -208,7 +208,7 @@ class Meeting(CommonMeeting):
         TEMPS_FORT = "TF", "Temps fort"
         MESSE_FAMILLES = "MF", "Messe des familles"
 
-    kind = models.CharField(_("Kind"), max_length=5, blank=True, choices=Kind.choices)
+    kind = models.CharField(_("kind"), max_length=5, blank=True, choices=Kind.choices)
 
     def get_childs(self):
         """

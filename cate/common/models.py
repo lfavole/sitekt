@@ -30,8 +30,8 @@ class Year(models.Model):
     It can be active (or not).
     """
 
-    start_year = models.fields.IntegerField(_("Start year"), unique=True)
-    is_active = models.fields.BooleanField(_("Active year"))
+    start_year = models.fields.IntegerField(_("start year"), unique=True)
+    is_active = models.fields.BooleanField(_("active year"))
 
     class Meta:
         verbose_name = _("school year")
@@ -127,10 +127,10 @@ class PageBase(models.Model):
     Base class for pages and articles.
     """
 
-    slug = models.fields.SlugField(_("Slug"), max_length=100, unique=True, editable=False)
-    title = models.fields.CharField(_("Title"), max_length=100)
-    content = models.fields.TextField(_("Content"), blank=True)
-    hidden = models.fields.BooleanField(_("Hidden page"), default=False)
+    slug = models.fields.SlugField(_("slug"), max_length=100, unique=True, editable=False)
+    title = models.fields.CharField(_("title"), max_length=100)
+    content = models.fields.TextField(_("content"), blank=True)
+    hidden = models.fields.BooleanField(_("hidden page"), default=False)
 
     class Meta:
         abstract = True
@@ -209,7 +209,7 @@ class ImageBase(models.Model):
     Base class for images in pages and articles.
     """
 
-    image = ImageField(_("Image"))
+    image = ImageField(_("image"))
     page: "models.ForeignKey[CommonPage]"
 
     def __str__(self):
@@ -224,7 +224,7 @@ class CommonPage(PageBase):
     Common page class for all apps.
     """
 
-    order = models.PositiveIntegerField(_("Order"), default=0, null=False)
+    order = models.PositiveIntegerField(_("order"), default=0, null=False)
     parent_page = models.ForeignKey(
         "self", blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("Previous page")
     )
@@ -256,8 +256,8 @@ class CommonArticle(PageBase):
     Common article class for all apps.
     """
 
-    date = models.fields.DateField(_("Date"), default=now)
-    hidden = models.fields.BooleanField(_("Hidden article"), default=False)
+    date = models.fields.DateField(_("date"), default=now)
+    hidden = models.fields.BooleanField(_("hidden article"), default=False)
 
     class Meta:
         verbose_name = _("article")
@@ -283,7 +283,7 @@ class CommonGroup(models.Model):
     Common group class for all apps.
     """
 
-    name = models.fields.CharField(_("Name"), max_length=100, unique=True)
+    name = models.fields.CharField(_("name"), max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -382,17 +382,17 @@ class CommonChild(models.Model):
 
 
 class CommonDate(models.Model):
-    start_date = models.fields.DateField(_("Start date"))
-    end_date = models.fields.DateField(_("End date"), blank=True, null=True)
-    start_time = models.fields.TimeField(_("Start time"), blank=True, null=True)
-    end_time = models.fields.TimeField(_("End time"), blank=True, null=True)
+    start_date = models.fields.DateField(_("start date"))
+    end_date = models.fields.DateField(_("end date"), blank=True, null=True)
+    start_time = models.fields.TimeField(_("start time"), blank=True, null=True)
+    end_time = models.fields.TimeField(_("end time"), blank=True, null=True)
     time_text = DatalistField(
         _("Time (as text)"), max_length=50, blank=True, form_choices=("Journée", "Week-end", "Séjour")
     )
-    name = models.fields.CharField(_("Name"), max_length=100)
-    short_name = models.fields.CharField(_("Short name"), max_length=50, blank=True)
-    place = models.fields.CharField(_("Place"), max_length=100, blank=True)
-    cancelled = models.fields.BooleanField(_("Cancelled"))
+    name = models.fields.CharField(_("name"), max_length=100)
+    short_name = models.fields.CharField(_("short name"), max_length=50, blank=True)
+    place = models.fields.CharField(_("place"), max_length=100, blank=True)
+    cancelled = models.fields.BooleanField(_("cancelled"))
 
     class Meta:
         verbose_name = _("date")
@@ -459,8 +459,8 @@ class CommonMeeting(models.Model):
 
     Kind: "models.TextChoices"
     kind: "models.CharField[str]"
-    date = models.fields.DateField(_("Date"))
-    name = models.CharField(_("Name"), blank=True, max_length=100, help_text=_("Replaces the meeting kind"))
+    date = models.fields.DateField(_("date"))
+    name = models.CharField(_("name"), blank=True, max_length=100, help_text=_("Replaces the meeting kind"))
 
     get_childs: Callable[[], Manager[CommonChild]]
 
@@ -500,8 +500,8 @@ class CommonAttendance(models.Model):
         related_query_name="attendance",
         verbose_name=_("Meeting"),
     )
-    is_present = models.BooleanField(_("Present"))
-    has_warned = models.BooleanField(_("Has warned"))
+    is_present = models.BooleanField(_("present"))
+    has_warned = models.BooleanField(_("has warned"))
 
     def __str__(self):
         return _("%s was %s%s") % (
@@ -526,7 +526,7 @@ class CommonDocumentCategory(models.Model):
     Common document category class for all apps.
     """
 
-    title = models.CharField(_("Title"), unique=True, max_length=100)
+    title = models.CharField(_("title"), unique=True, max_length=100)
 
     def __str__(self):  # pylint: disable=E0307
         return self.title
@@ -542,8 +542,8 @@ class CommonDocument(models.Model):
     Common document class for all apps.
     """
 
-    title = models.fields.CharField(_("Document title"), max_length=100)
-    file = FileField(_("File"), null=True)
+    title = models.fields.CharField(_("document title"), max_length=100)
+    file = FileField(_("file"), null=True)
     categories: "models.ManyToManyField[CommonDocumentCategory, Any]" = models.ManyToManyField(
         "DocumentCategory", verbose_name=_("Categories"), blank=True
     )

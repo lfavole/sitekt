@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-04 13:38+0200\n"
+"POT-Creation-Date: 2023-09-29 15:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid "Visits"
 msgstr "Visites"
 
 #: .\tracking\models.py:16
-msgid "Session key"
+msgid "session key"
 msgstr "ID de session"
 
 #: .\tracking\models.py:23
@@ -35,82 +35,82 @@ msgid "IP address"
 msgstr "Adresse IP"
 
 #: .\tracking\models.py:26
-msgid "User agent"
-msgstr "Agent utilisateur"
+msgid "user agent"
+msgstr "agent utilisateur"
 
 #: .\tracking\models.py:27
-msgid "Start time"
-msgstr "Heure de début"
+msgid "start time"
+msgstr "heure de début"
 
 #: .\tracking\models.py:28
-msgid "Session expiry time"
-msgstr "Heure d'expiration de la session"
+msgid "session expiry time"
+msgstr "heure d'expiration de la session"
 
-#: .\tracking\models.py:29 .\tracking\models.py:84
-msgid "Time on site"
-msgstr "Temps sur le site"
+#: .\tracking\models.py:29 .\tracking\models.py:95
+msgid "time on site"
+msgstr "temps sur le site"
 
 #: .\tracking\models.py:34
 msgid "visit"
 msgstr "visite"
 
-#: .\tracking\models.py:53
+#: .\tracking\models.py:54
 msgid "mobile connection"
 msgstr "connexion mobile"
 
-#: .\tracking\models.py:55
+#: .\tracking\models.py:56
 msgid "proxy"
 msgstr "proxy"
 
-#: .\tracking\models.py:57
+#: .\tracking\models.py:58
 msgid "hosting"
 msgstr "hébergeur"
 
 #. Translators: This string is used as a separator between list elements
-#: .\tracking\models.py:62
+#: .\tracking\models.py:61
 msgid ", "
 msgstr ", "
 
-#: .\tracking\models.py:65
+#: .\tracking\models.py:73
 msgid "IP address location"
 msgstr "Emplacement de l'adresse IP"
 
-#: .\tracking\models.py:69
+#: .\tracking\models.py:78
 msgid "Information about user agent"
 msgstr "Informations sur l'agent utilisateur"
 
-#: .\tracking\models.py:79
-msgid "Session expired"
-msgstr "Session expirée"
+#: .\tracking\models.py:89
+msgid "session expired"
+msgstr "session expirée"
 
-#: .\tracking\models.py:91
+#: .\tracking\models.py:103
 msgid "Visit"
 msgstr "Visite"
 
-#: .\tracking\models.py:93
+#: .\tracking\models.py:105
 msgid "URL"
 msgstr "URL"
 
-#: .\tracking\models.py:94
-msgid "Referer"
-msgstr "Page d'origine"
+#: .\tracking\models.py:106
+msgid "referer"
+msgstr "page d'origine"
 
-#: .\tracking\models.py:95
-msgid "Query string"
-msgstr "Chaîne de requête"
+#: .\tracking\models.py:107
+msgid "query string"
+msgstr "chaîne de requête"
 
-#: .\tracking\models.py:96
-msgid "Method"
-msgstr "Méthode"
+#: .\tracking\models.py:108
+msgid "method"
+msgstr "méthode"
 
-#: .\tracking\models.py:97
-msgid "View time"
-msgstr "Heure de la vue"
+#: .\tracking\models.py:109
+msgid "view time"
+msgstr "heure de la vue"
 
-#: .\tracking\models.py:102
+#: .\tracking\models.py:114
 msgid "page view"
 msgstr "page vue"
 
-#: .\tracking\models.py:103
+#: .\tracking\models.py:115
 msgid "page views"
 msgstr "pages vues"

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-23 09:06+0200\n"
+"POT-Creation-Date: 2023-09-29 15:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 "Votre mot de passe ne doit pas avoir été trouvé dans une faille de sécurité "
 "majeure."
 
-#: .\cate\settings.py:252
+#: .\cate\settings.py:257
 msgid ""
 "You must first create the article, then insert the image. Don't worry, the "
 "image will be uploaded after reloading."
@@ -82,20 +82,20 @@ msgstr "suivante"
 msgid "last"
 msgstr "fin"
 
-#: .\cate\templatetags\join_last.py:8
+#: .\cate\templatetags\join_last.py:9
 msgid ", "
 msgstr ", "
 
-#: .\cate\templatetags\join_last.py:8
+#: .\cate\templatetags\join_last.py:9
 msgid "and"
 msgstr "et"
 
-#: .\cate\views.py:124
+#: .\cate\views.py:159
 msgid "You have the permission to view the error details!"
 msgstr "Vous avez la permission de voir les détails de l'erreur !"
 
 #. Translators: %(djdt)s is the DjDT logo
-#: .\cate\views.py:127
+#: .\cate\views.py:162
 #, python-format
 msgid ""
 "Open the debug toolbar (%(djdt)s at top-right) and click on the Error tab."
