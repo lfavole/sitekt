@@ -44,13 +44,13 @@ class AuthorizationData:
 class Authorization(PDF):
 	line_h_mul = 1.9
 
-	def __init__(self, request: HttpRequest, *args, **kwargs):
+	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 
 		self.is_form_at_top = True
 
-		self.add_font("Montserrat", "", str(DATA / "fonts/Montserrat-Regular.ttf"))
-		self.add_font("Montserrat", "B", str(DATA / "fonts/Montserrat-Bold.ttf"))
+		# self.add_font("Montserrat", "", str(DATA / "fonts/Montserrat-Regular.ttf"))
+		# self.add_font("Montserrat", "B", str(DATA / "fonts/Montserrat-Bold.ttf"))
 
 		self.set_margin(7)
 		self.set_auto_page_break(False)
@@ -227,14 +227,14 @@ class Authorization(PDF):
 		self.ln()
 		self.ln()
 
-def authorization_pdf(request: HttpRequest, app: Literal["espacecate", "aumonerie"]):
-	pdf = Authorization(request)
-	try:
-		number = int(request.GET.get("exemplaires", 1))
-	except ValueError:
-		number = 1
+	def render(self, app: Literal["espacecate", "aumonerie"], request: HttpRequest):
+		try:
+			number = int(request.GET.get("exemplaires", 1))
+		except ValueError:
+			number = 1
 
-	data = AuthorizationData(request.GET)
-	for _ in range(number):
-		pdf.render_form(app, data)
-	return bytes(pdf.output())
+		data = AuthorizationData(request.GET)
+		for _ in range(number):
+			self.render_form(app, data)
+
+	filename = "autorisation"

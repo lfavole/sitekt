@@ -1,17 +1,23 @@
-from contextlib import contextmanager
+import datetime as dt
 import re
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
-
-from common.models import Year
+from typing import Any, Callable, Literal
+from django.apps import apps
+from django.core.exceptions import PermissionDenied
+from django.http import HttpRequest, HttpResponse
 from fpdf import FPDF, FPDF_VERSION, output
-from fpdf.drawing import DeviceRGB
 from fpdf.enums import Align, CharVPos, MethodReturnValue, XPos, YPos
 from fpdf.fonts import FontFace
 from fpdf.line_break import Fragment
 from fpdf.syntax import PDFDate, PDFObject, PDFString
-from fpdf.table import Cell, Row  # noqa
+from fpdf.table import Cell, Row
+from common.views import has_permission  # noqa
+
+from cate.utils.text import slugify
+
+from ..models import Year
 
 HERE = Path(__file__).resolve()
 DATA = HERE.parent.parent.parent.parent / "data"
@@ -164,6 +170,7 @@ class Table:
 class PDF(FPDF):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._in_set_font = False
         self.set_author("Secteur paroissial de l'Embrunais et du Savinois")
         self.set_creator(f"Espace caté {Year.get_current().formatted_year} (https://github.com/lfavole/sitekt)")
         self.set_producer(f"fpdf2 v{FPDF_VERSION} (https://github.com/PyFPDF/fpdf2)")
@@ -219,10 +226,11 @@ class PDF(FPDF):
 
         return frags
 
+    # These 2 properties are used to check the current font
     @property
     def current_font(self):
         ret = super().current_font
-        if ret:
+        if ret or self._in_set_font:
             return ret
         self.set_font()
         return super().current_font
@@ -231,7 +239,20 @@ class PDF(FPDF):
     def current_font(self, value):
         self._GraphicsStateMixin__statestack[-1]["current_font"] = value  # type: ignore
 
+    @property
+    def font_family(self):
+        ret = super().font_family
+        if ret or self._in_set_font:
+            return ret
+        self.set_font()
+        return super().font_family
+
+    @font_family.setter
+    def font_family(self, value):
+        self._GraphicsStateMixin__statestack[-1]["font_family"] = value  # type: ignore
+
     def set_font(self, family = None, style = "", size = 0) -> None:
+        self._in_set_font = True
         styles = {
             "": "Regular",
             "B": "Bold",
@@ -240,7 +261,7 @@ class PDF(FPDF):
         }
 
         key_style = "".join(c for c in style.upper() if c in "BI")
-        key_family = (family or self.font_family).lower()
+        key_family = (family or self.font_family).lower()  # don't use the property above
         if key_family == "":
             key_family = "montserrat"
         if key_family == "montserrat":
@@ -252,12 +273,8 @@ class PDF(FPDF):
                     str(DATA / f"fonts/Montserrat-{styles[key_style]}.ttf"),
                 )
 
-        return super().set_font(key_family, style, size)
-
-    def set_font_size(self, size):
-        if not self.current_font:
-            self.set_font()
-        super().set_font_size(size)
+        super().set_font(key_family, style, size)
+        self._in_set_font = False
 
     @contextmanager
     def go_back(self):
@@ -267,6 +284,46 @@ class PDF(FPDF):
         finally:
             if self.page == page:
                 self.x, self.y = x, y
+
+    def get_model(self, model: str):
+        ret = apps.get_model(self.app, model)  # type: ignore
+        if not has_permission(self.request, ret):  # type: ignore
+            raise PermissionDenied
+        return ret
+
+    def render(self, app: Literal["espacecate", "aumonerie"], *args, **kwargs):
+        raise NotImplementedError
+
+    filename: str
+
+    @classmethod
+    def as_view(cls):
+        def view(request: HttpRequest):
+            from ..views import _encode_filename  # avoid circular import
+            app = request.resolver_match.app_name if request.resolver_match else ""
+            if not app:
+                raise RuntimeError("Could not determine app to render the PDF")
+            pdf = cls()
+            pdf.app = app  # type: ignore
+            pdf.request = request  # type: ignore
+            pdf.render(app, request)  # type: ignore
+
+            ret = HttpResponse(bytes(pdf.output()))
+            ret.headers["Content-Type"] = "application/pdf"  # type: ignore
+
+            datetime = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"{app}_" + normalize_filename(pdf.filename).removesuffix(".pdf") + f"_{datetime}.pdf"
+            disposition = "attachment" if bool(request.GET.get("dl")) else "inline"
+            ret.headers["Content-Disposition"] = (  # type: ignore
+                f"{disposition}; {_encode_filename(filename)}"
+            )
+            return ret
+
+        return view
+
+
+def normalize_filename(filename: str):
+    return slugify(filename).replace("-", "_")
 
 
 # Fix encryption of metadata (PyFPDF/fpdf2#865)

@@ -139,9 +139,11 @@ class List(PDF):
 
         return list(childs), regroup_check  # fetch the childs
 
+    filename = "liste"
+
     def render(self, app: Literal["espacecate", "aumonerie"], regroup_by: str = ""):
         self.app = app
-        self.Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
+        self.Child: Type[CommonChild] = self.get_model("Child")  # type: ignore
         fields: dict[str, tuple[str, int]] = {
             "espacecate": {
                 "nom": ("Nom", 23),  # not "Nom de famille" ! (too long)
@@ -243,9 +245,3 @@ class List(PDF):
                     new_x = XPos.LMARGIN,
                     new_y = YPos.NEXT,
                 )
-
-
-def list_pdf(request: HttpRequest, app: Literal["espacecate", "aumonerie"]):
-    pdf = List()
-    pdf.render(app, request.GET.get("regroup", ""))
-    return bytes(pdf.output())

@@ -122,8 +122,10 @@ class QuickList(PDF):
     def classes(self):
         return list(self.classes_dict.keys())
 
-    def render(self, app: Literal["espacecate", "aumonerie"]):
-        self.Child: Type[CommonChild] = apps.get_model(app, "Child")  # type: ignore
+    filename = "liste_rapide"
+
+    def render(self, app: Literal["espacecate", "aumonerie"], _request: HttpRequest):
+        self.Child: Type[CommonChild] = self.get_model("Child")  # type: ignore
         fields: dict[str, tuple[str, int]] = {
             "groupe": ("", 25),
             "name": ("Enfants inscrits", 50),
@@ -157,7 +159,10 @@ class QuickList(PDF):
                 return (
                     (str(element.groupe) if element.groupe else "")
                     + " -- "
-                    + (self.classes_dict.get(classe, classe) if classe != "AUTRE" else "")
+                    + (
+                        (self.classes_dict.get(classe, classe) if app == "aumonerie" else classe)
+                        if classe != "AUTRE" else ""
+                    )
                 )
 
             ret = getattr(element, key)
@@ -213,9 +218,3 @@ class QuickList(PDF):
                     new_y = YPos.NEXT,
                 )
                 self.ln(3)
-
-
-def quick_list_pdf(request: HttpRequest, app: Literal["espacecate", "aumonerie"]):
-    pdf = QuickList()
-    pdf.render(app)
-    return bytes(pdf.output())

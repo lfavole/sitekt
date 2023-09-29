@@ -46,13 +46,19 @@ class Meetings(PDF):
     def classes(self):
         return list(self.classes_dict.keys())
 
-    def render(self, app: Literal["espacecate", "aumonerie"], black_white: bool):
-        self.black_white = black_white  # pylint: disable=W0201
+    @property
+    def filename(self):
+        return self.Meeting._meta.verbose_name_plural
+
+    def render(self, app: Literal["espacecate", "aumonerie"], request: HttpRequest):
+        self.app = app
+        self.black_white = bool(request.GET.get("black_white"))
 
         year = Year.get_current()
 
-        Meeting: Type[CommonMeeting] = apps.get_model(app, "Meeting")  # type: ignore
-        Group: Type[CommonGroup] = apps.get_model(app, "Group")  # type: ignore
+        Meeting: Type[CommonMeeting] = self.get_model("Meeting")  # type: ignore
+        self.Meeting = Meeting
+        Group: Type[CommonGroup] = self.get_model("Group")  # type: ignore
 
         meetings = list(Meeting.objects.prefetch_related("attendances"))
         groups: list[CommonGroup | None] = list(Group.objects.all())  # type: ignore
@@ -231,9 +237,3 @@ class Meetings(PDF):
             self.cell(space_size)
             self.cell(h=8, txt=f"= {text}")
             self.cell(10)
-
-
-def meetings_pdf(request: HttpRequest, app: Literal["espacecate", "aumonerie"]):
-    pdf = Meetings()
-    pdf.render(app, bool(request.GET.get("black_white")))
-    return bytes(pdf.output())

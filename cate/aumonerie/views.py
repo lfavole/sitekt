@@ -1,7 +1,9 @@
-from common.pdfs.authorization import authorization_pdf
-from common.pdfs.calendar import calendar_pdf
-from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView, common_meetings, common_list, common_quick_list, pdf_response, serve
-from django.http.response import HttpResponse
+from common.pdfs.authorization import Authorization
+from common.pdfs.calendar import Calendar
+from common.pdfs.list import List
+from common.pdfs.meetings import Meetings
+from common.pdfs.quick_list import QuickList
+from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView, serve
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import SubscriptionForm
@@ -22,17 +24,11 @@ def subscription(request):
         form = SubscriptionForm()
     return render(request, "common/subscription.html", {"title": "Inscription à l'aumônerie", "form": form})
 
-def authorization(request):
-    return pdf_response(request, authorization_pdf(request, "aumonerie"), "autorisation")
-
-def list(request):
-    return common_list(request, "aumonerie")
-
-def quick_list(request):
-    return common_quick_list(request, "aumonerie")
-
-def meetings(request):
-    return common_meetings(request, "aumonerie")
+authorization = Authorization.as_view()
+calendar = Calendar.as_view()
+list = List.as_view()
+quick_list = QuickList.as_view()
+meetings = Meetings.as_view()
 
 
 class ArticleListView(CommonArticleListView):
@@ -50,6 +46,3 @@ class DocumentListView(CommonDocumentListView):
 
 def serve_document(request, pk):
     return serve(request, get_object_or_404(Document, pk = pk))
-
-def calendar(request):
-    return HttpResponse(calendar_pdf("aumonerie"), "application/pdf")
