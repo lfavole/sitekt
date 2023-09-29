@@ -2,14 +2,6 @@
 
 {% block result_list %}
 <ul>
-    {% comment %}
-    <li><a href="{% url cl.opts.app_label|add:":list" %}" target="_blank">Liste récapitulative des enfants, triés par classe</a></li>
-    <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=classe" target="_blank">Liste récapitulative des enfants (regroupés par classe)</a></li>
-    {% if cl.opts.app_label == "espacecate" %}
-        <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=annees" target="_blank">Liste récapitulative des enfants (regroupés par années)</a></li>
-    {% endif %}
-    <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=groupe" target="_blank">Liste récapitulative des enfants (regroupés par groupe)</a></li>
-    {% endcomment %}
     <li>
         Listes récapitulatives des enfants, triés par classe :
         <ul>

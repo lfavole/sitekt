@@ -2,9 +2,9 @@ from datetime import timedelta
 
 from django.conf import settings
 
-MAX_VISIT_TIME = getattr(settings, "MAX_VISIT_TIME", timedelta(seconds = 1800))
+MAX_VISIT_TIME = getattr(settings, "MAX_VISIT_TIME", timedelta(seconds=1800))
 if not isinstance(MAX_VISIT_TIME, timedelta):
-    MAX_VISIT_TIME = timedelta(seconds = MAX_VISIT_TIME)
+    MAX_VISIT_TIME = timedelta(seconds=MAX_VISIT_TIME)
 
 TRACK_AJAX_REQUESTS = getattr(settings, "TRACK_AJAX_REQUESTS", False)
 TRACK_ANONYMOUS_USERS = getattr(settings, "TRACK_ANONYMOUS_USERS", True)

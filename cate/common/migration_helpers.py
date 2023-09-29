@@ -19,6 +19,7 @@ def get_primary_key():
         nonlocal i
         i += 1
         return i
+
     return function
 
 
@@ -40,6 +41,7 @@ def export_data(app, reverse=False):
         all_exported_data[app] = serialize("python", chain(*(model.objects.all() for model in models_list)))
         for model in models_list:
             model.objects.using(schema_editor.connection.alias).delete()
+
     return function
 
 
@@ -56,7 +58,9 @@ def import_data(app, reverse=False):
         for model in models_list:
             for field in model._meta.fields:
                 if isinstance(field, models.ForeignKey) and _get_model_class(field.related_model) in models_classes:
-                    fields_to_check.setdefault(str(model._meta), []).append((str(field.related_model._meta), field.name))
+                    fields_to_check.setdefault(str(model._meta), []).append(
+                        (str(field.related_model._meta), field.name)
+                    )
 
         pk_generators = defaultdict(get_primary_key)
         old_to_new_pks: dict[str, dict[str, str | int]] = {}
@@ -71,13 +75,14 @@ def import_data(app, reverse=False):
                 del fields[field]
             new_pk = (
                 # we must use the method from CommonPage because the models in migrations don't have methods
-                CommonPage._generate_slug(apps.get_model(model_name)(**fields)) if reverse  # type: ignore
+                CommonPage._generate_slug(apps.get_model(model_name)(**fields))
+                if reverse  # type: ignore
                 else pk_generators[model_name]()
             )
             corr_for_model = old_to_new_pks.setdefault(model_name, {})
             corr_for_model[element["pk"]] = new_pk
             if not reverse:
-                element["fields"]["slug"] = element["pk"]   # add the slug
+                element["fields"]["slug"] = element["pk"]  # add the slug
             element["pk"] = new_pk
 
         # Change the PKs on the foreign keys
@@ -98,4 +103,5 @@ def import_data(app, reverse=False):
             model.objects.using(schema_editor.connection.alias).bulk_create(objs)
 
         del all_exported_data[app]
+
     return function

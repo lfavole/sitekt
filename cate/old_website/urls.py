@@ -22,6 +22,7 @@ class OptionalPhpPathConverter:
     """
     Optional path that removes .php extension.
     """
+
     regex = r".*(\.php)?"
 
     def to_url(self, value: str):
@@ -47,16 +48,12 @@ urlpatterns = [
     *all_apps("/includes/<optpath:path>", views.redirect_app_static),
     # Redirect kt-static to static
     path("kt-static/<optpath:path>", views.redirect_kt_static),
-
     # Redirect admin
     *all_apps("-admin/<optpath:path>", views.redirect_admin, with_app=True),
-
     # Redirect articles
     *all_apps("/articles.php", views.redirect_articles, with_app=True),
-
     # Show a message for the Advent calendar
     path("calendrier-avent/<optpath:path>", views.advent_calendar),
-
     # Redirect the other URLs normally (also removes .php extension)
     path("<optpath:path>", views.simple_redirect),
 ]

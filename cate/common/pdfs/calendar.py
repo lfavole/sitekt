@@ -3,11 +3,11 @@ import json
 from pathlib import Path
 from typing import Literal
 
+from dateutil.easter import easter
 from django.http import HttpRequest
+from fpdf.enums import Align, XPos, YPos
 
 from cate.abbreviation import abbreviation
-from dateutil.easter import easter
-from fpdf.enums import Align, XPos, YPos
 
 from ..models import Year
 from . import PDF
@@ -15,16 +15,33 @@ from . import PDF
 HERE = Path(__file__).resolve()
 DATA = HERE.parent.parent.parent.parent / "data"
 
-fr_months = ["", "janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+fr_months = [
+    "",
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+]
 fr_weekdays = "LMMJVSD"
 
-class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], str, datetime.date, datetime.date | None, bool]]):
+
+class DateContainer(
+    list[tuple[Literal["event", "date", "holidays", "ferie"], str, datetime.date, datetime.date | None, bool]]
+):
     easter_date: datetime.date
 
-    def add_date(self, name: str, start_date: datetime.date, end_date: datetime.date | None = None, display = True):
+    def add_date(self, name: str, start_date: datetime.date, end_date: datetime.date | None = None, display=True):
         self.append(("date", name, start_date, end_date, display))
 
-    def add_event(self, name: str, date: datetime.date, display = True):
+    def add_event(self, name: str, date: datetime.date, display=True):
         self.append(("event", name, date, None, display))
 
     def add_holidays(self, name: str, start: datetime.date, end: datetime.date):
@@ -34,21 +51,21 @@ class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], st
             end += datetime.timedelta(days=2)  # Monday
         self.append(("holidays", name, start, end, True))
 
-    def add_ferie(self, name: str, date: datetime.date, display = True):
+    def add_ferie(self, name: str, date: datetime.date, display=True):
         self.append(("ferie", name, date, None, display))
 
-    def add_easter_date(self, name: str, days_number: int, display = True):
-        date = self.easter_date + datetime.timedelta(days = days_number)
+    def add_easter_date(self, name: str, days_number: int, display=True):
+        date = self.easter_date + datetime.timedelta(days=days_number)
         self.append(("date", name, date, None, display))
 
-    def add_easter_ferie(self, name: str, days_number: int, display = True):
-        date = self.easter_date + datetime.timedelta(days = days_number)
+    def add_easter_ferie(self, name: str, days_number: int, display=True):
+        date = self.easter_date + datetime.timedelta(days=days_number)
         self.append(("ferie", name, date, None, display))
 
     def __contains__(self, value):
         return self.contains(value)
 
-    def contains(self, value, include_hidden = True):
+    def contains(self, value, include_hidden=True):
         for date in self:
             if self.date_contains(date, value, include_hidden):
                 return True
@@ -56,7 +73,7 @@ class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], st
         return False
 
     @staticmethod
-    def date_contains(date, value, include_hidden = True):
+    def date_contains(date, value, include_hidden=True):
         if not date[4] and not include_hidden:
             return False
 
@@ -83,6 +100,7 @@ class DateContainer(list[tuple[Literal["event", "date", "holidays", "ferie"], st
         ret = [date[1] for date in self if self.date_contains(date, value, False) and date[0] != "holidays"]
         return zip(*(abbreviation(date) for date in ret))
 
+
 def get_epiphanie(year: int):
     for day in range(2, 8 + 1):
         date = datetime.date(year, 1, day)
@@ -90,6 +108,7 @@ def get_epiphanie(year: int):
             return date
 
     raise ValueError(f"No Sunday between January 2-8 {year}")
+
 
 class Calendar(PDF):
     filename = "calendrier"
@@ -100,7 +119,7 @@ class Calendar(PDF):
     def render(self, app: Literal["espacecate", "aumonerie"], request: HttpRequest):
         start_year = Year.get_current().start_year
 
-        self.set_auto_page_break(False, margin = 10)
+        self.set_auto_page_break(False, margin=10)
 
         title = {
             "espacecate": "Calendrier KT et EVF",
@@ -155,6 +174,7 @@ class Calendar(PDF):
         self.title = f"{title} {start_year}-{start_year + 1}"
 
         _DAYS_IN_MONTH = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
         def get_days_in_month(year: int, month: int):
             if month == 2 and year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
                 return 29
@@ -171,9 +191,9 @@ class Calendar(PDF):
                 0,
                 title_height,
                 f"{title} : {fr_months[months[0]].capitalize()} – {fr_months[months[-1]].capitalize()} {start_year + count}",
-                new_x = XPos.LMARGIN,
-                new_y = YPos.NEXT,
-                align = Align.C,
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+                align=Align.C,
             )
 
             month_width = self.epw / len(months)
@@ -190,11 +210,11 @@ class Calendar(PDF):
                     month_width,
                     month_height,
                     fr_months[month].capitalize(),
-                    border = True,
-                    fill = True,
-                    new_x = XPos.LMARGIN,
-                    new_y = YPos.NEXT,
-                    align = Align.C,
+                    border=True,
+                    fill=True,
+                    new_x=XPos.LMARGIN,
+                    new_y=YPos.NEXT,
+                    align=Align.C,
                 )
 
                 self.set_font("Montserrat", "", 12)
@@ -216,17 +236,17 @@ class Calendar(PDF):
                         day_width,
                         day_height,
                         str(day),
-                        border = True,
-                        align = Align.C,
-                        fill = fill,
+                        border=True,
+                        align=Align.C,
+                        fill=fill,
                     )
                     self.cell(
                         weekday_width,
                         day_height,
                         fr_weekdays[datetime_day.weekday()],
-                        border = True,
-                        align = Align.C,
-                        fill = fill,
+                        border=True,
+                        align=Align.C,
+                        fill=fill,
                     )
 
                     fill = False
@@ -268,11 +288,11 @@ class Calendar(PDF):
                         width,
                         day_height,
                         text,
-                        border = True,
-                        align = Align.C,
-                        fill = fill,
-                        new_x = XPos.LMARGIN,
-                        new_y = YPos.NEXT,
+                        border=True,
+                        align=Align.C,
+                        fill=fill,
+                        new_x=XPos.LMARGIN,
+                        new_y=YPos.NEXT,
                     )
 
                     if stretching != 100:

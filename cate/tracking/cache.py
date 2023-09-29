@@ -15,7 +15,8 @@ def instance_cache_key(instance):
     return "%s.%s:%s" % (opts.app_label, name, instance.pk)
 
 
-_T = TypeVar("_T", bound = models.Model)
+_T = TypeVar("_T", bound=models.Model)
+
 
 class CacheQuerySet(QuerySet, Generic[_T]):
     def filter(self, *args, **kwargs):

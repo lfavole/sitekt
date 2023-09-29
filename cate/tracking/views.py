@@ -10,17 +10,17 @@ from .settings import TRACK_PAGEVIEWS
 
 # tracking wants to accept more formats than default, here they are
 input_formats = [
-    "%Y-%m-%d %H:%M:%S",    # "2006-10-25 14:30:59"
-    "%Y-%m-%d %H:%M",       # "2006-10-25 14:30"
-    "%Y-%m-%d",             # "2006-10-25"
-    "%Y-%m",                # "2006-10"
-    "%Y",                   # "2006"
+    "%Y-%m-%d %H:%M:%S",  # "2006-10-25 14:30:59"
+    "%Y-%m-%d %H:%M",  # "2006-10-25 14:30"
+    "%Y-%m-%d",  # "2006-10-25"
+    "%Y-%m",  # "2006-10"
+    "%Y",  # "2006"
 ]
 
 
 class DashboardForm(forms.Form):
-    start = forms.DateTimeField(required = False, input_formats = input_formats)
-    end = forms.DateTimeField(required = False, input_formats = input_formats)
+    start = forms.DateTimeField(required=False, input_formats=input_formats)
+    end = forms.DateTimeField(required=False, input_formats=input_formats)
 
 
 @permission_required("tracking.visitor_log")
@@ -29,10 +29,10 @@ def dashboard(request):
     Counts, aggregations and more!
     """
     end_time = now()
-    start_time = end_time - timedelta(days = 7)
+    start_time = end_time - timedelta(days=7)
     defaults = {"start": start_time, "end": end_time}
 
-    form = DashboardForm(data = request.GET or defaults)
+    form = DashboardForm(data=request.GET or defaults)
     if form.is_valid():
         start_time = form.cleaned_data["start"]
         end_time = form.cleaned_data["end"]
@@ -45,7 +45,7 @@ def dashboard(request):
         track_start_time = now()
 
     # If the start_date is before tracking began, warn about incomplete data
-    warn_incomplete = (start_time < track_start_time)
+    warn_incomplete = start_time < track_start_time
 
     # queries take `date` objects (for now)
     user_stats = Visit.objects.user_stats(start_time, end_time)

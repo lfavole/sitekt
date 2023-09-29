@@ -11,7 +11,18 @@ from django.utils import timezone
 from django.utils.encoding import smart_str
 
 from .models import PageView, Visit
-from .settings import MAX_VISIT_TIME, TRACK_AJAX_REQUESTS, TRACK_ANONYMOUS_USERS, TRACK_IGNORE_STATUS_CODES, TRACK_IGNORE_URLS, TRACK_IGNORE_USER_AGENTS, TRACK_PAGEVIEWS, TRACK_QUERY_STRING, TRACK_REFERER, TRACK_SUPERUSERS
+from .settings import (
+    MAX_VISIT_TIME,
+    TRACK_AJAX_REQUESTS,
+    TRACK_ANONYMOUS_USERS,
+    TRACK_IGNORE_STATUS_CODES,
+    TRACK_IGNORE_URLS,
+    TRACK_IGNORE_USER_AGENTS,
+    TRACK_PAGEVIEWS,
+    TRACK_QUERY_STRING,
+    TRACK_REFERER,
+    TRACK_SUPERUSERS,
+)
 from .utils import get_ip_address
 
 track_ignore_urls = [re.compile(x) for x in TRACK_IGNORE_URLS]
@@ -28,16 +39,13 @@ class VisitorTrackingMiddleware:
         return response
 
     def _should_track(self, user: User | None, request: HttpRequest, response: HttpResponse):
-        # Session framework not installed, nothing to see here..
+        # Session framework not installed, nothing to see here...
         if not hasattr(request, "session"):
             warnings.warn("VisitorTrackingMiddleware installed without SessionMiddleware", RuntimeWarning)
             return False
 
         # Do not track AJAX requests
-        if (
-            request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
-            and not TRACK_AJAX_REQUESTS
-        ):
+        if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest" and not TRACK_AJAX_REQUESTS:
             return False
 
         # Do not track if HTTP HttpResponse status_code blacklisted
@@ -75,10 +83,10 @@ class VisitorTrackingMiddleware:
         last_access_ts = request.session.get("last_access_ts")
 
         if last_access_ts is not None:
-            last_access = dt.datetime.fromtimestamp(last_access_ts, tz = dt.timezone.utc if settings.USE_TZ else None)
+            last_access = dt.datetime.fromtimestamp(last_access_ts, tz=dt.timezone.utc if settings.USE_TZ else None)
             if (visit_time - last_access) <= MAX_VISIT_TIME:
                 try:
-                    visit = Visit.objects.filter(session_key = session_key).first()
+                    visit = Visit.objects.filter(session_key=session_key).first()
                 except Visit.DoesNotExist:
                     pass
 
@@ -89,7 +97,7 @@ class VisitorTrackingMiddleware:
             # Log the ip address. Start time is managed via the field
             # `default` value
             ip_address = get_ip_address(request)
-            visit = Visit(session_key = session_key, ip_address = ip_address)
+            visit = Visit(session_key=session_key, ip_address=ip_address)
 
         # Update the user field if the visit user is not set.
         # This implies authentication has occured on this request and now the user is object exists.
@@ -103,7 +111,7 @@ class VisitorTrackingMiddleware:
         # grab the latest User-Agent and store it
         user_agent = request.META.get("HTTP_USER_AGENT", None)
         if user_agent:
-            visit.user_agent = smart_str(user_agent, encoding = "latin-1", errors = "ignore")
+            visit.user_agent = smart_str(user_agent, encoding="latin-1", errors="ignore")
 
         time_on_site = 0
         if visit.start_time:
@@ -126,12 +134,12 @@ class VisitorTrackingMiddleware:
             query_string = request.META.get("QUERY_STRING", "")
 
         pageview = PageView(
-            visit = visit,
-            url = request.path,
-            view_time = view_time,
-            method = request.method,
-            referer = referer,
-            query_string = query_string,
+            visit=visit,
+            url=request.path,
+            view_time=view_time,
+            method=request.method,
+            referer=referer,
+            query_string=query_string,
         )
         pageview.save()
 

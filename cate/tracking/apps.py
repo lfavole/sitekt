@@ -11,4 +11,5 @@ class TrackingConfig(AppConfig):
     def ready(self):
         from . import handlers
         from .models import Visit
-        post_save.connect(handlers.post_save_cache, sender = Visit)
+
+        post_save.connect(handlers.post_save_cache, sender=Visit)

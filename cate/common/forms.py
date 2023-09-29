@@ -10,33 +10,40 @@ class DatalistWidget(forms.widgets.Select):
     """
     Widget for `<datalist>`.
     """
+
     template_name = "widgets/datalist.html"
+
 
 class DatalistFormField(forms.ChoiceField, forms.CharField):
     """
     Text field with `<datalist>`.
     """
+
     widget = DatalistWidget
-    def __init__(self, *args, choices = (), **kwargs) -> None:
+
+    def __init__(self, *args, choices=(), **kwargs) -> None:
         choices = [(choice, choice) for choice in choices]
         super().__init__(*args, **kwargs)
         attrs = self.widget.attrs
-        attrs |= self.widget_attrs(self.widget) # type: ignore
-        self.widget = DatalistWidget({**self.widget.attrs, **self.widget_attrs(self.widget)}, choices) # type: ignore
+        attrs |= self.widget_attrs(self.widget)  # type: ignore
+        self.widget = DatalistWidget({**self.widget.attrs, **self.widget_attrs(self.widget)}, choices)  # type: ignore
 
     def valid_value(self, _value):
         return True
+
 
 class PriceInput(forms.NumberInput):
     """
     Number input with € after it.
     """
+
     def __init__(self, attrs: dict[str, Any] = {}):
-        super().__init__(attrs = {"step": 0.1, **attrs})
+        super().__init__(attrs={"step": 0.1, **attrs})
 
     def render(self, *args, **kwargs):
         # font-size is for Django administration
         return super().render(*args, **kwargs) + '<span style="font-size:1rem;margin-left:0.5em">€</span>'
+
 
 class DisplayedHTML(forms.Widget):
     def __init__(self, html: str, *args, **kwargs):
@@ -45,6 +52,7 @@ class DisplayedHTML(forms.Widget):
 
     def render(self, *_args, **_kwargs):
         return self.html
+
 
 class DisplayedHTMLField(forms.Field):
     def __init__(self, html: str, *args, **kwargs):
@@ -59,6 +67,7 @@ class BooleanField(forms.BooleanField):
     """
     Boolean field with yes/no radio buttons.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.widget = forms.RadioSelect(
@@ -95,6 +104,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
         return db_field.formfield(**kwargs)
 
     nom = {"espacecate": "l'enfant", "aumonerie": "le jeune"}[app]
+
     class SubscriptionForm(forms.ModelForm):
         autorisation = DisplayedHTMLField(
             "Un document intitulé <b>« Autorisation et engagement »</b> devra être signé par vos soins.<br>"
@@ -136,10 +146,12 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
                     "aux <b>frais du Catéchisme à partir de 35 euros par enfant</b> "
                     "(livres, photocopies, matériel pédagogique, chauffage...).<br>"
                     "Participation aux frais, en espèces ou par chèque, à l'ordre de « Paroisses de l'Embrunais »"
-                ) if app == "espacecate" else (
+                )
+                if app == "espacecate"
+                else (
                     f"Participation aux frais (cotisation pour l'année {Year.get_current().formatted_year} : "
                     "en espèces ou par chèque, à partir de 20 euros à l'ordre de « Aumônerie des Jeunes d'Embrun »)"
-                )
+                ),
             }
             formfield_callback = formfield_for_dbfield
             fieldsets = copy.deepcopy(target_model.fieldsets)  # type: ignore
@@ -148,7 +160,11 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
             exclude = list(fieldsets[-1][1]["fields"])
             fieldsets.pop()  # remove admin section
             # add authorization document information
-            fieldsets[-1][1]["fields"] = (fieldsets[-1][1]["fields"][0], "autorisation", *fieldsets[-1][1]["fields"][1:])
+            fieldsets[-1][1]["fields"] = (
+                fieldsets[-1][1]["fields"][0],
+                "autorisation",
+                *fieldsets[-1][1]["fields"][1:],
+            )
 
         fieldsets_template = "common/form_as_fieldsets.html"
 
@@ -186,7 +202,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
                 self.instance.communion_cette_annee = self.instance.annees_kt == 2
             if app == "aumonerie":
                 from aumonerie.models import Group
-                
+
                 self.instance.profession_cette_annee = False
                 self.instance.confirmation_cette_annee = False
                 group_name = None

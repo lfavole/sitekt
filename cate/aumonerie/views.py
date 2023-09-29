@@ -3,7 +3,14 @@ from common.pdfs.calendar import Calendar
 from common.pdfs.list import List
 from common.pdfs.meetings import Meetings
 from common.pdfs.quick_list import QuickList
-from common.views import CommonArticleListView, CommonArticleView, CommonDateListView, CommonDocumentListView, CommonPageView, serve
+from common.views import (
+    CommonArticleListView,
+    CommonArticleView,
+    CommonDateListView,
+    CommonDocumentListView,
+    CommonPageView,
+    serve,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import SubscriptionForm
@@ -24,6 +31,7 @@ def subscription(request):
         form = SubscriptionForm()
     return render(request, "common/subscription.html", {"title": "Inscription à l'aumônerie", "form": form})
 
+
 authorization = Authorization.as_view()
 calendar = Calendar.as_view()
 list = List.as_view()
@@ -34,6 +42,7 @@ meetings = Meetings.as_view()
 class ArticleListView(CommonArticleListView):
     model = Article
 
+
 class ArticleView(CommonArticleView):
     model = Article
 
@@ -41,8 +50,10 @@ class ArticleView(CommonArticleView):
 class DateListView(CommonDateListView):
     model = Date
 
+
 class DocumentListView(CommonDocumentListView):
     model = Document
 
+
 def serve_document(request, pk):
-    return serve(request, get_object_or_404(Document, pk = pk))
+    return serve(request, get_object_or_404(Document, pk=pk))

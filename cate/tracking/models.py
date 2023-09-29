@@ -13,18 +13,18 @@ from .managers import PageviewManager, VisitorManager
 
 
 class Visit(models.Model):
-    session_key = models.CharField(_("Session key"), max_length = 40)
+    session_key = models.CharField(_("Session key"), max_length=40)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name = "visit_history",
-        null = True,
-        editable = False,
-        on_delete = models.SET_NULL,
-        verbose_name = _("User"),
+        related_name="visit_history",
+        null=True,
+        editable=False,
+        on_delete=models.SET_NULL,
+        verbose_name=_("User"),
     )
     ip_address = models.GenericIPAddressField(_("IP address"))
     user_agent = models.TextField(_("User agent"))
-    start_time = models.DateTimeField(_("Start time"), default = timezone.now)
+    start_time = models.DateTimeField(_("Start time"), default=timezone.now)
     expiry_time = models.DateTimeField(_("Session expiry time"))
     time_on_site = models.IntegerField(_("Time on site"))
 
@@ -33,15 +33,16 @@ class Visit(models.Model):
     class Meta(object):
         verbose_name = _("visit")
         ordering = ("-start_time",)
-        permissions = (
-            ("visitor_log", "Can view visitor"),
-        )
+        permissions = (("visitor_log", "Can view visitor"),)
 
     def ip_address_location(self):
-        req = requests.get(f"http://ip-api.com/json/{self.ip_address}", {
-            "fields": "status,message,city,regionName,country,mobile,proxy,hosting",
-            "lang": "fr",
-        })
+        req = requests.get(
+            f"http://ip-api.com/json/{self.ip_address}",
+            {
+                "fields": "status,message,city,regionName,country,mobile,proxy,hosting",
+                "lang": "fr",
+            },
+        )
         try:
             data: dict[str, Any] = req.json()
         except requests.JSONDecodeError as err:
@@ -58,11 +59,13 @@ class Visit(models.Model):
 
         # Translators: This string is used as a separator between list elements
         sep = gettext(", ")
-        ret = sep.join((
-            data.get("city", ""),
-            data.get("regionName", ""),
-            data.get("country", ""),
-        ))
+        ret = sep.join(
+            (
+                data.get("city", ""),
+                data.get("regionName", ""),
+                data.get("country", ""),
+            )
+        )
         if extra:
             ret += " (" + sep.join(extra) + ")"
         return ret
@@ -71,6 +74,7 @@ class Visit(models.Model):
 
     def pretty_user_agent(self):
         return str(user_agents.parse(self.user_agent))
+
     pretty_user_agent.short_description = _("Information about user agent")
 
     def session_expired(self):
@@ -80,25 +84,28 @@ class Visit(models.Model):
         if self.expiry_time:
             return self.expiry_time <= timezone.now()
         return False
+
     session_expired.boolean = True
     session_expired.short_description = _("Session expired")
 
     def pretty_time_on_site(self):
         if self.time_on_site is not None:
-            return timedelta(seconds = self.time_on_site)
+            return timedelta(seconds=self.time_on_site)
+
     pretty_time_on_site.short_description = _("Time on site")
+
 
 class PageView(models.Model):
     visit = models.ForeignKey(
         Visit,
-        related_name = "pageviews",
-        on_delete = models.CASCADE,
-        verbose_name = _("Visit"),
+        related_name="pageviews",
+        on_delete=models.CASCADE,
+        verbose_name=_("Visit"),
     )
     url = models.TextField(_("URL"))
     referer = models.TextField(_("Referer"))
     query_string = models.TextField(_("Query string"))
-    method = models.CharField(_("Method"), max_length = 10)
+    method = models.CharField(_("Method"), max_length=10)
     view_time = models.DateTimeField(_("View time"))
 
     objects = PageviewManager["PageView"]()

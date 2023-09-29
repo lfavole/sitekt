@@ -50,6 +50,7 @@ class CustomSettings(ModuleType):
 
             if getattr(cs_overrides, "TEST", False):
                 import custom_settings_test as cs_test
+
                 return getattr(cs_test, name)
 
             return getattr(cs_overrides, name)
@@ -76,7 +77,11 @@ class CustomSettings(ModuleType):
                 return PA_SITE if PYTHONANYWHERE else None
 
             if name == "WSGI_FILE":
-                return None if not self.HOST else Path("/var/www") / (self.HOST.replace(".", "_").lower().strip() + "_wsgi.py")
+                return (
+                    None
+                    if not self.HOST
+                    else Path("/var/www") / (self.HOST.replace(".", "_").lower().strip() + "_wsgi.py")
+                )
 
         return super().__getattribute__(name)
 

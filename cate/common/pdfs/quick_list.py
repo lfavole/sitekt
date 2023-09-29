@@ -9,7 +9,7 @@ from fpdf.enums import AccessPermission, Align, XPos, YPos
 from fpdf.fonts import FontFace
 
 from ..models import CommonChild, Year
-from . import Cell, PDF, Table
+from . import PDF, Cell, Table
 
 
 class CustomTable(Table):
@@ -141,10 +141,13 @@ class QuickList(PDF):
                 fields[field.name] = (field.verbose_name, fields[field.name][1])
                 field_types[field.name] = type(field)
 
-        self.page_title = f"Liste des %s - %s - {Year.get_current().formatted_year}" % {
-            "espacecate": ("enfants", "KT et EVF"),
-            "aumonerie": ("jeunes", "Aumônerie"),
-        }[app]
+        self.page_title = (
+            f"Liste des %s - %s - {Year.get_current().formatted_year}"
+            % {
+                "espacecate": ("enfants", "KT et EVF"),
+                "aumonerie": ("jeunes", "Aumônerie"),
+            }[app]
+        )
         self.set_title(self.page_title)
 
         self.set_font("Montserrat")
@@ -161,7 +164,8 @@ class QuickList(PDF):
                     + " -- "
                     + (
                         (self.classes_dict.get(classe, classe) if app == "aumonerie" else classe)
-                        if classe != "AUTRE" else ""
+                        if classe != "AUTRE"
+                        else ""
                     )
                 )
 
@@ -213,8 +217,8 @@ class QuickList(PDF):
                     0,
                     12,
                     self.page_title,
-                    align = Align.C,
-                    new_x = XPos.LMARGIN,
-                    new_y = YPos.NEXT,
+                    align=Align.C,
+                    new_x=XPos.LMARGIN,
+                    new_y=YPos.NEXT,
                 )
                 self.ln(3)

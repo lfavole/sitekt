@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 
+import custom_settings
 from debug_toolbar.settings import PANELS_DEFAULTS
 from debug_toolbar.toolbar import DebugToolbar
 from django.http import HttpRequest
@@ -19,7 +20,6 @@ from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.functional import lazy
 from django.utils.translation import gettext
-import custom_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,90 +35,90 @@ SECRET_KEY = custom_settings.SECRET_KEY or "+jt!%+%erdp^y7h37v#68x31+u9ut6^8zryj
 DEBUG = custom_settings.DEBUG
 
 if not DEBUG:
-	CONN_MAX_AGE = 600
-	ALLOWED_HOSTS = [custom_settings.HOST]
+    CONN_MAX_AGE = 600
+    ALLOWED_HOSTS = [custom_settings.HOST]
 else:
-	ALLOWED_HOSTS = ["*"]
+    ALLOWED_HOSTS = ["*"]
 
 if custom_settings.PYTHONANYWHERE:
-	CSRF_COOKIE_SECURE = True
-	SESSION_COOKIE_SECURE = True
-	SECURE_SSL_REDIRECT = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 
 GITHUB_WEBHOOK_KEY = custom_settings.GITHUB_WEBHOOK_KEY
 
 # Application definition
 
 INSTALLED_APPS = [
-	"django.contrib.admin",
-	"django.contrib.admindocs",
-	"django.contrib.auth",
-	"django.contrib.contenttypes",
-	"django.contrib.sessions",
-	"django.contrib.messages",
-	"django.contrib.staticfiles",
-	"adminsortable2",
-	"easy_thumbnails",
-	"tinymce",
-	"cate",
-	"users",
-	"storage",
-	"tracking",
-	"aumonerie",
-	"common",
-	"debug",
-	"debug_toolbar",
-	"errors",
-	"espacecate",
-	"calendrier_avent_2022",
-	"old_website",
-	"django_cleanup", # must be placed last
+    "django.contrib.admin",
+    "django.contrib.admindocs",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "adminsortable2",
+    "easy_thumbnails",
+    "tinymce",
+    "cate",
+    "users",
+    "storage",
+    "tracking",
+    "aumonerie",
+    "common",
+    "debug",
+    "debug_toolbar",
+    "errors",
+    "espacecate",
+    "calendrier_avent_2022",
+    "old_website",
+    "django_cleanup",  # must be placed last
 ]
 
 MIDDLEWARE = [
-	"django.middleware.security.SecurityMiddleware",
-	"django.middleware.gzip.GZipMiddleware",
-	"django.contrib.sessions.middleware.SessionMiddleware",
-	"django.middleware.http.ConditionalGetMiddleware",
-	"django.middleware.common.CommonMiddleware",
-	"cate.middleware.MinifyHtmlMiddleware",
-	"django.middleware.csrf.CsrfViewMiddleware",
-	"django.contrib.auth.middleware.AuthenticationMiddleware",
-	"django.contrib.messages.middleware.MessageMiddleware",
-	"django.middleware.clickjacking.XFrameOptionsMiddleware",
-	"tracking.middleware.VisitorTrackingMiddleware",
-	"debug_toolbar.middleware.DebugToolbarMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.gzip.GZipMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.http.ConditionalGetMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "cate.middleware.MinifyHtmlMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "tracking.middleware.VisitorTrackingMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 DEBUG_TOOLBAR_CONFIG = {
-	"SHOW_TOOLBAR_CALLBACK": "cate.settings.show_toolbar",
-	"SHOW_COLLAPSED": True,
-	"RENDER_PANELS": False,
-	"OBSERVE_REQUEST_CALLBACK": "cate.settings.observe_request",
+    "SHOW_TOOLBAR_CALLBACK": "cate.settings.show_toolbar",
+    "SHOW_COLLAPSED": True,
+    "RENDER_PANELS": False,
+    "OBSERVE_REQUEST_CALLBACK": "cate.settings.observe_request",
 }
 DEBUG_TOOLBAR_PANELS = [
-	*PANELS_DEFAULTS,
-	"debug.panels.ErrorPanel",
-	"debug.panels.GitInfoPanel",
+    *PANELS_DEFAULTS,
+    "debug.panels.ErrorPanel",
+    "debug.panels.GitInfoPanel",
 ]
 
 
 def show_toolbar(request: HttpRequest):
-	"""
-	Should we show the toolbar?
-	"""
-	return request.user.is_authenticated and request.user.has_perm("users.can_see_debug_toolbar")  # type: ignore
+    """
+    Should we show the toolbar?
+    """
+    return request.user.is_authenticated and request.user.has_perm("users.can_see_debug_toolbar")  # type: ignore
 
 
 def observe_request(request: HttpRequest):
-	"""
-	Should we observe the request with the toolbar?
-	"""
-	if DebugToolbar.is_toolbar_request(request):
-		return False
-	if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-		return False
-	return True
+    """
+    Should we observe the request with the toolbar?
+    """
+    if DebugToolbar.is_toolbar_request(request):
+        return False
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return False
+    return True
 
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
@@ -126,30 +126,30 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 ROOT_URLCONF = "cate.urls"
 
 TEMPLATES = [
-	{
-		"BACKEND": "django.template.backends.django.DjangoTemplates",
-		"DIRS": [],
-		"APP_DIRS": True,
-		"OPTIONS": {
-			"context_processors": [
-				"django.template.context_processors.debug",
-				"django.template.context_processors.request",
-				"django.contrib.auth.context_processors.auth",
-				"django.contrib.messages.context_processors.messages",
-				"cate.context_processors.app_name",
-				"cate.context_processors.navbar_processor",
-				"cate.context_processors.now_variable",
-				"cate.context_processors.offline",
-			],
-		},
-	},
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "cate.context_processors.app_name",
+                "cate.context_processors.navbar_processor",
+                "cate.context_processors.now_variable",
+                "cate.context_processors.offline",
+            ],
+        },
+    },
 ]
 
 WSGI_APPLICATION = "cate.wsgi.application"
 
 TRACK_IGNORE_URLS = (
-	r"^(favicon\.ico|robots\.txt)$",
-	r"^admin/",
+    r"^(favicon\.ico|robots\.txt)$",
+    r"^admin/",
 )
 
 TRACK_IGNORE_STATUS_CODES = (403, 404, 500)
@@ -158,35 +158,39 @@ TRACK_PAGEVIEWS = True
 
 
 STORAGES = {
-	"default": {
-		"BACKEND": "storage.storages.CustomFileSystemStorage",
-	},
-	"staticfiles": {
-		"BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
-	},
+    "default": {
+        "BACKEND": "storage.storages.CustomFileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
 }
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-	"default": {
-		"ENGINE": "django.db.backends.sqlite3",
-		"NAME": BASE_DIR / "db.sqlite3",
-	}
-} if custom_settings.USE_SQLITE else {
-	"default": {
-		"ENGINE": "django.db.backends.mysql",
-		"NAME": custom_settings.DB_NAME,
-		"USER": custom_settings.DB_USER,
-		"PASSWORD": custom_settings.DB_PASSWORD,
-		"HOST": custom_settings.DB_HOST,
-		"OPTIONS": {
-			"charset": "utf8mb4",
-			"init_command": "SET sql_mode=\"STRICT_TRANS_TABLES\"",
-		},
-	}
-}
+DATABASES = (
+    {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+    if custom_settings.USE_SQLITE
+    else {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": custom_settings.DB_NAME,
+            "USER": custom_settings.DB_USER,
+            "PASSWORD": custom_settings.DB_PASSWORD,
+            "HOST": custom_settings.DB_HOST,
+            "OPTIONS": {
+                "charset": "utf8mb4",
+                "init_command": 'SET sql_mode="STRICT_TRANS_TABLES"',
+            },
+        }
+    }
+)
 
 AUTH_USER_MODEL = "users.User"
 
@@ -194,21 +198,21 @@ AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-	{
-		"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-	},
-	{
-		"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-	},
-	{
-		"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-	},
-	{
-		"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-	},
-	{
-		"NAME": "cate.password_validation.PwnedPasswordValidator",
-	},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+    {
+        "NAME": "cate.password_validation.PwnedPasswordValidator",
+    },
 ]
 
 
@@ -248,46 +252,44 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 def add_url(text, url):
-	return text % {
-		"message": gettext("You must first create the article, then insert the image. Don't worry, the image will be uploaded after reloading."),
-		"url": url,
-	}
+    return text % {
+        "message": gettext(
+            "You must first create the article, then insert the image. Don't worry, the image will be uploaded after reloading."
+        ),
+        "url": url,
+    }
 
 
 add_url_lazy = lazy(add_url)
 static_lazy = lazy(static)
-TINYMCE_JS_URL = STATIC_URL + "vendor/tinymce/tinymce.min.js" if custom_settings.OFFLINE else "https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"
-TINYMCE_EXTRA_MEDIA = {
-	"css": {
-		"all": (
-			"/static/tinymce/tinymce.css",
-		)
-	},
-	"js": (
-		"/static/tinymce/tinymce.js",
-	)
-}
+TINYMCE_JS_URL = (
+    STATIC_URL + "vendor/tinymce/tinymce.min.js"
+    if custom_settings.OFFLINE
+    else "https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"
+)
+TINYMCE_EXTRA_MEDIA = {"css": {"all": ("/static/tinymce/tinymce.css",)}, "js": ("/static/tinymce/tinymce.js",)}
 TINYMCE_DEFAULT_CONFIG = {
-	"language": "fr",
-	"language_url": static_lazy("tinymce/langs/fr_FR.js"),
-	"content_css": [
-		"https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap",
-		static_lazy("global/global.css"),
-	],
-	"content_style": "body{padding:8px}",
-	"promotion": False,
-	"plugins": "autolink code fullscreen help image link lists media preview quickbars save searchreplace table",
-	"toolbar": (
-		"undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft "
-		"aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor removeformat | "
-		"image media link"
-	),
-	"relative_urls": False,
-	"image_advtab": True,
-	"images_reuse_filename": True,
-	"images_upload_credentials": True,
-	# pylint: disable=C0209
-	"images_upload_handler": add_url_lazy("""\
+    "language": "fr",
+    "language_url": static_lazy("tinymce/langs/fr_FR.js"),
+    "content_css": [
+        "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+        static_lazy("global/global.css"),
+    ],
+    "content_style": "body{padding:8px}",
+    "promotion": False,
+    "plugins": "autolink code fullscreen help image link lists media preview quickbars save searchreplace table",
+    "toolbar": (
+        "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft "
+        "aligncenter alignright alignjustify | outdent indent | numlist bullist | forecolor backcolor removeformat | "
+        "image media link"
+    ),
+    "relative_urls": False,
+    "image_advtab": True,
+    "images_reuse_filename": True,
+    "images_upload_credentials": True,
+    # pylint: disable=C0209
+    "images_upload_handler": add_url_lazy(
+        """\
 (blobInfo, progress) => new Promise((success, failure) => {
 	var parts = location.pathname.split("/");
 	if(parts[4] == "add" && parts[5] == "") {
@@ -320,5 +322,7 @@ TINYMCE_DEFAULT_CONFIG = {
 	formData.append("csrfmiddlewaretoken", django.jQuery("#content-main form").get(0).csrfmiddlewaretoken.value);
 	xhr.send(formData);
 })
-""", reverse_lazy("tinymce-upload-image")),
+""",
+        reverse_lazy("tinymce-upload-image"),
+    ),
 }

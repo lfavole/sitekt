@@ -5,15 +5,12 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 
+
 def main():
     def sanitize(name):
         return name.removesuffix(".py").lower().strip().replace("-", "_")
 
-    files = [
-        sanitize(file.name)
-        for file in HERE.parent.iterdir()
-        if file.is_file()
-    ]
+    files = [sanitize(file.name) for file in HERE.parent.iterdir() if file.is_file()]
     if HERE.name in files:
         files.remove(HERE.name)
     if "utils" in files:
@@ -36,7 +33,9 @@ def main():
     args = parser.parse_args(sys.argv[2:])
     module.main(args)
 
+
 if __name__ == "__main__":
     sys.path.insert(0, str(HERE.parent.parent))
-    from scripts import main # type: ignore
+    from scripts import main  # type: ignore
+
     main()

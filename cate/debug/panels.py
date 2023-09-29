@@ -38,10 +38,12 @@ class ErrorPanel(Panel):
 
     def generate_stats(self, request, response):
         self.toolbar.store()  # ensure that store_id exists
-        self.record_stats({
-            "request": request,
-            "store_id": self.toolbar.store_id,
-        })
+        self.record_stats(
+            {
+                "request": request,
+                "store_id": self.toolbar.store_id,
+            }
+        )
 
     def enable_instrumentation(self):
         exception._old_response_for_exception = response_for_exception  # type: ignore
@@ -158,11 +160,13 @@ class GitInfoPanel(Panel):
 
                 value = getattr(client, attr)
                 if isinstance(value, dict):
-                    value = SafeString("<br>".join(
-                        # Translators: add a space before colon if needed
-                        f"<b>{html.escape(key)}</b>" + _(":") + f" {html.escape(value)}"
-                        for key, value in value.items()
-                    ))
+                    value = SafeString(
+                        "<br>".join(
+                            # Translators: add a space before colon if needed
+                            f"<b>{html.escape(key)}</b>" + _(":") + f" {html.escape(value)}"
+                            for key, value in value.items()
+                        )
+                    )
                 if attr == "url":
                     value = SafeString(f'<a href="{html.escape(value)}" target="_blank">{html.escape(value)}</a>')
                 if value is None or value == "":

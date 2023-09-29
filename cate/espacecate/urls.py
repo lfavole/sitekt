@@ -13,26 +13,26 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from common.views import subscription_ok
 from django.urls import path
 
 from . import views
-from common.views import subscription_ok
 
 app_name = "espacecate"
 urlpatterns = [
-    path("articles/<slug:slug>", views.ArticleView.as_view(), name = "article"),
-    path("articles/", views.ArticleListView.as_view(), name = "articles"),
-    path("autorisation", views.authorization, name = "autorisation"),
-    path("calendrier", views.calendar, name = "calendrier"),
-    path("dates", views.DateListView.as_view(), name = "dates"),
-    path("docs/<int:pk>", views.serve_document, name = "document"),
-    path("docs/", views.DocumentListView.as_view(), name = "documents"),
-    path("inscription/ok", subscription_ok, name = "inscription_ok"),
-    path("inscription", views.subscription, name = "inscription"),
-    path("index", views.PageView.as_view(), kwargs = {"slug": "accueil"}),
-    path("liste", views.list, name = "list"),
-    path("liste-rapide", views.quick_list, name = "quick-list"),
-    path("rencontres", views.meetings, name = "meetings"),
-    path("", views.PageView.as_view(), name = "accueil", kwargs = {"slug": "accueil"}),
-    path("<slug:slug>", views.PageView.as_view(), name = "page"),
+    path("articles/<slug:slug>", views.ArticleView.as_view(), name="article"),
+    path("articles/", views.ArticleListView.as_view(), name="articles"),
+    path("autorisation", views.authorization, name="autorisation"),
+    path("calendrier", views.calendar, name="calendrier"),
+    path("dates", views.DateListView.as_view(), name="dates"),
+    path("docs/<int:pk>", views.serve_document, name="document"),
+    path("docs/", views.DocumentListView.as_view(), name="documents"),
+    path("inscription/ok", subscription_ok, name="inscription_ok"),
+    path("inscription", views.subscription, name="inscription"),
+    path("index", views.PageView.as_view(), kwargs={"slug": "accueil"}),
+    path("liste", views.list, name="list"),
+    path("liste-rapide", views.quick_list, name="quick-list"),
+    path("rencontres", views.meetings, name="meetings"),
+    path("", views.PageView.as_view(), name="accueil", kwargs={"slug": "accueil"}),
+    path("<slug:slug>", views.PageView.as_view(), name="page"),
 ]

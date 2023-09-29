@@ -5,9 +5,21 @@ from typing import Iterable, Literal, Type
 from django.apps import apps
 from django.http import HttpRequest
 from django.utils.crypto import get_random_string
-from fpdf.enums import AccessPermission, Align, MethodReturnValue, StrokeCapStyle, XPos, YPos
+from fpdf.enums import (
+    AccessPermission,
+    Align,
+    MethodReturnValue,
+    StrokeCapStyle,
+    XPos,
+    YPos,
+)
 
-from ..models import CommonChild, CommonGroup, CommonMeeting, Year  # pylint: disable=E0402
+from ..models import (  # pylint: disable=E0402
+    CommonChild,
+    CommonGroup,
+    CommonMeeting,
+    Year,
+)
 from . import PDF
 
 
@@ -137,9 +149,7 @@ class Meetings(PDF):
         for meeting in meetings:
             self.y = start_y
             meeting_name = (
-                meeting.date.strftime("%d/%m")
-                + "\n"
-                + (meeting_kinds.get(meeting.kind, meeting.kind) or "AUTRE")
+                meeting.date.strftime("%d/%m") + "\n" + (meeting_kinds.get(meeting.kind, meeting.kind) or "AUTRE")
             )
             lines = self.multi_cell(
                 col_width,

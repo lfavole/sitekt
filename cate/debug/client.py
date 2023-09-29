@@ -4,8 +4,8 @@ import subprocess as sp
 from time import time
 from typing import Any
 
-import requests
 import custom_settings
+import requests
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 

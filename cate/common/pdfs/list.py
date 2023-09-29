@@ -58,7 +58,7 @@ class List(PDF):
                 continue
 
             if key == "telephone":
-                value = "0" + number_format(int(value), "", grouping = 2, thousand_sep = " ", force_grouping = True)
+                value = "0" + number_format(int(value), "", grouping=2, thousand_sep=" ", force_grouping=True)
                 if not int(value.replace(" ", "")):
                     return ""
 
@@ -106,7 +106,7 @@ class List(PDF):
         if regroup_by == "groupe":
             childs = childs.select_related("groupe")
 
-        childs = sorted(childs, key = lambda child: self.classes.index(child.classe))
+        childs = sorted(childs, key=lambda child: self.classes.index(child.classe))
 
         regroup_check = None
 
@@ -114,14 +114,16 @@ class List(PDF):
             regroup_check = lambda row_n: self.classes_dict[childs[row_n].classe]  # noqa
 
         elif regroup_by == "groupe":
-            def get_group(child, sorting = True):
+
+            def get_group(child, sorting=True):
                 # use "" when sorting so the childs appear at the top
                 return child.groupe.name if child.groupe else ("" if sorting else "Aucun groupe")
 
             regroup_check = lambda row_n: get_group(childs[row_n], False)  # noqa
-            childs = sorted(childs, key = get_group)
+            childs = sorted(childs, key=get_group)
 
         elif regroup_by == "annees" and self.app == "espacecate":
+
             def get_years(child):
                 classe = self.classes.index(child.classe)
                 if classe <= 3:  # PS, MS, GS, CP
@@ -133,9 +135,10 @@ class List(PDF):
                 if years == -1:
                     return "Éveil à la foi"
                 return str(years) + ("ère" if years == 1 else "ème") + " année de caté"
+
             regroup_check = _regroup_check
 
-            childs = sorted(childs, key = get_years)
+            childs = sorted(childs, key=get_years)
 
         return list(childs), regroup_check  # fetch the childs
 
@@ -216,18 +219,17 @@ class List(PDF):
         table_data: list[tuple[str, ...]] = [
             # ("Nom", "Prénom"),
             tuple(value[0] for value in fields.values()),
-            *(tuple(get(element, key) for key in fields) for element in childs)
+            *(tuple(get(element, key) for key in fields) for element in childs),
         ]
 
         Table(
             self,
             table_data,
             [value[1] for value in fields.values()],
-
-            heading_line_height = 10,
-            heading_font_face = FontFace(size_pt = 10, fill_color = (34, 204, 34)),
-            regroup_check = regroup_check,
-            regroup_font_face = FontFace(emphasis = "B", size_pt = 11, fill_color = (255, 68, 68)),
+            heading_line_height=10,
+            heading_font_face=FontFace(size_pt=10, fill_color=(34, 204, 34)),
+            regroup_check=regroup_check,
+            regroup_font_face=FontFace(emphasis="B", size_pt=11, fill_color=(255, 68, 68)),
         ).render()
 
     def header(self):
@@ -239,9 +241,9 @@ class List(PDF):
                     0,
                     10,
                     self.page_title,
-                    border = True,
-                    align = Align.C,
-                    fill = True,
-                    new_x = XPos.LMARGIN,
-                    new_y = YPos.NEXT,
+                    border=True,
+                    align=Align.C,
+                    fill=True,
+                    new_x=XPos.LMARGIN,
+                    new_y=YPos.NEXT,
                 )

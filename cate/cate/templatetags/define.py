@@ -2,13 +2,16 @@ from django import template
 
 register = template.Library()
 
+
 @register.simple_tag
-def define(value = None):
-	return value
+def define(value=None):
+    return value
+
 
 @register.simple_tag
 def define_list(*args):
-	return args
+    return args
+
 
 class Addable(list):
     def __add__(self, other):
@@ -22,6 +25,7 @@ class Addable(list):
         self.extend(obj)
         return self
 
+
 @register.simple_tag
 def define_addable(*args):
-	return Addable(args)
+    return Addable(args)

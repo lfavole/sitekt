@@ -13,6 +13,7 @@ class PageviewInline(admin.TabularInline):
     can_delete = False
     fields = ["method", "url", "view_time"]
 
+
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
     date_hierarchy = "start_time"
@@ -31,30 +32,38 @@ class VisitAdmin(admin.ModelAdmin):
 
     @property
     def media(self):
-        return super().media + Media(css={
-            "all": [staticfiles_storage.url("admin/tracking.css")],
-        })
+        return super().media + Media(
+            css={
+                "all": [staticfiles_storage.url("admin/tracking.css")],
+            }
+        )
 
     inlines = [PageviewInline]
 
-    def has_add_permission(self, _request, _obj = None):
+    def has_add_permission(self, _request, _obj=None):
         return False
-    def has_change_permission(self, _request, _obj = None):
+
+    def has_change_permission(self, _request, _obj=None):
         return False
-    def has_delete_permission(self, _request, _obj = None):
+
+    def has_delete_permission(self, _request, _obj=None):
         return False
+
 
 class PageviewAdmin(admin.ModelAdmin):
     date_hierarchy = "view_time"
 
     list_display = ("url", "view_time")
 
-    def has_add_permission(self, _request, _obj = None):
+    def has_add_permission(self, _request, _obj=None):
         return False
-    def has_change_permission(self, _request, _obj = None):
+
+    def has_change_permission(self, _request, _obj=None):
         return False
-    def has_delete_permission(self, _request, _obj = None):
+
+    def has_delete_permission(self, _request, _obj=None):
         return False
+
 
 if TRACK_PAGEVIEWS:
     admin.site.register(PageView, PageviewAdmin)

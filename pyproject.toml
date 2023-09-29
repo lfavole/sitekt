@@ -1,0 +1,37 @@
+[tool.black]
+line-length = 120
+extend-exclude = "migrations/"
+
+[tool.isort]
+profile = "black"
+skip = "migrations"
+
+[tool.pylint.main]
+jobs = 0
+load-plugins = "pylint_quotes"
+disable = [
+    "bad-indentation",
+    "bare-except",
+    "fixme",
+    "global-statement",
+    "import-outside-toplevel",
+    "invalid-str-returned",
+    "line-too-long",
+    "missing-module-docstring",
+    "missing-timeout",
+    "no-member",
+    "protected-access",
+    "unspecified-encoding",
+]
+expected-line-ending-format = "LF"
+include-naming-hint = "y"
+
+[tool.pylint.basic]
+allowed-redefined-builtins = "id"
+good-names = ["f", "i", "id", "md", "pk"]
+no-docstring-rgx = "(^_|Config$|Admin$|Inline$|^(main|contribute_to_argparse|Meta|get_absolute_url)$)"
+
+[tool.pylint.pylint_quotes]
+string-quote = "double"
+triple-quote = "double"
+docstring-quote = "double"

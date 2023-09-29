@@ -4,6 +4,8 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Literal
+
+from common.views import has_permission  # noqa
 from django.apps import apps
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
@@ -13,7 +15,6 @@ from fpdf.fonts import FontFace
 from fpdf.line_break import Fragment
 from fpdf.syntax import PDFDate, PDFObject, PDFString
 from fpdf.table import Cell, Row
-from common.views import has_permission  # noqa
 
 from cate.utils.text import slugify
 
@@ -36,7 +37,7 @@ class Table:
     heading_line_height: float = 15
 
     fill_alternate: bool = True
-    fill_font_face: FontFace = field(default_factory=lambda: FontFace(fill_color = 230))
+    fill_font_face: FontFace = field(default_factory=lambda: FontFace(fill_color=230))
 
     regroup_check: Callable[[int], Any] | None = None
     regroup_font_face: FontFace = field(default_factory=FontFace)
@@ -106,11 +107,11 @@ class Table:
                         0,
                         self.regroup_height,
                         regrouped_data,
-                        border = True,
-                        align = self.regroup_align,
-                        fill = True,
-                        new_x = XPos.LMARGIN,
-                        new_y = YPos.NEXT,
+                        border=True,
+                        align=self.regroup_align,
+                        fill=True,
+                        new_x=XPos.LMARGIN,
+                        new_y=YPos.NEXT,
                     )
                 fill = False
 
@@ -151,19 +152,19 @@ class Table:
             col_width,
             line_height,
             cell.text,
-            dry_run = True,
-            output = MethodReturnValue.LINES,
+            dry_run=True,
+            output=MethodReturnValue.LINES,
         )
         self.fpdf.multi_cell(
             col_width,
             line_height,
             cell.text,
-            border = True,
-            align = self.align,
-            fill = fill,
-            new_x = XPos.RIGHT,
-            new_y = YPos.TOP,
-            max_line_height = line_height / len(lines),
+            border=True,
+            align=self.align,
+            fill=fill,
+            new_x=XPos.RIGHT,
+            new_y=YPos.TOP,
+            max_line_height=line_height / len(lines),
         )
 
 
@@ -183,7 +184,10 @@ class PDF(FPDF):
             (r"((?:\+\d+ |\d)\d(?: \d\d){4})", self._phone_link),
             (r"([\w.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", self._email_link),
             # https://stackoverflow.com/a/3809435
-            (r"(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*)", self._link),
+            (
+                r"(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b[-a-zA-Z0-9@:%_\+.~#?&//=]*)",
+                self._link,
+            ),
         ]
 
     def _superscript(self, frag: Fragment):
@@ -251,7 +255,7 @@ class PDF(FPDF):
     def font_family(self, value):
         self._GraphicsStateMixin__statestack[-1]["font_family"] = value  # type: ignore
 
-    def set_font(self, family = None, style = "", size = 0) -> None:
+    def set_font(self, family=None, style="", size=0) -> None:
         self._in_set_font = True
         styles = {
             "": "Regular",
@@ -300,6 +304,7 @@ class PDF(FPDF):
     def as_view(cls):
         def view(request: HttpRequest):
             from ..views import _encode_filename  # avoid circular import
+
             app = request.resolver_match.app_name if request.resolver_match else ""
             if not app:
                 raise RuntimeError("Could not determine app to render the PDF")
@@ -314,9 +319,7 @@ class PDF(FPDF):
             datetime = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"{app}_" + normalize_filename(pdf.filename).removesuffix(".pdf") + f"_{datetime}.pdf"
             disposition = "attachment" if bool(request.GET.get("dl")) else "inline"
-            ret.headers["Content-Disposition"] = (  # type: ignore
-                f"{disposition}; {_encode_filename(filename)}"
-            )
+            ret.headers["Content-Disposition"] = f"{disposition}; {_encode_filename(filename)}"  # type: ignore
             return ret
 
         return view
@@ -327,6 +330,7 @@ def normalize_filename(filename: str):
 
 
 # Fix encryption of metadata (PyFPDF/fpdf2#865)
+
 
 class PDFInfo(PDFObject):
     def __init__(

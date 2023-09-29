@@ -2,14 +2,15 @@ import re
 from datetime import date
 from typing import Type
 
-from cate.utils.text import slugify
 from common.models import CommonArticle
 from django.apps import apps
 from django.contrib import messages
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.http import Http404, HttpResponsePermanentRedirect
 from django.shortcuts import render, resolve_url
 from django.urls import reverse
-from django.contrib.staticfiles.storage import staticfiles_storage
+
+from cate.utils.text import slugify
 
 
 def redirect_kt_static(request, path):
@@ -36,7 +37,7 @@ def redirect_admin(request, path):
             request,
             messages.INFO,
             "Vous avez été redirigé vers le nouvel espace administrateur. "
-            "Vos identifiants sont les mêmes que sur l'ancien site."
+            "Vos identifiants sont les mêmes que sur l'ancien site.",
         )
     # FIXME redirect correctly admin pages
     return HttpResponsePermanentRedirect(reverse("admin:index") + path)

@@ -3,8 +3,8 @@ import datetime as dt
 import mimetypes
 from typing import Any, Callable, Type
 from urllib.parse import urlparse
-from bs4 import BeautifulSoup
 
+from bs4 import BeautifulSoup
 from django.apps import apps
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
@@ -24,480 +24,533 @@ from .fields import DatalistField
 
 
 class Year(models.Model):
-	"""
-	A school year to be linked to childs, etc.
+    """
+    A school year to be linked to childs, etc.
 
-	It can be active (or not).
-	"""
-	start_year = models.fields.IntegerField(_("Start year"), unique = True)
-	is_active = models.fields.BooleanField(_("Active year"))
+    It can be active (or not).
+    """
 
-	class Meta:
-		verbose_name = _("school year")
-		ordering = ["-start_year"]
+    start_year = models.fields.IntegerField(_("Start year"), unique=True)
+    is_active = models.fields.BooleanField(_("Active year"))
 
-	def _get_end_year(self):
-		return self.start_year + 1
-	_get_end_year.short_description = _("End year")
-	end_year = property(_get_end_year)
+    class Meta:
+        verbose_name = _("school year")
+        ordering = ["-start_year"]
 
-	def _get_formatted_year(self):
-		return f"{self.start_year}-{self.end_year}"
-	_get_formatted_year.short_description = _("School year") # type: ignore
-	formatted_year = property(_get_formatted_year)
+    def _get_end_year(self):
+        return self.start_year + 1
 
-	def __str__(self):
-		return _("School year %s") % (self.formatted_year,)
+    _get_end_year.short_description = _("End year")
+    end_year = property(_get_end_year)
 
-	def save(self, *args, **kwargs):
-		# Note: we avoid saving the objects to avoid recursion error
-		obj = type(self).objects.all()
-		if self.is_active:
-			# this year becomes an active year => deactivate the other years
-			for year in obj.filter(is_active = True):
-				if year == self:
-					continue
-				if not year.is_active:
-					continue # avoid hitting the database
-				year.is_active = False
-				year.save()
+    def _get_formatted_year(self):
+        return f"{self.start_year}-{self.end_year}"
 
-		elif not obj.filter(is_active = True).exists():
-			# no active years => activate the first year or this year
-			first = obj.first()
-			if first and not first.is_active: # activate the first year
-				first.is_active = True
-				first.save()
-			else: # one year => this year is active
-				self.is_active = True
+    _get_formatted_year.short_description = _("School year")  # type: ignore
+    formatted_year = property(_get_formatted_year)
 
-		super().save(*args, **kwargs)
+    def __str__(self):
+        return _("School year %s") % (self.formatted_year,)
 
-	def delete(self, *args, **kwargs):
-		obj = type(self).objects.all()
-		if not obj.filter(is_active = True).exists():
-			years = obj.filter(is_active = False)
-			if years.exists():
-				el = years[0]
-				if not el.is_active: # activate the first year
-					# we avoid saving the objects to avoid recursion error
-					el.is_active = True
-					el.save()
-			# we are deleting the only active year
-			# there will be bugs...
+    def save(self, *args, **kwargs):
+        # Note: we avoid saving the objects to avoid recursion error
+        obj = type(self).objects.all()
+        if self.is_active:
+            # this year becomes an active year => deactivate the other years
+            for year in obj.filter(is_active=True):
+                if year == self:
+                    continue
+                if not year.is_active:
+                    continue  # avoid hitting the database
+                year.is_active = False
+                year.save()
 
-		return super().delete(*args, **kwargs)
+        elif not obj.filter(is_active=True).exists():
+            # no active years => activate the first year or this year
+            first = obj.first()
+            if first and not first.is_active:  # activate the first year
+                first.is_active = True
+                first.save()
+            else:  # one year => this year is active
+                self.is_active = True
 
-	@classmethod
-	def get_current(cls):
-		"""
-		Return the current year.
-		"""
-		year = cache.get("current_year")
-		if not year:
-			try:
-				year = cls.objects.get(is_active = True)
-			except (cls.DoesNotExist, DatabaseError):
-				return Year(start_year = dt.date.today().year, is_active = True)
-			cache.set("current_year", year)
-		return year
+        super().save(*args, **kwargs)
 
-	@property
-	def trs(self):
-		return [self.tr1, self.tr2, self.tr3]
+    def delete(self, *args, **kwargs):
+        obj = type(self).objects.all()
+        if not obj.filter(is_active=True).exists():
+            years = obj.filter(is_active=False)
+            if years.exists():
+                el = years[0]
+                if not el.is_active:  # activate the first year
+                    # we avoid saving the objects to avoid recursion error
+                    el.is_active = True
+                    el.save()
+            # we are deleting the only active year
+            # there will be bugs...
 
-	@property
-	def tr1(self):
-		return (dt.date(self.start_year, 9, 1), dt.date(self.end_year, 1, 1))
+        return super().delete(*args, **kwargs)
 
-	@property
-	def tr2(self):
-		return (dt.date(self.end_year, 1, 1), dt.date(self.end_year, 4, 1))
+    @classmethod
+    def get_current(cls):
+        """
+        Return the current year.
+        """
+        year = cache.get("current_year")
+        if not year:
+            try:
+                year = cls.objects.get(is_active=True)
+            except (cls.DoesNotExist, DatabaseError):
+                return Year(start_year=dt.date.today().year, is_active=True)
+            cache.set("current_year", year)
+        return year
 
-	@property
-	def tr3(self):
-		return (dt.date(self.end_year, 4, 1), dt.date(self.end_year, 7, 1))
+    @property
+    def trs(self):
+        return [self.tr1, self.tr2, self.tr3]
+
+    @property
+    def tr1(self):
+        return (dt.date(self.start_year, 9, 1), dt.date(self.end_year, 1, 1))
+
+    @property
+    def tr2(self):
+        return (dt.date(self.end_year, 1, 1), dt.date(self.end_year, 4, 1))
+
+    @property
+    def tr3(self):
+        return (dt.date(self.end_year, 4, 1), dt.date(self.end_year, 7, 1))
 
 
 class PageBase(models.Model):
-	"""
-	Base class for pages and articles.
-	"""
-	slug = models.fields.SlugField(_("Slug"), max_length = 100, unique = True, editable = False)
-	title = models.fields.CharField(_("Title"), max_length = 100)
-	content = models.fields.TextField(_("Content"), blank = True)
-	hidden = models.fields.BooleanField(_("Hidden page"), default = False)
+    """
+    Base class for pages and articles.
+    """
 
-	class Meta:
-		abstract = True
+    slug = models.fields.SlugField(_("Slug"), max_length=100, unique=True, editable=False)
+    title = models.fields.CharField(_("Title"), max_length=100)
+    content = models.fields.TextField(_("Content"), blank=True)
+    hidden = models.fields.BooleanField(_("Hidden page"), default=False)
 
-	def _generate_slug(self, try_slugs=True):
-		value = self.title
-		slug_candidate = slug_original = slugify(value)
-		if not try_slugs:
-			return slug_candidate
+    class Meta:
+        abstract = True
 
-		i = 0
-		while True:
-			i += 1
-			if not type(self).objects.filter(slug = slug_candidate).exists(): # type: ignore
-				break
-			slug_candidate = slug_original + "-" + str(i)
+    def _generate_slug(self, try_slugs=True):
+        value = self.title
+        slug_candidate = slug_original = slugify(value)
+        if not try_slugs:
+            return slug_candidate
 
-		return slug_candidate
+        i = 0
+        while True:
+            i += 1
+            if not type(self).objects.filter(slug=slug_candidate).exists():  # type: ignore
+                break
+            slug_candidate = slug_original + "-" + str(i)
 
-	def save(self, *args, **kwargs):
-		if self._state.adding:
-			self.slug = self._generate_slug()
+        return slug_candidate
 
-		super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            self.slug = self._generate_slug()
 
-		self._write_base64_images()
+        super().save(*args, **kwargs)
 
-	def _write_base64_images(self):
-		"""
-		Creates the corresponding objects for Base64 images in the page/article.
-		Saves the element only if needed.
-		"""
-		edited = False
+        self._write_base64_images()
 
-		soup = BeautifulSoup(self.content)
-		for i, img in enumerate(soup.find_all("img")):
-			if not (src := img.attrs.get("src")):
-				continue
+    def _write_base64_images(self):
+        """
+        Creates the corresponding objects for Base64 images in the page/article.
+        Saves the element only if needed.
+        """
+        edited = False
 
-			if (parse_result := urlparse(src)).scheme != "data":
-				continue
+        soup = BeautifulSoup(self.content)
+        for i, img in enumerate(soup.find_all("img")):
+            if not (src := img.attrs.get("src")):
+                continue
 
-			mimetype, data = parse_result.path.split(",", 1)
-			if mimetype.endswith(";base64"):
-				mimetype = mimetype.removesuffix(";base64")
-				data = base64.b64decode(data)
+            if (parse_result := urlparse(src)).scheme != "data":
+                continue
 
-			if not (ext := mimetypes.guess_extension(mimetype)):
-				continue
+            mimetype, data = parse_result.path.split(",", 1)
+            if mimetype.endswith(";base64"):
+                mimetype = mimetype.removesuffix(";base64")
+                data = base64.b64decode(data)
 
-			if not (path := self._save_image(f"blobid{i}{ext}", data)):
-				continue
-			img.attrs["src"] = path
+            if not (ext := mimetypes.guess_extension(mimetype)):
+                continue
 
-			edited = True
+            if not (path := self._save_image(f"blobid{i}{ext}", data)):
+                continue
+            img.attrs["src"] = path
 
-		if edited:
-			self.content = soup.prettify()
-			super().save()
+            edited = True
 
-	def _save_image(self, filename, content):
-		"""
-		Saves the image with the corresponding filename and content.
-		Returns the URL.
-		"""
-		Image: Type[ImageBase] = apps.get_model(self._meta.app_label, self._meta.model_name + "Image")  # type: ignore
-		image_obj = Image.objects.create(page=self, image=ContentFile(content, filename))
-		return image_obj.image.url
+        if edited:
+            self.content = soup.prettify()
+            super().save()
 
-	def __str__(self): # pylint: disable=E0307
-		return self.title
+    def _save_image(self, filename, content):
+        """
+        Saves the image with the corresponding filename and content.
+        Returns the URL.
+        """
+        Image: Type[ImageBase] = apps.get_model(self._meta.app_label, self._meta.model_name + "Image")  # type: ignore
+        image_obj = Image.objects.create(page=self, image=ContentFile(content, filename))
+        return image_obj.image.url
+
+    def __str__(self):  # pylint: disable=E0307
+        return self.title
+
 
 class ImageBase(models.Model):
-	"""
-	Base class for images in pages and articles.
-	"""
-	image = ImageField(_("Image"))
-	page: "models.ForeignKey[CommonPage]"
+    """
+    Base class for images in pages and articles.
+    """
 
-	def __str__(self):
-		return _("Image '%s' in %s") % (self.image.url, self.page)
+    image = ImageField(_("Image"))
+    page: "models.ForeignKey[CommonPage]"
 
-	class Meta:
-		abstract = True
+    def __str__(self):
+        return _("Image '%s' in %s") % (self.image.url, self.page)
+
+    class Meta:
+        abstract = True
+
 
 class CommonPage(PageBase):
-	"""
-	Common page class for all apps.
-	"""
-	order = models.PositiveIntegerField(_("Order"), default = 0, null = False)
-	parent_page = models.ForeignKey("self", blank = True, null = True, on_delete = models.SET_NULL, verbose_name = _("Previous page"))
+    """
+    Common page class for all apps.
+    """
 
-	class Meta:
-		verbose_name = _("page")
-		abstract = True
-		ordering = ["order"]
+    order = models.PositiveIntegerField(_("Order"), default=0, null=False)
+    parent_page = models.ForeignKey(
+        "self", blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("Previous page")
+    )
 
-	def get_absolute_url(self):
-		return reverse("espacecate:page", args = [self.slug])
+    class Meta:
+        verbose_name = _("page")
+        abstract = True
+        ordering = ["order"]
+
+    def get_absolute_url(self):
+        return reverse("espacecate:page", args=[self.slug])
+
 
 class CommonPageImage(ImageBase):
-	"""
-	Common page image class for all apps.
-	"""
-	page = models.ForeignKey("Page", on_delete = models.CASCADE, verbose_name = _("Page"))
+    """
+    Common page image class for all apps.
+    """
 
-	class Meta:
-		verbose_name = _("page image")
-		verbose_name_plural = _("page images")
-		abstract = True
+    page = models.ForeignKey("Page", on_delete=models.CASCADE, verbose_name=_("Page"))
+
+    class Meta:
+        verbose_name = _("page image")
+        verbose_name_plural = _("page images")
+        abstract = True
+
 
 class CommonArticle(PageBase):
-	"""
-	Common article class for all apps.
-	"""
-	date = models.fields.DateField(_("Date"), default = now)
-	hidden = models.fields.BooleanField(_("Hidden article"), default = False)
+    """
+    Common article class for all apps.
+    """
 
-	class Meta:
-		verbose_name = _("article")
-		abstract = True
-		ordering = ["-date"]
+    date = models.fields.DateField(_("Date"), default=now)
+    hidden = models.fields.BooleanField(_("Hidden article"), default=False)
+
+    class Meta:
+        verbose_name = _("article")
+        abstract = True
+        ordering = ["-date"]
+
 
 class CommonArticleImage(ImageBase):
-	"""
-	Common article image class for all apps.
-	"""
-	page = models.ForeignKey("Article", on_delete = models.CASCADE, verbose_name = _("Article"))
+    """
+    Common article image class for all apps.
+    """
 
-	class Meta:
-		verbose_name = _("article image")
-		verbose_name_plural = _("article images")
-		abstract = True
+    page = models.ForeignKey("Article", on_delete=models.CASCADE, verbose_name=_("Article"))
+
+    class Meta:
+        verbose_name = _("article image")
+        verbose_name_plural = _("article images")
+        abstract = True
+
 
 class CommonGroup(models.Model):
-	"""
-	Common group class for all apps.
-	"""
-	name = models.fields.CharField(_("Name"), max_length = 100, unique = True)
+    """
+    Common group class for all apps.
+    """
 
-	def __str__(self):
-		return self.name
+    name = models.fields.CharField(_("Name"), max_length=100, unique=True)
 
-	class Meta:
-		verbose_name = _("group")
-		abstract = True
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("group")
+        abstract = True
+
 
 class CommonChild(models.Model):
-	"""
-	Common child class for all apps.
-	"""
-	nom = models.CharField("Nom de famille", max_length = 100)
-	prenom = models.CharField("Prénom", max_length = 100)
-	date_naissance = models.DateField("Date de naissance")
-	lieu_naissance = models.CharField("Lieu de naissance", max_length = 100)
-	adresse = models.TextField("Adresse")
+    """
+    Common child class for all apps.
+    """
 
-	paye = models.CharField("Payé", max_length = 10, default = "non", choices = [
-		("non", "Non"),
-		("attente", "En attente"),
-		("oui", "Oui"),
-	])
-	signe = models.BooleanField("Signé", default = False)
-	groupe = models.ForeignKey("Group", on_delete = models.SET_NULL, verbose_name = "Groupe", blank = True, null = True)
-	photo = ImageField("Photo", blank = True, null = True)
-	date_inscription = models.DateTimeField("Date et heure d'inscription", auto_now_add=True)
+    nom = models.CharField("Nom de famille", max_length=100)
+    prenom = models.CharField("Prénom", max_length=100)
+    date_naissance = models.DateField("Date de naissance")
+    lieu_naissance = models.CharField("Lieu de naissance", max_length=100)
+    adresse = models.TextField("Adresse")
 
-	class Meta:
-		verbose_name = _("child")
-		ordering = ["nom", "prenom"]
-		abstract = True
+    paye = models.CharField(
+        "Payé",
+        max_length=10,
+        default="non",
+        choices=[
+            ("non", "Non"),
+            ("attente", "En attente"),
+            ("oui", "Oui"),
+        ],
+    )
+    signe = models.BooleanField("Signé", default=False)
+    groupe = models.ForeignKey("Group", on_delete=models.SET_NULL, verbose_name="Groupe", blank=True, null=True)
+    photo = ImageField("Photo", blank=True, null=True)
+    date_inscription = models.DateTimeField("Date et heure d'inscription", auto_now_add=True)
 
-	def __str__(self):
-		return f"{self.prenom} {self.nom}"
+    class Meta:
+        verbose_name = _("child")
+        ordering = ["nom", "prenom"]
+        abstract = True
 
-	@property
-	def official_name(self):
-		return f"{self.nom} {self.prenom}"
+    def __str__(self):
+        return f"{self.prenom} {self.nom}"
 
-	sacraments_checks: dict[str, str] = {}
+    @property
+    def official_name(self):
+        return f"{self.nom} {self.prenom}"
 
-	def clean(self):
-		today = dt.date.today()
-		errors = {}
+    sacraments_checks: dict[str, str] = {}
 
-		def add_error(field, error):
-			if field not in errors:
-				errors[field] = []
-			errors[field].append(error)
+    def clean(self):
+        today = dt.date.today()
+        errors = {}
 
-		def check_not_future(name: str, msg: str):
-			date: "dt.date" | None = getattr(self, name)
-			if date and date > today:
-				add_error(name, f"{msg.capitalize()} ne doit pas être dans le futur.")
+        def add_error(field, error):
+            if field not in errors:
+                errors[field] = []
+            errors[field].append(error)
 
-		def check_after_birth(name: str, msg: str):
-			date = getattr(self, name)
-			if date and date < self.date_naissance:
-				add_error(name, f"{msg.capitalize()} doit être après la date de naissance.")
+        def check_not_future(name: str, msg: str):
+            date: "dt.date" | None = getattr(self, name)
+            if date and date > today:
+                add_error(name, f"{msg.capitalize()} ne doit pas être dans le futur.")
 
-		def check_sacrament(name: str, msg: str):
-			if not getattr(self, name):
-				return  # the sacrament hasn't been done
+        def check_after_birth(name: str, msg: str):
+            date = getattr(self, name)
+            if date and date < self.date_naissance:
+                add_error(name, f"{msg.capitalize()} doit être après la date de naissance.")
 
-			if name == "pardon":
-				# special case
-				if self.annee_pardon and self.annee_pardon > today.year:  # type: ignore
-					add_error(f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur.")
-				return
+        def check_sacrament(name: str, msg: str):
+            if not getattr(self, name):
+                return  # the sacrament hasn't been done
 
-			check_not_future(f"date_{name}", f"la date {msg}")
-			check_after_birth(f"date_{name}", f"la date {msg}")
+            if name == "pardon":
+                # special case
+                if self.annee_pardon and self.annee_pardon > today.year:  # type: ignore
+                    add_error(f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur.")
+                return
 
-		check_not_future("date_naissance", "la date de naissance")
-		for name, msg in self.sacraments_checks.items():
-			check_sacrament(name, msg)
+            check_not_future(f"date_{name}", f"la date {msg}")
+            check_after_birth(f"date_{name}", f"la date {msg}")
 
-		for field, msg in {"tel_mere": "de la mère", "tel_pere": "du père"}.items():
-			length = len(getattr(self, field))
-			if length not in (0, 10):
-				add_error(field, f"Le numéro de téléphone {msg} est incorrect (il a {length} chiffre{'s' if length >= 2 else ''}).")
+        check_not_future("date_naissance", "la date de naissance")
+        for name, msg in self.sacraments_checks.items():
+            check_sacrament(name, msg)
 
-		if errors:
-			raise ValidationError(errors)
+        for field, msg in {"tel_mere": "de la mère", "tel_pere": "du père"}.items():
+            length = len(getattr(self, field))
+            if length not in (0, 10):
+                add_error(
+                    field,
+                    f"Le numéro de téléphone {msg} est incorrect (il a {length} chiffre{'s' if length >= 2 else ''}).",
+                )
+
+        if errors:
+            raise ValidationError(errors)
+
 
 class CommonDate(models.Model):
-	start_date = models.fields.DateField(_("Start date"))
-	end_date = models.fields.DateField(_("End date"), blank = True, null = True)
-	start_time = models.fields.TimeField(_("Start time"), blank = True, null = True)
-	end_time = models.fields.TimeField(_("End time"), blank = True, null = True)
-	time_text = DatalistField(_("Time (as text)"), max_length = 50, blank = True, form_choices = ("Journée", "Week-end", "Séjour"))
-	name = models.fields.CharField(_("Name"), max_length = 100)
-	short_name = models.fields.CharField(_("Short name"), max_length = 50, blank = True)
-	place = models.fields.CharField(_("Place"), max_length = 100, blank = True)
-	cancelled = models.fields.BooleanField(_("Cancelled"))
+    start_date = models.fields.DateField(_("Start date"))
+    end_date = models.fields.DateField(_("End date"), blank=True, null=True)
+    start_time = models.fields.TimeField(_("Start time"), blank=True, null=True)
+    end_time = models.fields.TimeField(_("End time"), blank=True, null=True)
+    time_text = DatalistField(
+        _("Time (as text)"), max_length=50, blank=True, form_choices=("Journée", "Week-end", "Séjour")
+    )
+    name = models.fields.CharField(_("Name"), max_length=100)
+    short_name = models.fields.CharField(_("Short name"), max_length=50, blank=True)
+    place = models.fields.CharField(_("Place"), max_length=100, blank=True)
+    cancelled = models.fields.BooleanField(_("Cancelled"))
 
-	class Meta:
-		verbose_name = _("date")
-		ordering = ["start_date", "start_time"]
-		abstract = True
+    class Meta:
+        verbose_name = _("date")
+        ordering = ["start_date", "start_time"]
+        abstract = True
 
-	def clean(self):
-		if self.end_date and self.start_date > self.end_date:
-			raise ValidationError({"end_date": _("The end date must be after the start date.")})
+    def clean(self):
+        if self.end_date and self.start_date > self.end_date:
+            raise ValidationError({"end_date": _("The end date must be after the start date.")})
 
-		if self.end_time and not self.start_time:
-			msg = _("The start time must be specified when the end time is specified.")
-			raise ValidationError({"start_time": msg})
+        if self.end_time and not self.start_time:
+            msg = _("The start time must be specified when the end time is specified.")
+            raise ValidationError({"start_time": msg})
 
-		if self.end_time and self.start_time > self.end_time:
-			raise ValidationError({"end_time": _("The end time must be after the start time.")})
+        if self.end_time and self.start_time > self.end_time:
+            raise ValidationError({"end_time": _("The end time must be after the start time.")})
 
-		if self.start_time and self.end_time and self.time_text:
-			msg = _("The start time / end time or the time as text must be specified, not both.")
-			raise ValidationError({"start_time": msg, "end_time": msg, "time_text": msg})
+        if self.start_time and self.end_time and self.time_text:
+            msg = _("The start time / end time or the time as text must be specified, not both.")
+            raise ValidationError({"start_time": msg, "end_time": msg, "time_text": msg})
 
-	@property
-	def start(self):
-		start_date = self.start_date
-		# fall back to start time = midnight
-		start_time = self.start_time or dt.time()
-		return dt.datetime.combine(start_date, start_time)
+    @property
+    def start(self):
+        start_date = self.start_date
+        # fall back to start time = midnight
+        start_time = self.start_time or dt.time()
+        return dt.datetime.combine(start_date, start_time)
 
-	@property
-	def end(self):
-		end_date = self.end_date or (
-			# entire day (no end time) => end = 1 day after
-			self.start_date + dt.timedelta(days=1)
-			if self.start_time is None
-			else self.start_date
-		)
-		ret = dt.datetime.combine(end_date, self.end_time or self.start.time())
-		if self.start_time and self.end_time is None:
-			# start time but no end time => end = 1 hour after
-			# we must use this trick because we can't do time + timedelta
-			ret += dt.timedelta(hours=1)
-		return ret
+    @property
+    def end(self):
+        end_date = self.end_date or (
+            # entire day (no end time) => end = 1 day after
+            self.start_date + dt.timedelta(days=1)
+            if self.start_time is None
+            else self.start_date
+        )
+        ret = dt.datetime.combine(end_date, self.end_time or self.start.time())
+        if self.start_time and self.end_time is None:
+            # start time but no end time => end = 1 hour after
+            # we must use this trick because we can't do time + timedelta
+            ret += dt.timedelta(hours=1)
+        return ret
 
-	@property
-	def is_past(self):
-		return dt.datetime.now() > self.end
+    @property
+    def is_past(self):
+        return dt.datetime.now() > self.end
 
-	@property
-	def is_current(self):
-		return self.start <= dt.datetime.now() <= self.end
+    @property
+    def is_current(self):
+        return self.start <= dt.datetime.now() <= self.end
 
-	@property
-	def is_future(self):
-		return dt.datetime.now() < self.start
+    @property
+    def is_future(self):
+        return dt.datetime.now() < self.start
 
-	def __str__(self): # pylint: disable=E0307
-		return self.name
+    def __str__(self):  # pylint: disable=E0307
+        return self.name
+
 
 class CommonMeeting(models.Model):
-	"""
-	Common meeting class for all apps.
-	"""
-	Kind: "models.TextChoices"
-	kind: "models.CharField[str]"
-	date = models.fields.DateField(_("Date"))
-	name = models.CharField(_("Name"), blank=True, max_length=100, help_text=_("Replaces the meeting kind"))
+    """
+    Common meeting class for all apps.
+    """
 
-	get_childs: Callable[[], Manager[CommonChild]]
+    Kind: "models.TextChoices"
+    kind: "models.CharField[str]"
+    date = models.fields.DateField(_("Date"))
+    name = models.CharField(_("Name"), blank=True, max_length=100, help_text=_("Replaces the meeting kind"))
 
-	def save(self, *args, **kwargs):
-		add = self._state.adding
-		super().save(*args, **kwargs)
-		if add:
-			Attendance: Type[CommonAttendance] = apps.get_model(self._meta.app_label, "Attendance")  # type: ignore
-			for child in self.get_childs():
-				Attendance.objects.create(child=child, meeting=self, is_present=True, has_warned=False)
+    get_childs: Callable[[], Manager[CommonChild]]
 
-	def __str__(self):
-		return self.name or self.get_kind_display()  # type: ignore
+    def save(self, *args, **kwargs):
+        add = self._state.adding
+        super().save(*args, **kwargs)
+        if add:
+            Attendance: Type[CommonAttendance] = apps.get_model(self._meta.app_label, "Attendance")  # type: ignore
+            for child in self.get_childs():
+                Attendance.objects.create(child=child, meeting=self, is_present=True, has_warned=False)
 
-	class Meta:
-		verbose_name = _("meeting")
-		ordering = ["date"]
-		abstract = True
+    def __str__(self):
+        return self.name or self.get_kind_display()  # type: ignore
+
+    class Meta:
+        verbose_name = _("meeting")
+        ordering = ["date"]
+        abstract = True
+
 
 class CommonAttendance(models.Model):
-	"""
-	Common attendance class for all apps.
-	"""
-	child: "models.ForeignKey[CommonChild]" = models.ForeignKey("Child", on_delete=models.CASCADE, related_name="attendances", related_query_name="attendance", verbose_name=_("Child"))
-	meeting: "models.ForeignKey[CommonMeeting]" = models.ForeignKey("Meeting", on_delete=models.CASCADE, related_name="attendances", related_query_name="attendance", verbose_name=_("Meeting"))
-	is_present = models.BooleanField(_("Present"))
-	has_warned = models.BooleanField(_("Has warned"))
+    """
+    Common attendance class for all apps.
+    """
 
-	def __str__(self):
-		return _("%s was %s%s") % (
-			str(self.child),
-			(
-				# Translators: use inclusive writing
-				_("present")
-				if self.is_present
-				# Translators: use inclusive writing
-				else _("absent")
-			),
-			(" " + _("and has warned")) if self.has_warned else "",
-		)
+    child: "models.ForeignKey[CommonChild]" = models.ForeignKey(
+        "Child",
+        on_delete=models.CASCADE,
+        related_name="attendances",
+        related_query_name="attendance",
+        verbose_name=_("Child"),
+    )
+    meeting: "models.ForeignKey[CommonMeeting]" = models.ForeignKey(
+        "Meeting",
+        on_delete=models.CASCADE,
+        related_name="attendances",
+        related_query_name="attendance",
+        verbose_name=_("Meeting"),
+    )
+    is_present = models.BooleanField(_("Present"))
+    has_warned = models.BooleanField(_("Has warned"))
 
-	class Meta:
-		verbose_name = _("attendance")
-		abstract = True
+    def __str__(self):
+        return _("%s was %s%s") % (
+            str(self.child),
+            (
+                # Translators: use inclusive writing
+                _("present")
+                if self.is_present
+                # Translators: use inclusive writing
+                else _("absent")
+            ),
+            (" " + _("and has warned")) if self.has_warned else "",
+        )
+
+    class Meta:
+        verbose_name = _("attendance")
+        abstract = True
+
 
 class CommonDocumentCategory(models.Model):
-	"""
-	Common document category class for all apps.
-	"""
-	title = models.CharField(_("Title"), unique=True, max_length = 100)
+    """
+    Common document category class for all apps.
+    """
 
-	def __str__(self):  # pylint: disable=E0307
-		return self.title
+    title = models.CharField(_("Title"), unique=True, max_length=100)
 
-	class Meta:
-		verbose_name = _("document category")
-		verbose_name_plural = _("document categories")
-		abstract = True
+    def __str__(self):  # pylint: disable=E0307
+        return self.title
+
+    class Meta:
+        verbose_name = _("document category")
+        verbose_name_plural = _("document categories")
+        abstract = True
+
 
 class CommonDocument(models.Model):
-	"""
-	Common document class for all apps.
-	"""
-	title = models.fields.CharField(_("Document title"), max_length = 100)
-	file = FileField(_("File"), null = True)
-	categories: "models.ManyToManyField[CommonDocumentCategory, Any]" = models.ManyToManyField("DocumentCategory", verbose_name=_("Categories"), blank=True)
+    """
+    Common document class for all apps.
+    """
 
-	class Meta:
-		verbose_name = _("document")
-		abstract = True
+    title = models.fields.CharField(_("Document title"), max_length=100)
+    file = FileField(_("File"), null=True)
+    categories: "models.ManyToManyField[CommonDocumentCategory, Any]" = models.ManyToManyField(
+        "DocumentCategory", verbose_name=_("Categories"), blank=True
+    )
 
-	def __str__(self): # pylint: disable=E0307
-		return self.title
+    class Meta:
+        verbose_name = _("document")
+        abstract = True
+
+    def __str__(self):  # pylint: disable=E0307
+        return self.title
