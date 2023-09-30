@@ -213,11 +213,6 @@ class List(PDF):
             if key == "classe":
                 return self.classes_dict.get(ret, ret)
 
-            if key == "date_naissance":
-                lieu = element.lieu_naissance
-                if lieu:
-                    ret += f"\nà {lieu}"
-
             return str(ret)
 
         childs, regroup_check = self.get_childs_and_regroup_check(regroup_by)
