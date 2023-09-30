@@ -205,12 +205,17 @@ class List(PDF):
 
             ret = getattr(element, key)
             if isinstance(ret, bool):
-                return "Oui" if ret else "Non"
+                ret = "Oui" if ret else "Non"
             if isinstance(ret, dt.date):
-                return localize_input(ret)  # type: ignore
+                ret = localize_input(ret) or ""  # type: ignore
 
             if key == "classe":
                 return self.classes_dict.get(ret, ret)
+
+            if key == "date_naissance":
+                lieu = element.lieu_naissance
+                if lieu:
+                    ret += f"\nà {lieu}"
 
             return str(ret)
 
