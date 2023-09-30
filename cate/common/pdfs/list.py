@@ -144,7 +144,8 @@ class List(PDF):
 
     filename = "liste"
 
-    def render(self, app: Literal["espacecate", "aumonerie"], regroup_by: str = ""):
+    def render(self, app: Literal["espacecate", "aumonerie"], request: HttpRequest):
+        regroup_by = request.GET.get("regroup", "")
         self.app = app
         self.Child: Type[CommonChild] = self.get_model("Child")  # type: ignore
         fields: dict[str, tuple[str, int]] = {
