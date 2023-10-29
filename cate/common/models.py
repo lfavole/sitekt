@@ -226,7 +226,8 @@ class CommonPage(PageBase):
 
     order = models.PositiveIntegerField(_("order"), default=0, null=False)
     parent_page = models.ForeignKey(
-        "self", blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("Previous page")
+        "self", blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("Previous page"),
+        related_name="parent_pages",
     )
 
     class Meta:

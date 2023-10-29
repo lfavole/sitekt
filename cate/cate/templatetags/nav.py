@@ -51,10 +51,16 @@ def nav(value: list[tuple[Page, Any]], request: HttpRequest):
                 return True
 
             ret += "\t<li><a" + (' class="act"' if is_active(match, req_match) else "") + ' href="' + href + '">'
+            message = []
             if page.hidden:
-                ret += "<i>(<small>Page cachée :</small> "
+                message.append("cachée")
+            if not page.content and not nested_pages:
+                message.append("vide")
+
+            if message:
+                ret += f"<i>(<small>Page {', '.join(message)} :</small> "
             ret += escape(page.title)
-            if page.hidden:
+            if message:
                 ret += ")</i>"
             ret += "</a>"
 

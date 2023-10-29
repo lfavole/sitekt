@@ -58,7 +58,10 @@ class BaseView(generic.View):
         ret = self.model.objects.all()
         if not admin:
             if hasattr(self.model, "content"):
-                ret = ret.filter(~Q(content__exact=""))
+                if hasattr(self.model, "parent_pages"):
+                    ret = ret.filter(~(Q(content__exact="") & Q(parent_pages__isnull=True)))
+                else:
+                    ret = ret.filter(~Q(content__exact=""))
             if hasattr(self.model, "hidden"):
                 ret = ret.filter(hidden=False)
             if hasattr(self.model, "date"):
