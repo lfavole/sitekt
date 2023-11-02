@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "errors",
     "espacecate",
     "calendrier_avent_2022",
+    "calendrier_avent_2023",
     "old_website",
     "django_cleanup",  # must be placed last
 ]

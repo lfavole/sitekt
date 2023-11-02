@@ -1,0 +1,13 @@
+{% extends "cate/site_base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&amp;display=swap">
+<link rel="stylesheet" href="{% static "calendrier-avent-2023/style.css" %}">
+{% endblock css %}
+
+{% block body %}
+<main>
+{% block content %}{% endblock %}
+</main>
+{% endblock %}
