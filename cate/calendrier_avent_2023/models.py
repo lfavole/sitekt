@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils.safestring import mark_safe
-from storage.fields import ImageField
+from django.utils.translation import gettext_lazy as _
 
 from cate.templatetags.format_day import format_day, format_day_html
+from common.models import ImageBase
+from storage.fields import ImageField
 
 
 class Day(models.Model):
@@ -20,3 +22,15 @@ class Day(models.Model):
 
     def __html__(self):
         return mark_safe(format_day_html(self.day) + " décembre : " + self.child)
+
+
+class DayImage(ImageBase):
+    """
+    An image in a day.
+    """
+
+    page = models.ForeignKey(Day, on_delete=models.CASCADE, verbose_name=_("Day"))  # type: ignore
+
+    class Meta:
+        verbose_name = _("day image")
+        verbose_name_plural = _("day images")
