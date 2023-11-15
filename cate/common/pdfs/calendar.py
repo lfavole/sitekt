@@ -169,7 +169,11 @@ class Calendar(PDF):
             from aumonerie.models import Date
 
         for date in Date.objects.all():
-            special_dates.add_date(date.short_name or date.name, date.start_date, date.end_date)
+            special_dates.add_date(
+                date.short_name or date.name,
+                date.start_date,
+                date.end_date + datetime.timedelta(days=1) if date.end_date else date.end_date,
+            )
 
         self.title = f"{title} {start_year}-{start_year + 1}"
 
