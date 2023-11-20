@@ -190,36 +190,14 @@ body.mode-nuit .jours a {
 p {
 	font-size: 20px;
 }
-.trop-tot, .intro {
+.too-early, .intro {
 	font-size: 42px;
 	text-align: center;
 	line-height: 1.5em;
 }
 
-img {
+.intro img {
 	height: 100px;
 	border-radius: 50%;
 	vertical-align: middle;
-}
-
-.imgs {
-	text-align: center;
-}
-.imgs img {
-	height: 150px;
-	margin: 0 0.5em;
-}
-
-.titre-chant {
-	font-family: "Lobster Two", cursive;
-	font-size: 48px;
-	text-align: center;
-}
-.chant {
-	text-align: center;
-}
-.chant iframe {
-	width: 45vw;
-	height: calc(45vw / 400 * 225);
-	margin: 0 16px;
 }

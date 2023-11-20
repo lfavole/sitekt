@@ -1,0 +1,70 @@
+.cpt {
+    display: inline-block;
+}
+.cpt .hidden, .cpt .hidden + .hidden2 {
+    display: none;
+}
+.cpt .hidden2 {
+    display: inline;
+}
+.cpt > span {
+    transition: color 0.4s ease-in-out;
+    display: inline-block;
+}
+.cpt > span > span {
+    display: inline-block;
+    width: 0.7em;
+    height: 1em;
+    line-height: 1em;
+    text-align: center;
+}
+.cpt > span > span:first-of-type {
+    text-align: right;
+}
+.cpt > span > span:last-of-type {
+    text-align: left;
+}
+.cpt.anim .prec {
+    position: relative;
+    color: transparent;
+}
+.cpt.anim .prec::before, .cpt.anim .prec::after {
+    color: black;
+    color: var(--color);
+    color: var(--color, black);
+    position: absolute;
+    left: 0px;
+    right: 0px;
+}
+.cpt.anim .prec::before {
+    content: attr(data-prec);
+    top: -100%;
+    opacity: 0;
+    animation: prec-before 0.4s ease-in-out;
+}
+@keyframes prec-before {
+    0% {
+        top: 0%;
+        opacity: 1;
+    }
+    100% {
+        top: -100%;
+        opacity: 0;
+    }
+}
+.cpt.anim .prec::after {
+    content: attr(data-act);
+    top: 0%;
+    opacity: 1;
+    animation: prec-after 0.4s ease-in-out;
+}
+@keyframes prec-after {
+    0% {
+        top: 100%;
+        opacity: 0;
+    }
+    100% {
+        top: 0%;
+        opacity: 1;
+    }
+}

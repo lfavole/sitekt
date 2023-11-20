@@ -19,6 +19,6 @@ from . import views
 
 app_name = "calendrier-avent-2023"
 urlpatterns = [
-    path("<int:day>", views.DayView.as_view(), name="day"),
+    path("<int:day>", views.day, name="day"),
     path("", views.home, name="home"),
 ]
