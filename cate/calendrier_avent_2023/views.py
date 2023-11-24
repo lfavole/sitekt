@@ -3,10 +3,12 @@ from datetime import date
 from django.http import Http404, HttpRequest
 from django.shortcuts import render
 
+from common.views import has_permission
+
 from .models import Day
 
 DAYS = 25
-MONTH = 11
+MONTH = 12
 YEAR = 2023
 start = date(YEAR, MONTH, 1)
 end = date(YEAR, MONTH, 25)
@@ -22,21 +24,16 @@ def home(request: HttpRequest):
 
 
 def day(request, day: int):
+    has_perm = has_permission(request, Day)
     today = date.today()
     day_date = date(YEAR, MONTH, day)
 
-    all_days = Day.objects.all()
-    if today < start:
-        all_days = all_days.none()
-    if today <= end:
-        all_days = all_days.filter(day__lte=today.day)
-
     try:
-        day_obj = all_days.get(day=day)
+        day_obj = Day.objects.get(day=day)
     except Day.DoesNotExist:
         day_obj = None  # hide the 404 error if too early (see below)
 
-    if today < day_date:
+    if today < day_date and (not has_perm or not bool(request.GET.get("unlock"))):
         return render(
             request,
             "calendrier_avent_2023/too_early.html",
@@ -45,6 +42,7 @@ def day(request, day: int):
                 "day": day,
                 "not_begun": today < start,
                 "date_to_wait": start if today < start else day_date,
+                "has_perm": has_perm,
             },
         )
 

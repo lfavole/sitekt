@@ -17,4 +17,9 @@
     <br>
     <span class="cpt" data-date="{{ date_to_wait.isoformat }}">Revenez plus tard...</span>
 </p>
+{% if has_perm %}
+<p class="too-early">
+    Ou <a href="?unlock=1">cliquez ici</a> pour débloquer.
+</p>
+{% endif %}
 {% endblock %}
