@@ -9,7 +9,7 @@ body.index {
 h1, .jours {
 	font-family: Lobster, cursive;
 }
-.index h1 {
+.index h1, body.mode-nuit h1 {
 	color: #eee;
 }
 h1 {
