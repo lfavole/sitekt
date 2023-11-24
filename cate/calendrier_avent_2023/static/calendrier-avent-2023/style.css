@@ -1,19 +1,21 @@
 body {
-	background-color: #88f;
 	background-color: #4ae;
+}
+body.index {
+    background-image: url("background.jpg");
+	background-size: cover;
+	background-position: center;
 }
 h1, .jours {
 	font-family: Lobster, cursive;
+}
+.index h1 {
+	color: #eee;
 }
 h1 {
 	font-size: 72px;
 	text-align: center;
 	background-color: unset;
-}
-body.mode-nuit h1 {
-	color: #eee;
-}
-h1 {
 	word-spacing: 0.1em;
 }
 h1 sup {
@@ -63,29 +65,23 @@ a {
 }
 main {
 	margin: 0px 8px;
-	height: 100vh;
 }
-
-.popup {
-	position: fixed;
-	left: 50%;
-	bottom: 0px;
-	transform: translateX(-50%) translateY(100%);
-	background-color: #f88;
-	font-family: Lobster, cursive;
-	font-size: 36px;
-	padding: 0.2em 0.5em;
-	border-radius: 0.4em 0.4em 0px 0px;
-	animation: popup 4s ease-in-out;
-	user-select: none;
+.picture-popup {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(0, 0, 255, 0.4);
+    transition: opacity 0.4s;
+    display: flex;
 }
-@keyframes popup {
-	0%, 100% {
-		transform: translateX(-50%) translateY(100%);
-	}
-	15%, 85% {
-		transform: translateX(-50%) translateY(0%);
-	}
+.picture-popup img {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+	margin: auto;
 }
 
 .jours {
