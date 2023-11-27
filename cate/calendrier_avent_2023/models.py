@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -22,6 +23,9 @@ class Day(models.Model):
 
     def __html__(self):
         return mark_safe(format_day_html(self.day) + " décembre : " + self.child)
+
+    def get_absolute_url(self):
+        return reverse("calendrier_avent_2023:day", args=[self.day])
 
 
 class DayImage(ImageBase):
