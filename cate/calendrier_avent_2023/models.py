@@ -11,7 +11,7 @@ from storage.fields import ImageField
 class Day(models.Model):
     day = models.fields.IntegerField("jour", unique=True)
     child = models.fields.CharField("enfant", max_length=100)
-    picture = ImageField("photo", null=True)
+    picture = ImageField("photo", blank=True, null=True)
     character = models.fields.CharField("personnage", max_length=100)
     content = models.fields.TextField("contenu", blank=True)
 
