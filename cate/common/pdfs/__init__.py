@@ -46,8 +46,13 @@ class Table:
 
     rows: list[Row] = field(default_factory=list)
 
+    @property
+    def _fpdf(self):
+        return self.fpdf
+
     def __post_init__(self):
         self.width = self.fpdf.epw  # FIXME
+        self._initial_style = None
 
         for row in self.table_data:
             self.row(row)
@@ -56,7 +61,9 @@ class Table:
         """
         Adds a row to the table. Returns a `Row` object.
         """
-        row = Row(self.fpdf)
+        if self._initial_style is None:
+            self._initial_style = self.fpdf.font_face()
+        row = Row(self)  # type: ignore
         self.rows.append(row)
         for cell in cells:
             row.cell(str(cell))

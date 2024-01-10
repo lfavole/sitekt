@@ -42,7 +42,7 @@ class PriceInput(forms.NumberInput):
 
     def render(self, *args, **kwargs):
         # font-size is for Django administration
-        return super().render(*args, **kwargs) + '<span style="font-size:1rem;margin-left:0.5em">€</span>'
+        return super().render(*args, **kwargs) + SafeString('<span style="font-size:1rem;margin-left:0.5em">€</span>')
 
 
 class DisplayedHTML(forms.Widget):

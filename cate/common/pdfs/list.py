@@ -7,6 +7,7 @@ from django.http import HttpRequest
 from django.utils.crypto import get_random_string
 from django.utils.formats import localize_input
 from django.utils.numberformat import format as number_format
+from fpdf.drawing import color_from_hex_string
 from fpdf.enums import AccessPermission, Align, XPos, YPos
 from fpdf.fonts import FontFace
 
@@ -15,7 +16,7 @@ from . import PDF, Table
 
 
 class List(PDF):
-    MARKDOWN_LINK_COLOR = "#0d47a1"
+    MARKDOWN_LINK_COLOR = color_from_hex_string("#0d47a1")
 
     lines: dict[str, int] = {}
     Child: Type[CommonChild]

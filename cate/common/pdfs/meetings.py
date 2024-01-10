@@ -5,6 +5,7 @@ from typing import Iterable, Literal, Type
 from django.apps import apps
 from django.http import HttpRequest
 from django.utils.crypto import get_random_string
+from fpdf.drawing import color_from_hex_string
 from fpdf.enums import (
     AccessPermission,
     Align,
@@ -24,7 +25,7 @@ from . import PDF
 
 
 class Meetings(PDF):
-    MARKDOWN_LINK_COLOR = "#0d47a1"
+    MARKDOWN_LINK_COLOR = color_from_hex_string("#0d47a1")
 
     lines: dict[str, int] = {}
     Child: Type[CommonChild]
