@@ -39,7 +39,8 @@ a {
 	body.mode-nuit a {
 		color:#81d4fa;
 	}
-	body.mode-nuit main > :not(h1, h2, h3, h4, h5, h6) {
+	/* the titles already have color:black */
+	body.mode-nuit main {
 		color:white;
 		--color:white;
 	}
