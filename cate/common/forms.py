@@ -145,7 +145,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
                     "En fonction de leurs possibilités, les familles sont invitées à participer "
                     "aux <b>frais du Catéchisme à partir de 35 euros par enfant</b> "
                     "(livres, photocopies, matériel pédagogique, chauffage...).<br>"
-                    "Participation aux frais, en espèces ou par chèque, à l'ordre de « Paroisses de l'Embrunais »"
+                    "Participation aux frais, en espèces ou par chèque, à l'ordre de « Aumônerie des Jeunes d'Embrun »"
                 )
                 if app == "espacecate"
                 else (
