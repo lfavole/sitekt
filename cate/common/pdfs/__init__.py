@@ -32,6 +32,7 @@ class Table:
     col_widths: list[float] | float = field(default_factory=list)
     font_face: FontFace = field(default_factory=FontFace)
     line_height: float = 10
+    auto_line_height: bool = False
     align: Align = Align.C
     heading_font_face: FontFace = field(default_factory=FontFace)
     heading_line_height: float = 15
@@ -95,7 +96,26 @@ class Table:
 
     def _display_line(self, row_n, fill, regrouped_data):
         data_row = self.rows[row_n]
-        line_height = self.heading_line_height if row_n == 0 else self.line_height
+        base_line_height = self.heading_line_height if row_n == 0 else self.line_height
+        line_height = base_line_height
+
+        font_face = self.font_face
+        if fill:
+            font_face_new = self.fill_font_face
+            font_face_new.size_pt = font_face.size_pt
+            font_face = font_face_new
+        if row_n == 0:
+            font_face = self.heading_font_face
+            fill = bool(font_face.fill_color)
+
+        if self.auto_line_height:
+            line_height = 0
+            with self.fpdf.use_font_face(font_face):
+                col_n = 0
+                for cell in data_row.cells:
+                    col_width = self._get_col_width(row_n, col_n, cell.colspan)
+                    line_height = max(line_height, self._get_cell_lines(cell, col_width) * base_line_height)
+                    col_n += cell.colspan
 
         if row_n > 0 and self.regroup_check:
             new_regrouped_data = self.regroup_check(row_n - 1)
@@ -128,15 +148,6 @@ class Table:
             self.fpdf.add_page()
             fill, regrouped_data = self._display_line(0, fill, regrouped_data)
 
-        font_face = self.font_face
-        if fill:
-            font_face_new = self.fill_font_face
-            font_face_new.size_pt = font_face.size_pt
-            font_face = font_face_new
-        if row_n == 0:
-            font_face = self.heading_font_face
-            fill = bool(font_face.fill_color)
-
         with self.fpdf.use_font_face(font_face):
             col_n = 0
             for cell in data_row.cells:
@@ -154,24 +165,26 @@ class Table:
 
         return fill, regrouped_data
 
-    def _display_cell(self, cell: Cell, row_n: int, col_n: int, col_width: float, line_height: float, fill: bool):
-        lines = self.fpdf.multi_cell(
+    def _get_cell_lines(self, cell: Cell, col_width: float):
+        return len(self.fpdf.multi_cell(
             col_width,
-            line_height,
+            1,
             cell.text,
             dry_run=True,
             output=MethodReturnValue.LINES,
-        )
+        ))
+
+    def _display_cell(self, cell: Cell, row_n: int, col_n: int, col_width: float, line_height: float, fill: bool):
+        lines = self._get_cell_lines(cell, col_width)
         self.fpdf.multi_cell(
             col_width,
-            line_height,
+            line_height / lines,
             cell.text,
             border=True,
             align=self.align,
             fill=fill,
             new_x=XPos.RIGHT,
             new_y=YPos.TOP,
-            max_line_height=line_height / len(lines),
         )
 
 

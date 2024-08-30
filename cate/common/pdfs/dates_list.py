@@ -58,7 +58,9 @@ class DatesList(PDF):
             self,
             table_data,
             [40, 30, 60, 60],
-            heading_line_height=10,
+            auto_line_height=True,
+            line_height=self.font_size * 1.25,
+            heading_line_height=self.font_size * 1.5,
             heading_font_face=FontFace(emphasis="B", fill_color=(255, 171, 145)),
             fill_font_face=FontFace(fill_color=238),
         ).render()
