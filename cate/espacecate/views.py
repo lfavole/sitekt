@@ -1,5 +1,6 @@
 from common.pdfs.authorization import Authorization
 from common.pdfs.calendar import Calendar
+from common.pdfs.dates_list import DatesList
 from common.pdfs.list import List
 from common.pdfs.meetings import Meetings
 from common.pdfs.quick_list import QuickList
@@ -34,6 +35,7 @@ def subscription(request):
 
 authorization = Authorization.as_view()
 calendar = Calendar.as_view()
+dates_list = DatesList.as_view()
 list = List.as_view()
 quick_list = QuickList.as_view()
 meetings = Meetings.as_view()
