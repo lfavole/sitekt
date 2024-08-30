@@ -181,7 +181,7 @@ class PDF(FPDF):
         self._in_set_font = False
         self.set_author("Secteur paroissial de l'Embrunais et du Savinois")
         self.set_creator(f"Espace caté {Year.get_current().formatted_year} (https://github.com/lfavole/sitekt)")
-        self.set_producer(f"fpdf2 v{FPDF_VERSION} (https://github.com/PyFPDF/fpdf2)")
+        self.set_producer(f"fpdf2 v{FPDF_VERSION} (https://github.com/py-pdf/fpdf2)")
 
         self.set_margin(10)
         self.set_auto_page_break(True, 10)
@@ -334,30 +334,3 @@ class PDF(FPDF):
 
 def normalize_filename(filename: str):
     return slugify(filename).replace("-", "_")
-
-
-# Fix encryption of metadata (PyFPDF/fpdf2#865)
-
-
-class PDFInfo(PDFObject):
-    def __init__(
-        self,
-        title,
-        subject,
-        author,
-        keywords,
-        creator,
-        producer,
-        creation_date: PDFDate,
-    ):
-        super().__init__()
-        self.title = PDFString(title, encrypt=True) if title else None
-        self.subject = PDFString(subject, encrypt=True) if subject else None
-        self.author = PDFString(author, encrypt=True) if author else None
-        self.keywords = PDFString(keywords, encrypt=True) if keywords else None
-        self.creator = PDFString(creator, encrypt=True) if creator else None
-        self.producer = PDFString(producer, encrypt=True) if producer else None
-        self.creation_date = creation_date
-
-
-output.PDFInfo = PDFInfo
