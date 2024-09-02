@@ -520,6 +520,7 @@ fieldset {
 	border-radius:8px;
 	margin:1em 0;
 	background-color:#eee;
+	color:black;
 }
 legend {
 	padding:0.1em 0.3em;
