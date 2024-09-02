@@ -150,7 +150,7 @@ def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model:
                 if app == "espacecate"
                 else (
                     f"Participation aux frais (cotisation pour l'année {Year.get_current().formatted_year} : "
-                    "en espèces ou par chèque, à partir de 20 euros à l'ordre de « Aumônerie des Jeunes d'Embrun »)"
+                    "en espèces ou par chèque, à partir de 35 euros à l'ordre de « Aumônerie des Jeunes d'Embrun »)"
                 ),
             }
             formfield_callback = formfield_for_dbfield
