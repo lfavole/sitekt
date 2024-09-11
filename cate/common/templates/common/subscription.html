@@ -57,6 +57,17 @@ $(function() {
 		e.preventDefault();
 		autorisation();
 	});
+	$(window).on("beforeunload", function(e) {
+		var filled = false;
+		$("input:not([type=checkbox], [type=radio][checked], [type=hidden])", f).each(function(i, e) {
+			if(e.value) {
+				filled = true;
+				return false;
+			}
+		});
+		if(filled)
+			e.preventDefault();
+	});
 });
 </script>
 {% endblock js %}
