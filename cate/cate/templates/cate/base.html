@@ -6,6 +6,11 @@
 <meta name="og:icon" content="{% get_static_prefix %}{{ app }}/favicon.ico">
 <meta name="theme-color" content="#ffaa00">
 <title>{% block title %}{% endblock %}</title>
+{% block head %}
+{% if request.path == "/espacecate/" or request.path == "/aumonerie/" %}
+<link rel="canonical" href="{{ request.path }}accueil">
+{% endif %}
+{% endblock head %}
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
