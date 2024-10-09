@@ -39,6 +39,7 @@ urlpatterns = [
     add_website("aumonerie"),
     add_website("calendrier_avent_2022"),
     add_website("calendrier_avent_2023"),
+    add_website("calendrier_avent_2024"),
     path("debug/", include("debug_toolbar.urls")),
     add_website("errors"),
     add_website("espacecate"),

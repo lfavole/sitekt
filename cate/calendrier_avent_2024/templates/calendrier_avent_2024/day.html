@@ -1,0 +1,15 @@
+{% extends "calendrier_avent_2024/page_base.html" %}
+{% load format_day %}
+
+{% block title %}{{ day.day|format_day }} décembre{% endblock %}
+
+{% block content %}
+<h1>
+    <a href="{% url "calendrier_avent_2024:home" %}"><span class="fleche fl-gauche"></span></a>
+    {{ day.day|format_day_html }} décembre
+</h1>
+{% if day.day != 25 %}
+<p class="intro"><img src="{{ day.picture.url }}"> <b>{{ day.child }}</b> vous présente <b>{{ day.holiday }}</b></p>
+{% endif %}
+{{ day.content|safe }}
+{% endblock %}

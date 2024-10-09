@@ -1,0 +1,26 @@
+{% extends "cate/site_base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&amp;display=swap">
+<link rel="stylesheet" href="{% static "calendrier-avent-2024/style.css" %}">
+<link rel="stylesheet" href="{% static "global/countdown.css" %}">
+{% endblock css %}
+{% block js %}
+<script src="{% static "global/countdown.js" %}"></script>
+<script src="{% static "calendrier-avent-2024/script.js" %}"></script>
+{% endblock js %}
+
+{% block body %}
+<main>
+{% block content %}{% endblock %}
+</main>
+{% if has_perm %}
+<footer>
+    <a href="{% url "calendrier_avent_2024:set_date" %}">Changer de date</a>
+    {% if changed_date %}
+    - Date actuelle = {{ changed_date }}
+    {% endif %}
+</footer>
+{% endif %}
+{% endblock %}

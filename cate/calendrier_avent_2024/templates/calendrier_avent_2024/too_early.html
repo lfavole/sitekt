@@ -1,0 +1,25 @@
+{% extends "calendrier_avent_2024/page_base.html" %}
+{% load format_day %}
+
+{% block title %}{{ day|format_day }} décembre{% endblock %}
+
+{% block content %}
+<h1>
+    <a href="{% url "calendrier_avent_2024:home" %}"><span class="fleche fl-gauche"></span></a>
+    {{ day|format_day_html }} décembre
+</h1>
+<p class="too-early">
+    {% if not_begun %}
+    Le calendrier de l’Avent n’a pas encore commencé.
+    {% else %}
+    Il est trop tôt pour regarder ce jour.
+    {% endif %}
+    <br>
+    <span class="cpt" data-date="{{ date_to_wait.isoformat }}">Revenez plus tard...</span>
+</p>
+{% if has_perm %}
+<p class="too-early">
+    Ou <a href="?unlock=1">cliquez ici</a> pour débloquer.
+</p>
+{% endif %}
+{% endblock %}
