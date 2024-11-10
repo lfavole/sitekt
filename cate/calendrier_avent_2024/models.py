@@ -5,13 +5,12 @@ from django.utils.translation import gettext_lazy as _
 
 from cate.templatetags.format_day import format_day, format_day_html
 from common.models import ImageBase
-from storage.fields import ImageField
+from espacecate.models import Child
 
 
 class Day(models.Model):
     day = models.fields.IntegerField("jour", unique=True)
-    child = models.fields.CharField("enfant", max_length=100)
-    picture = ImageField("photo", blank=True, null=True)
+    child = models.ForeignKey(Child, on_delete=models.CASCADE, verbose_name="enfant")
     holiday = models.fields.CharField("fête", max_length=100)
     content = models.fields.TextField("contenu", blank=True)
 
