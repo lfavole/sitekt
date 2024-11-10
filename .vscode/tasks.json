@@ -6,7 +6,7 @@
 		{
 			"label": "Run development server",
 			"type": "shell",
-			"command": "py cate/manage.py runserver",
+			"command": "${command:python.interpreterPath} cate/manage.py runserver",
 			"presentation": {
 				"reveal": "never",
 				"panel": "dedicated"
