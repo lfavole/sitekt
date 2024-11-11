@@ -1,8 +1,9 @@
-cate/db.sqlite3
-cate/custom_settings_overrides.py
+db.sqlite3
+custom_settings_overrides.py
 *.mo
-cate/src/vendor/tinymce/**
+src/vendor/tinymce/**
 **/__pycache__/**
-cate/media/**
-cate/static/**
+media/**
+static/**
 data/**
+venv*/**

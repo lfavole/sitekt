@@ -1,8 +1,12 @@
-colorama ~= 0.4; sys_platform == "win32" # colorama
-Django ~= 4.2 # django
-django-admin-sortable2 ~= 2.1 # adminsortable2
-easy-thumbnails ~= 2.8 # easy_thumbnails
-django-cleanup ~= 8.0 # django_cleanup
-minify-html~= 0.11 # minify_html
-django-debug-toolbar ~= 4.2 # debug_toolbar
-user-agents ~= 2.2 # user_agents
+colorama ~= 0.4; sys_platform == "win32"
+Django ~= 4.2
+django-admin-sortable2 ~= 2.1
+django-dbbackup ~= 4.2
+django-cleanup ~= 8.0
+django-debug-toolbar ~= 4.2
+easy-thumbnails ~= 2.10
+fpdf2 ~= 2.8
+minify-html ~= 0.11
+python-dateutil ~= 2.9
+requests ~= 2.32
+user-agents ~= 2.2

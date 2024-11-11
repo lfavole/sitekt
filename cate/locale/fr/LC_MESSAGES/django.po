@@ -1,8 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# This file is distributed under the same license as the django-cate package.
 #, fuzzy
 msgid ""
 msgstr ""
@@ -18,6 +14,91 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\aumonerie\models.py:199 .\espacecate\models.py:211
-msgid "kind"
-msgstr "type"
+#: .\cate\password_validation.py:28
+msgid ""
+"Your password was determined to have been involved in a major security "
+"breach."
+msgstr "Votre mot de passe a été trouvé dans une faille de sécurité majeure."
+
+#: .\cate\password_validation.py:46
+msgid ""
+"We could not validate the safety of this password. This does not mean the "
+"password is invalid. Please try again later."
+msgstr ""
+"Nous n'avons pas pu vérifier la sécurité de ce mot de passe. Cela ne veut "
+"pas dire que le mot de passe est invalide pour autant. Veuillez réessayer "
+"plus tard."
+
+#: .\cate\password_validation.py:72
+msgid "Your password must not have been detected in a major security breach."
+msgstr ""
+"Votre mot de passe ne doit pas avoir été trouvé dans une faille de sécurité "
+"majeure."
+
+#: .\cate\settings.py:257
+msgid ""
+"You must first create the article, then insert the image. Don't worry, the "
+"image will be uploaded after reloading."
+msgstr ""
+"Vous devez d'abord créer l'article, puis insérer l'image. Ne vous inquiétez "
+"pas, l'image sera envoyée lors du rechargement de la page."
+
+#: .\cate\templates\cate\404.html:4 .\cate\templates\cate\404.html:7
+msgid "Page not found"
+msgstr "Page non trouvée"
+
+#: .\cate\templates\cate\404.html:8
+#, python-format
+msgid "The page <code>%(request_path)s</code> has not been found."
+msgstr "La page <code>%(request_path)s</code> n'a pas été trouvée."
+
+#: .\cate\templates\cate\500.html:4 .\cate\templates\cate\500.html:7
+msgid "Server error"
+msgstr "Erreur du serveur"
+
+#: .\cate\templates\cate\500.html:8
+#, python-format
+msgid "The error has been saved with the number %(error_id)s."
+msgstr "L'erreur a été enregistrée avec le numéro %(error_id)s."
+
+#: .\cate\templates\cate\paginator.html:6
+msgid "first"
+msgstr "début"
+
+#: .\cate\templates\cate\paginator.html:7
+msgid "previous"
+msgstr "précédente"
+
+#: .\cate\templates\cate\paginator.html:11
+#, python-format
+msgid "Page %(current)s of %(total)s"
+msgstr "Page %(current)s sur %(total)s"
+
+#: .\cate\templates\cate\paginator.html:15
+msgid "next"
+msgstr "suivante"
+
+#: .\cate\templates\cate\paginator.html:16
+msgid "last"
+msgstr "fin"
+
+#: .\cate\templatetags\join_last.py:9
+msgid ", "
+msgstr ", "
+
+#: .\cate\templatetags\join_last.py:9
+msgid "and"
+msgstr "et"
+
+#: .\cate\views.py:159
+msgid "You have the permission to view the error details!"
+msgstr "Vous avez la permission de voir les détails de l'erreur !"
+
+#. Translators: %(djdt)s is the DjDT logo
+#: .\cate\views.py:162
+#, python-format
+msgid ""
+"Open the debug toolbar (%(djdt)s at top-right) and click on the Error tab."
+msgstr ""
+"Ouvrez le volet de débogage (%(djdt)s en haut à droite) et cliquez sur "
+"l'onglet Erreur."
