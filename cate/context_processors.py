@@ -1,7 +1,7 @@
 import importlib
+import os
 from typing import Any, Type
 
-import custom_settings
 from common.models import CommonPage
 from common.views import CommonPageView
 from django.http import HttpRequest
@@ -13,7 +13,7 @@ def now_variable(_request: HttpRequest):
 
 
 def offline(_request: HttpRequest):
-    return {"offline": custom_settings.OFFLINE}
+    return {"offline": bool(os.environ.get("OFFLINE"))}
 
 
 def app_name(request: HttpRequest):

@@ -25,8 +25,8 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Create custom_settings.py
-      run: echo "TEST = True" > website/custom_settings.py
+    - name: Create .env
+      run: echo "TEST=1" > .env
 
     - name: Install gettext
       if: ${{ matrix.os == 'ubuntu-latest' }}
@@ -61,8 +61,8 @@ jobs:
       with:
         python-version: "3.11"
 
-    - name: Create custom_settings.py
-      run: echo "TEST = True" > website/custom_settings.py
+    - name: Create .env
+      run: echo "TEST=1" > .env
 
     - name: Install dependencies
       run: |

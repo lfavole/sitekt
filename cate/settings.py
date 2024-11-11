@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
-import custom_settings
 from debug_toolbar.settings import PANELS_DEFAULTS
 from debug_toolbar.toolbar import DebugToolbar
 import dj_database_url
@@ -31,23 +30,23 @@ DATA = BASE_DIR.parent / "data"
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = custom_settings.SECRET_KEY or "+jt!%+%erdp^y7h37v#68x31+u9ut6^8zryj@#zmu5p$_!u2)u"
+SECRET_KEY = os.environ.get("SECRET_KEY") or "+jt!%+%erdp^y7h37v#68x31+u9ut6^8zryj@#zmu5p$_!u2)u"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = custom_settings.DEBUG
+DEBUG = bool(int(os.environ.get("DEBUG", "0")))
 
 if not DEBUG:
     CONN_MAX_AGE = 600
-    ALLOWED_HOSTS = [custom_settings.HOST]
+    ALLOWED_HOSTS = [os.environ.get("HOST", "") or os.environ.get("VERCEL_URL", "")]
 else:
     ALLOWED_HOSTS = ["*"]
 
-if custom_settings.PYTHONANYWHERE:
+if os.environ.get("PYTHONANYWHERE"):
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
 
-GITHUB_WEBHOOK_KEY = custom_settings.GITHUB_WEBHOOK_KEY
+GITHUB_WEBHOOK_KEY = os.environ.get("GITHUB_WEBHOOK_KEY")
 
 # Application definition
 
@@ -251,7 +250,7 @@ add_url_lazy = lazy(add_url)
 static_lazy = lazy(static)
 TINYMCE_JS_URL = (
     STATIC_URL + "vendor/tinymce/tinymce.min.js"
-    if custom_settings.OFFLINE
+    if os.environ.get("OFFLINE")
     else "https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"
 )
 TINYMCE_EXTRA_MEDIA = {"css": {"all": ("/static/tinymce/tinymce.css",)}, "js": ("/static/tinymce/tinymce.js",)}

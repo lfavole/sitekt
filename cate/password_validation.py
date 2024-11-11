@@ -1,4 +1,5 @@
 import hashlib
+import os
 
 import requests
 from django.core.exceptions import ValidationError
@@ -39,7 +40,7 @@ class PwnedPasswordValidator:
         :return: True if the password is valid. Else, False.
         """
 
-        if settings.custom_settings.OFFLINE:
+        if os.environ.get("OFFLINE"):
             return True
 
         error_fail_msg = _(
