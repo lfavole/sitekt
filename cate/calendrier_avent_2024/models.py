@@ -18,10 +18,10 @@ class Day(models.Model):
         verbose_name = "Jour"
 
     def __str__(self):
-        return mark_safe(format_day(self.day) + " décembre : " + self.child)
+        return mark_safe(format_day(self.day) + " décembre : " + str(self.child))
 
     def __html__(self):
-        return mark_safe(format_day_html(self.day) + " décembre : " + self.child)
+        return mark_safe(format_day_html(self.day) + " décembre : " + str(self.child))
 
     def get_absolute_url(self):
         return reverse("calendrier_avent_2024:day", args=[self.day])
