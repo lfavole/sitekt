@@ -6,3 +6,6 @@ cate/src/vendor/tinymce/**
 cate/media/**
 cate/static/**
 data/**
+venv*/**
+.env
+db.sqlite3
