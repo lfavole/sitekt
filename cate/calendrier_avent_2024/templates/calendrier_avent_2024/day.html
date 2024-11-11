@@ -1,5 +1,6 @@
 {% extends "calendrier_avent_2024/page_base.html" %}
 {% load format_day %}
+{% load thumbnail %}
 
 {% block title %}{{ day.day|format_day }} décembre{% endblock %}
 
@@ -9,7 +10,7 @@
     {{ day.day|format_day_html }} décembre
 </h1>
 {% if day.day != 25 %}
-<p class="intro"><img src="{{ day.child.photo.url }}"> <b>{{ day.child.prenom }}</b> vous présente <b>{{ day.holiday }}</b></p>
+<p class="intro"><img src="{% thumbnail day.child.photo 100x100 %}"> <b>{{ day.child.prenom }}</b> vous présente <b>{{ day.holiday }}</b></p>
 {% endif %}
 {{ day.content|safe }}
 {% endblock %}
