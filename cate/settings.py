@@ -10,11 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 import custom_settings
 from debug_toolbar.settings import PANELS_DEFAULTS
 from debug_toolbar.toolbar import DebugToolbar
+import dj_database_url
 from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse_lazy
@@ -172,28 +174,10 @@ STORAGES = {
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = (
-    {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
-    if custom_settings.USE_SQLITE
-    else {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": custom_settings.DB_NAME,
-            "USER": custom_settings.DB_USER,
-            "PASSWORD": custom_settings.DB_PASSWORD,
-            "HOST": custom_settings.DB_HOST,
-            "OPTIONS": {
-                "charset": "utf8mb4",
-                "init_command": 'SET sql_mode="STRICT_TRANS_TABLES"',
-            },
-        }
-    }
-)
+DATABASES = {
+    # POSTGRES_URL is put by Vercel
+    "default": dj_database_url.config(default=os.environ.get("POSTGRES_URL")),
+}
 
 AUTH_USER_MODEL = "users.User"
 
