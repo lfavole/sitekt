@@ -243,3 +243,13 @@ class Document(CommonDocument):
     """
     Document on `espacecate` app.
     """
+
+class Animator(models.Model):
+    """An animator."""
+
+    nom = models.CharField("Nom de famille", max_length=100)
+    prenom = models.CharField("Prénom", max_length=100)
+    photo = models.ImageField("Photo", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "animateur"

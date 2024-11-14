@@ -14,6 +14,7 @@ from common.admin import (
 from django.contrib import admin
 
 from .models import (
+    Animator,
     Article,
     ArticleImage,
     Attendance,
@@ -129,3 +130,6 @@ class DateAdmin(CommonDateAdmin):
     """
     Admin interface for dates of the espacecate app.
     """
+
+
+admin.site.register(Animator)
