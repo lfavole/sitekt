@@ -183,14 +183,14 @@ body.mode-nuit .jours a {
 	}
 }
 
-p {
-	font-size: 20px;
-	text-align: justify;
-}
 .too-early, .intro {
 	font-size: 42px;
 	text-align: center;
 	line-height: 1.5em;
+}
+main {
+	font-size: 20px;
+	text-align: justify;
 }
 
 .intro img {
