@@ -259,8 +259,8 @@ TINYMCE_JS_URL = (
 )
 TINYMCE_EXTRA_MEDIA = {"css": {"all": ("/static/tinymce/tinymce.css",)}, "js": ("/static/tinymce/tinymce.js",)}
 TINYMCE_DEFAULT_CONFIG = {
+    "base_url": STATIC_URL + "vendor/tinymce" if os.environ.get("OFFLINE") else "https://cdn.tiny.cloud/1/no-api-key/tinymce/7",
     "language": "fr",
-    "language_url": static_lazy("tinymce/langs/fr_FR.js"),
     "content_css": [
         "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap",
         static_lazy("global/global.css"),
