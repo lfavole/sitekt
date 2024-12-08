@@ -112,16 +112,13 @@ class GitClient:
         if args in self._outputs:
             data = self._outputs[args]
             if time() - data[0] < 60:  # cache for one minute
-                if isinstance(data[1], Exception):
-                    raise data[1]
                 return data[1]
 
         ts = time()
         try:
             output = sp.check_output(["git", *args], encoding="utf-8")
-        except sp.CalledProcessError as err:
-            self._outputs[args] = (ts, err)
-            raise
+        except (sp.CalledProcessError, OSError) as err:
+            output = f"{type(err)}: {err}"
 
         self._outputs[args] = (ts, output)
         return output
