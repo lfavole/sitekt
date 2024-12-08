@@ -110,3 +110,10 @@ class BlobFileStorage(Storage):
     # for the last access and last change date
     get_accessed_time = get_created_time
     get_modified_time = get_created_time
+
+    @property
+    def base_location(self):
+        """Return the root URL where the files are stored."""
+        return self._prefix or ""
+
+    location = base_location
