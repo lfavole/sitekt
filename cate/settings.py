@@ -21,6 +21,11 @@ from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.functional import lazy
 from django.utils.translation import gettext
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_DSN", ""),
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -70,7 +75,6 @@ INSTALLED_APPS = [
     "common",
     "debug",
     "debug_toolbar",
-    "errors",
     "espacecate",
     "calendrier_avent_2022",
     "calendrier_avent_2023",

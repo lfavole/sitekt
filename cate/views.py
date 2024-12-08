@@ -34,7 +34,7 @@ from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 from django.views.debug import ExceptionReporter, technical_404_response
 from django.views.decorators.csrf import csrf_exempt
-from errors.models import Error
+from sentry_sdk import Hub
 
 from .management.commands.fetch import Command as Fetch
 from . import context_processors as cps
@@ -179,15 +179,11 @@ def handler_500(request: HttpRequest, _template_name=None):
     """
     500 (server error) page that logs the error.
     """
-    reporter = ExceptionReporter(request, *sys.exc_info())
-    html = reporter.get_traceback_html()
-    error = Error.create_from_traceback_data(reporter.get_traceback_data(), html)
-
     return _render_for_status(
         request,
         500,
         {
-            "error_id": error.pk,
+            "error_id": Hub.current.scope.last_event_id() or "?",
         },
     )
 
