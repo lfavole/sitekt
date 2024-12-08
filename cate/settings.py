@@ -167,7 +167,7 @@ TRACK_PAGEVIEWS = True
 
 STORAGES = {
     "default": {
-        "BACKEND": "storage.storages.CustomFileSystemStorage",
+        "BACKEND": "storage.storages.CustomBlobStorage",
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
