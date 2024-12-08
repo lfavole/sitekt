@@ -255,7 +255,7 @@ static_lazy = lazy(static)
 TINYMCE_JS_URL = (
     STATIC_URL + "vendor/tinymce/tinymce.min.js"
     if os.environ.get("OFFLINE")
-    else "https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js"
+    else "https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js"
 )
 TINYMCE_EXTRA_MEDIA = {"css": {"all": ("/static/tinymce/tinymce.css",)}, "js": ("/static/tinymce/tinymce.js",)}
 TINYMCE_DEFAULT_CONFIG = {
@@ -315,4 +315,5 @@ TINYMCE_DEFAULT_CONFIG = {
 """,
         reverse_lazy("tinymce-upload-image"),
     ),
+    "license_key": "gpl",
 }
