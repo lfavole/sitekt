@@ -98,8 +98,19 @@ class BlobFileStorage(Storage):
 
     def save(self, name, content, max_length=None):
         """Save a file to the Vercel Blob."""
+        content.seek(0, os.SEEK_END)
+        length = content.tell()
+        content.seek(0)
         name = self.get_available_name(name, max_length)  # type: ignore
-        self._request("PUT", self.folder + name, data=content.read(), headers={"X-Add-Random-Suffix": "false"})
+        self._request(
+            "PUT",
+            self.folder + name,
+            data=content.read(),
+            headers={
+                "X-Add-Random-Suffix": "false",
+                "X-Content-Length": str(length),
+            }
+        )
         return name
 
     def get_created_time(self, name):
