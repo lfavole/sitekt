@@ -1,11 +1,12 @@
 import os.path
+from urllib.parse import urlencode
 
 from common.widgets import CustomImageClearableFileInput
 from django.db import models
 from easy_thumbnails.engine import NoSourceGenerator
 from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.fields import ThumbnailerField
-from easy_thumbnails.files import Thumbnailer
+from easy_thumbnails.files import Thumbnailer, ThumbnailFile
 
 
 class FileField(ThumbnailerField):
@@ -56,3 +57,41 @@ class ImageField(FileField, models.ImageField):
     def formfield(self, **kwargs):
         del kwargs["widget"]
         return super().formfield(**{"widget": CustomImageClearableFileInput, "max_length": self.max_length, **kwargs})
+
+
+# Generate thumbnails using Next.js on Vercel
+if os.environ.get("VERCEL"):
+    old_generate_thumbnail = Thumbnailer.generate_thumbnail
+
+    class CustomThumbnailFile(ThumbnailFile):
+        def __init__(self, source_url, thumbnail_options):
+            base_url = os.environ.get("VERCEL_URL", "")
+            if base_url:
+                base_url = f"https://{base_url}"
+            url = f"{base_url}/_vercel/image?" + urlencode({
+                "url": source_url,
+                "w": thumbnail_options["size"][0],
+                "q": 85,
+            })
+            super().__init__(url)
+
+        @property
+        def url(self):
+            return self.name
+
+    def generate_thumbnail(self, thumbnail_options, *args, **kwargs):
+        if thumbnail_options.get("crop"):
+            return old_generate_thumbnail(self, thumbnail_options)
+        return CustomThumbnailFile(self.source_storage.url(self.name), thumbnail_options, *args, **kwargs)
+
+    Thumbnailer.generate_thumbnail = generate_thumbnail
+
+    old_save_thumbnail = Thumbnailer.save_thumbnail
+
+    def save_thumbnail(self, thumbnail, *args, **kwargs):
+        # Don't save custom thumbnails
+        if isinstance(thumbnail, CustomThumbnailFile):
+            return
+        return old_save_thumbnail(self, thumbnail, *args, **kwargs)
+
+    Thumbnailer.save_thumbnail = save_thumbnail

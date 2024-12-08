@@ -10,5 +10,19 @@
             "source": "/(.*)",
             "destination": "api/app.py"
         }
-    ]
+    ],
+    "images": {
+        "sizes": [80, 100, 256, 1080, 1600],
+        "localPatterns": [{
+            "pathname": "^/static/.*$",
+            "search": ""
+        }],
+        "remotePatterns": [{
+            "protocol": "https",
+            "hostname": "*.public.blob.vercel-storage.com",
+            "port": "",
+            "search": ""
+        }],
+        "formats": ["image/avif", "image/webp"]
+    }
 }
