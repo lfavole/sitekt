@@ -16,8 +16,10 @@ register = template.Library()
 def nav(value: list[tuple[Page, Any]], request: HttpRequest):
     req_match = request.resolver_match
 
-    def nav_list(liste: list[tuple[Page, Any]]):
+    def nav_list(liste: list[tuple[Page, Any]], first=False):
         ret = "<ul>\n"
+        if first:
+            ret += '<label class="fermer" for="menu-checkbox"></label>\n'
         for page, nested_pages in liste:
             href = None
             if page.content == "":
@@ -72,7 +74,7 @@ def nav(value: list[tuple[Page, Any]], request: HttpRequest):
         ret += "</ul>\n"
         return ret
 
-    return mark_safe(nav_list(value))
+    return mark_safe(nav_list(value, True))
 
 @register.simple_tag(takes_context=True)
 def nav_link(context, value, label, notrans=""):

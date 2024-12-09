@@ -323,20 +323,6 @@ var night_mode = {
 	}
 };
 
-function menu_ouvrir() {
-	if($(".menu").is(".ouvert")) return;
-	$(".menu").addClass("ouvert").css("opacity", 1);
-	$("body").css("overflow", "hidden");
-}
-function menu_fermer() {
-	if(!$(".menu").is(".ouvert")) return;
-	$(".menu").removeClass("ouvert");
-	$("body").css("overflow", "");
-	setTimeout(function() {
-		$(".menu").css("opacity", "");
-	}, innerWidth > 500 ? 0 : 1000);
-}
-
 
 $(function() {
 	try {

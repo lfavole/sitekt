@@ -12,6 +12,16 @@ body, input, button, select, option, optgroup, textarea {
 	font-family:Montserrat, Arial, Helvetica, sans-serif;
 }
 
+.sr-only {
+    position: absolute !important;
+    clip: rect(1px, 1px, 1px, 1px) !important;
+    padding: 0 !important;
+    border: 0 !important;
+    height: 1px !important;
+    width: 1px !important;
+    overflow: hidden !important;
+}
+
 body {
 	margin:0px;
 	min-height:100vh;
@@ -266,17 +276,16 @@ nav ul ul li {
 	margin:4px 8px;
 }
 @media screen and (max-width: 500px) {
-	nav {
+	nav ul {
 		text-align:center;
 		pointer-events:none;
-		opacity:0;
 		position:fixed;
 		left:0;
 		top:0;
 		z-index:9000;
 		width:100vw;
 		height:0px;
-		overflow-y:auto;
+		overflow-y:hidden;
 		background-color:#efe;
 		padding:0px 8px;
 		transition:height 1s;
@@ -285,16 +294,22 @@ nav ul ul li {
 		display:block;
 		color:blue;
 		cursor:pointer;
+		text-align: center;
 	}
-	nav .ouvert {
+	nav .fermer {
+		display: block;
+		transform: scale(0);
+		transition: transform 0.4s;
+	}
+	nav #menu-checkbox:checked + ul {
 		pointer-events:auto;
-		opacity:1;
+		overflow-y:auto;
 		height:100vh;
 	}
-	nav .ouvert .fermer {
-		display:block;
+	nav #menu-checkbox:checked + ul .fermer {
+		transform: scale(1);
 	}
-	nav .ouvert > ul {
+	nav #menu-checkbox:checked + ul > ul {
 		padding:8px 0px;
 	}
 	nav > ul > li {

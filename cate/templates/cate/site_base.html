@@ -25,11 +25,9 @@
 </header>
 {% if display_navbar %}
 <nav>
-<div class="ouvrir-menu" onclick="menu_ouvrir()">Menu</div> {# TODO: remove onclick #}
-<div class="menu">
-<span class="fermer" onclick="menu_fermer()"></span> {# TODO: remove onclick #}
-{{ pages | nav:request }}
-</div>
+    <label class="ouvrir-menu" for="menu-checkbox">Menu</label>
+    <input type="checkbox" id="menu-checkbox" class="sr-only">
+    {{ pages | nav:request }}
 </nav>
 {% endif %}
 {% block main-content %}

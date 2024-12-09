@@ -6,7 +6,10 @@
 
 {% block main-content %}
 <nav>
+    <label class="ouvrir-menu" for="menu-checkbox">Menu</label>
+    <input type="checkbox" id="menu-checkbox" class="sr-only">
     <ul>
+        <label class="fermer" for="menu-checkbox"></label>
         {% nav_link "home" "Return to the website" "arrow" %}
 
         {% if user.is_authenticated %}
