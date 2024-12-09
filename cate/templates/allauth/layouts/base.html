@@ -1,0 +1,39 @@
+{% extends "cate/site_base.html" %}
+{% load i18n %}
+{% load nav %}
+
+{% block title %}{% block head_title %}{% endblock head_title %}{% endblock title %}
+
+{% block main-content %}
+<nav>
+    <ul>
+        {% nav_link "home" "Return to the website" "arrow" %}
+
+        {% if user.is_authenticated %}
+        {% if admin_permission %}
+        {% nav_link "admin:index" "Administration" %}
+        {% endif %}
+        <li>
+            <form method="post" action="{% url "account_logout" %}" class="logout-form">
+                {% csrf_token %}
+                <input type="submit" class="link" value="{% trans "Log out" %}">
+            </form>
+        </li>
+
+        {% nav_link "socialaccount_connections" "Account Connections" %}
+        {% nav_link "account_email" "Change Email" %}
+        {% nav_link "account_change_password" "Change Password" %}
+        {% nav_link "mfa_index" "Two-Factor Authentication" %}
+        {% nav_link "usersessions_list" "Sessions" %}
+
+        {% else %}
+        {% nav_link "account_login" "Log in" %}
+        {% nav_link "account_signup" "Sign up" %}
+        {% endif %}
+    </ul>
+</nav>
+<main class="content">
+{% block content %}{% endblock %}
+</main>
+{% block extra_body %}{% endblock %}
+{% endblock %}

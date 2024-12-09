@@ -34,6 +34,8 @@ def add_website(name: str):
 
 
 urlpatterns = [
+    path("accounts/", include("allauth.urls")),
+    path("accounts/", views.account_index, name="account_index"),
     path("admin/docs/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
     add_website("aumonerie"),

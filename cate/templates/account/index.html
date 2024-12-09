@@ -1,0 +1,11 @@
+{% extends "allauth/layouts/manage.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Manage account" %}{% endblock head_title %}
+
+{% block content %}
+    <h1>{% trans "Manage account" %}</h1>
+
+    {% blocktrans %}Please use the above links to set up your account.{% endblocktrans %}
+{% endblock content %}

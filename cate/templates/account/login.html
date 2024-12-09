@@ -1,0 +1,9 @@
+{% extends "account/login.html" %}
+{% block content %}
+<script src="//accounts.google.com/gsi/client" async></script>
+<div id="g_id_onload"
+     data-client_id="{{ GOOGLE_CLIENT_ID }}"
+     data-login_uri="{{ GOOGLE_REDIRECT_URI }}">
+</div>
+{{ block.super }}
+{% endblock content %}

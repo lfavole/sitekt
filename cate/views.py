@@ -188,6 +188,10 @@ def handler_500(request: HttpRequest, _template_name=None):
     )
 
 
+def account_index(request):
+    return render(request, "account/index.html")
+
+
 @csrf_exempt
 def reload_website(request: HttpRequest):
     forbidden = HttpResponseForbidden("Permission denied.")

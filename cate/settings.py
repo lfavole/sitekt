@@ -16,12 +16,17 @@ from pathlib import Path
 from debug_toolbar.settings import PANELS_DEFAULTS
 from debug_toolbar.toolbar import DebugToolbar
 import dj_database_url
+from django.contrib.auth import password_validation as pw
+from django.contrib.sites.requests import RequestSite
 from django.http import HttpRequest
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.functional import lazy
 from django.utils.translation import gettext
+from dotenv import load_dotenv
 import sentry_sdk
+
+load_dotenv()
 
 sentry_sdk.init(
     dsn=os.environ.get("SENTRY_DSN", ""),
@@ -29,7 +34,7 @@ sentry_sdk.init(
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA = BASE_DIR.parent / "data"
+DATA = BASE_DIR / "data"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -46,7 +51,7 @@ if not DEBUG:
 else:
     ALLOWED_HOSTS = ["*"]
 
-if os.environ.get("PYTHONANYWHERE"):
+if os.environ.get("PYTHONANYWHERE") or os.environ.get("VERCEL"):
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
@@ -80,6 +85,11 @@ INSTALLED_APPS = [
     "calendrier_avent_2023",
     "calendrier_avent_2024",
     "old_website",
+    # allauth (for template overridding)
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "django_cleanup",  # must be placed last
 ]
 
@@ -92,6 +102,7 @@ MIDDLEWARE = [
     "cate.middleware.MinifyHtmlMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "tracking.middleware.VisitorTrackingMiddleware",
@@ -167,7 +178,7 @@ TRACK_PAGEVIEWS = True
 
 STORAGES = {
     "default": {
-        "BACKEND": "storage.storages.CustomBlobStorage",
+        "BACKEND": "storage.storages.CustomFileSystemStorage" if DEBUG else "storage.storages.CustomBlobStorage",
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
@@ -182,7 +193,74 @@ DATABASES = {
     "default": dj_database_url.config(default=os.environ.get("POSTGRES_URL")),
 }
 
+ADMINS = [item.split(":", 1) for item in os.environ.get("ADMINS", "").split(",")]
+
+DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ.get("SERVER_EMAIL", "") or os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+# 0 is OK cf. https://github.com/python/cpython/blob/024ac542/Lib/smtplib.py#L1016
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 0))
+EMAIL_USE_TLS = bool(int(os.environ.get("EMAIL_USE_TLS", 0)))
+EMAIL_USE_SSL = bool(int(os.environ.get("EMAIL_USE_SSL", 0)))
+
 AUTH_USER_MODEL = "users.User"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+LOGIN_URL = "/accounts/login"
+LOGIN_REDIRECT_URL = "/"
+
+pw.password_validators_help_text_html = lambda: ""
+
+# Allauth settings
+# https://docs.allauth.org/en/stable/account/configuration.html
+ACCOUNT_ADAPTER = "users.adapter.Adapter"  # Change the login form
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_EMAIL_NOTIFICATIONS = True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_USER_DISPLAY = lambda user: user.email
+ACCOUNT_USERNAME_REQUIRED = False
+
+# https://docs.allauth.org/en/stable/socialaccount/configuration.html
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+SOCIALACCOUNT_STORE_TOKENS = True
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        # the address that comes from Google (Gmail) is always verified,
+        # so we can log in with it without prior linking
+        "EMAIL_AUTHENTICATION": True,
+        "APPS": [
+            {
+                "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+                "secret": os.getenv("GOOGLE_SECRET"),
+            },
+        ],
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "offline",
+        },
+    },
+}
+
+SITE_NAME = "Site du caté"
+
+requestsize_init = RequestSite.__init__
+
+def requestsite_init(self, request):
+    self.domain = request.get_host()
+    self.name = SITE_NAME
+
+RequestSite.__init__ = requestsite_init
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

@@ -2,9 +2,11 @@ from typing import Any
 
 from django import template
 from django.http import HttpRequest
-from django.urls import Resolver404, resolve, reverse
+from django.shortcuts import resolve_url
+from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext
 from espacecate.models import Page
 
 register = template.Library()
@@ -71,3 +73,22 @@ def nav(value: list[tuple[Page, Any]], request: HttpRequest):
         return ret
 
     return mark_safe(nav_list(value))
+
+@register.simple_tag(takes_context=True)
+def nav_link(context, value, label, notrans=""):
+    try:
+        value = resolve_url(value)
+    except NoReverseMatch:
+        return ""
+    if not value:
+        return ""
+    is_active = ' class="act"' if context.request.path == value else ""
+    if notrans == "":
+        label = mark_safe(gettext(label))
+    elif notrans == "arrow":
+        label = mark_safe('<span class="fleche fl-gauche"></span> ') + label
+    elif notrans == "notrans":
+        label = mark_safe(label)
+    else:
+        raise ValueError("Expected an empty string or notrans")
+    return mark_safe(f'<li><a href="{escape(value)}"{is_active}>{label}</a></li>')

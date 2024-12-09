@@ -36,7 +36,7 @@ a {
 	cursor:pointer;
 }
 @media not print {
-	body.mode-nuit a {
+	body.mode-nuit a, body.mode-nuit .link {
 		color:#81d4fa;
 	}
 	/* the titles already have color:black */
@@ -45,12 +45,15 @@ a {
 		--color:white;
 	}
 }
+p, form {
+	margin: 1em 0;
+}
 
 ::selection {
 	background-color:#ffab91;
 }
 @media not print {
-	.mode-nuit ::selection {
+	body.mode-nuit ::selection {
 		background-color:#a1887f;
 	}
 }
@@ -92,6 +95,7 @@ header {
 }
 @media screen and (max-width: 500px) {
 	header {
+		flex-direction: column;
 		padding-left:0px;
 		padding-top:158px;
 		padding-bottom:8px;
@@ -99,6 +103,44 @@ header {
 		background-size:126px, 100%;
 		height:unset;
 	}
+}
+/* User information */
+@media screen and (max-width: 1023px) {
+	header .user {
+		margin:0.5rem;
+	}
+}
+@media screen and (min-width: 1024px) {
+    header .user {
+        width: 150px;
+        text-align: center;
+		padding: 0.5em 0;
+    }
+}
+header .user {
+    flex-shrink: 0;
+}
+header .user summary {
+    cursor: pointer;
+}
+/* Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free
+Copyright 2024 Fonticons, Inc.
+
+Compressed with https://svgomg.net/
+*/
+header .user summary::before {
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    margin-right: 0.3em;
+    /* user */
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256a128 128 0 1 0 0-256 128 128 0 1 0 0 256zm-46 48C80 304 0 384 0 482c0 17 13 30 30 30h388c17 0 30-13 30-30 0-98-80-178-178-178h-92z"/></svg>');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .mode {
@@ -174,16 +216,16 @@ nav .ouvrir-menu {
 nav .fermer {
 	display:none;
 }
-nav .menu a {
-	color:#0d47a1;
-	text-decoration:none;
+nav a, nav .link {
+	color:#0d47a1 !important;
+	text-decoration:none !important;
 	cursor:pointer;
 }
-nav a[href]:not([href="#"]) {
+nav a[href]:not([href="#"]), nav .link {
 	font-weight:bold;
 }
 nav a.act {
-	color:#2196f3;
+	color:#2196f3 !important;
 	text-decoration:underline 2px;
 }
 nav ul {
@@ -192,15 +234,15 @@ nav ul {
 	margin:0px;
 	font-size:20px;
 }
-nav .menu > ul > li {
+nav > ul > li {
 	display:inline;
 	position:relative;
 	padding-bottom:4px;
 }
-nav .menu > ul > li::after {
+nav > ul > li::after {
 	content:" – ";
 }
-nav .menu > ul > li:last-child::after {
+nav > ul > li:last-child::after {
 	content:unset !important;
 }
 nav ul ul {
@@ -226,13 +268,6 @@ nav ul ul li {
 @media screen and (max-width: 500px) {
 	nav {
 		text-align:center;
-	}
-	nav .ouvrir-menu {
-		display:block;
-		color:blue;
-		cursor:pointer;
-	}
-	nav .menu {
 		pointer-events:none;
 		opacity:0;
 		position:fixed;
@@ -246,18 +281,23 @@ nav ul ul li {
 		padding:0px 8px;
 		transition:height 1s;
 	}
-	nav .menu.ouvert {
+	nav .ouvrir-menu {
+		display:block;
+		color:blue;
+		cursor:pointer;
+	}
+	nav .ouvert {
 		pointer-events:auto;
 		opacity:1;
 		height:100vh;
 	}
-	nav .menu.ouvert .fermer {
+	nav .ouvert .fermer {
 		display:block;
 	}
-	nav .menu.ouvert > ul {
+	nav .ouvert > ul {
 		padding:8px 0px;
 	}
-	nav .menu > ul > li {
+	nav > ul > li {
 		display:block;
 		width:100%;
 		font-size:20px;
@@ -288,7 +328,7 @@ nav ul ul li {
 }
 
 @media not print {
-	body.mode-nuit header, body.mode-nuit nav .menu {
+	body.mode-nuit header, body.mode-nuit nav {
 		filter:grayscale(30%);
 	}
 }
@@ -390,16 +430,20 @@ main .progress::after {
 }
 
 main {
-	padding:8px;
+	padding: 8px;
+	max-width: 1200px;
+	margin: 0 auto;
 }
 
 h1 {
 	font-size:32px;
 }
 h1, h2, h3, h4, h5, h6 {
-	padding:8px;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
 	page-break-after:avoid;
 	text-align:left;
+	border: 1px solid black;
 	color:black;
 	--color:black;
 }
@@ -952,6 +996,21 @@ form p.flex input[type=submit], form p.flex button[type=submit] {
 	}
 }
 
+.logout-form {
+	margin:0;
+	display:inline;
+}
+input.link {
+	color:blue;
+	text-decoration:underline;
+	cursor:pointer;
+	border:none;
+	padding:0;
+	background:none !important;
+	font-size: inherit;
+	height: unset;
+}
+
 
 .cpt {
 	display:inline-block;
@@ -1039,7 +1098,7 @@ form p.flex input[type=submit], form p.flex button[type=submit] {
 .fleche {
 	width:15px;
 	height:2px;
-	background-color:black;
+	background-color:currentColor;
 	margin-left:0.3em;
 	border-radius:1px;
 }

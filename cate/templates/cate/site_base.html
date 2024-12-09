@@ -1,9 +1,27 @@
 {% extends "cate/base.html" %}
+{% load i18n %}
 {% load nav %}
 
 {% block body %}
 <header>
 <div class="titre">{% block title-header %}{% endblock %}</div>
+<div class="user">
+{% if user.is_authenticated %}
+    <details>
+        <summary>{{ user.username }}</summary>
+        {% if admin_permission %}
+        <a href="{% url "admin:index" %}" target="_blank">{% trans "Administration" %}</a><br>
+        {% endif %}
+        <a href="{% url "account_index" %}">{% trans "Account" %}</a><br>
+        <form method="post" action="{% url "account_logout" %}" class="logout-form">
+            {% csrf_token %}
+            <input type="submit" class="link" value="{% trans "Log out" %}">
+        </form>
+    </details>
+{% else %}
+    <a href="{% url "account_login" %}">{% trans "Log in" %}</a>
+{% endif %}
+</div>
 </header>
 {% if display_navbar %}
 <nav>
@@ -14,7 +32,9 @@
 </div>
 </nav>
 {% endif %}
+{% block main-content %}
 <main>
 {% block content %}{% endblock %}
 </main>
+{% endblock %}
 {% endblock %}
