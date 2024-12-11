@@ -4,7 +4,7 @@
 
 {% block body %}
 <header>
-<div class="titre">{% block title-header %}{% endblock %}</div>
+<div class="titre">{% block title-header %}{{ SITE_NAME }}{% endblock %}</div>
 <div class="user">
 {% if user.is_authenticated %}
     <details>
@@ -23,13 +23,11 @@
 {% endif %}
 </div>
 </header>
-{% if display_navbar %}
 <nav>
     <label class="ouvrir-menu" for="menu-checkbox">Menu</label>
     <input type="checkbox" id="menu-checkbox" class="sr-only">
-    {{ pages | nav:request }}
+    {% nav %}
 </nav>
-{% endif %}
 {% block main-content %}
 <main>
 {% block content %}{% endblock %}

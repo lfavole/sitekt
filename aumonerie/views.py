@@ -9,28 +9,11 @@ from common.views import (
     CommonArticleView,
     CommonDateListView,
     CommonDocumentListView,
-    CommonPageView,
     serve,
 )
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
 
-from .forms import SubscriptionForm
-from .models import Article, Date, Document, Page
-
-
-class PageView(CommonPageView):
-    model = Page
-
-
-def subscription(request):
-    if request.method == "POST":
-        form = SubscriptionForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("aumonerie:inscription_ok")
-    else:
-        form = SubscriptionForm()
-    return render(request, "common/subscription.html", {"title": "Inscription à l'aumônerie", "form": form})
+from .models import Article, Date, Document
 
 
 authorization = Authorization.as_view()

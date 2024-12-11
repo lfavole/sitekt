@@ -38,12 +38,10 @@ urlpatterns = [
     path("accounts/", views.account_index, name="account_index"),
     path("admin/docs/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
-    add_website("aumonerie"),
     add_website("calendrier_avent_2022"),
     add_website("calendrier_avent_2023"),
     add_website("calendrier_avent_2024"),
     path("debug/", include("debug_toolbar.urls")),
-    add_website("espacecate"),
     path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name="export"),
     path("google<str:id>.html", views.google),
     path("old/", include("old_website.urls")),
@@ -51,9 +49,8 @@ urlpatterns = [
     path("tinymce/upload-image", views.upload_image, name="tinymce-upload-image"),
     path("tinymce/", include("tinymce.urls")),
     path("tracking/", include("tracking.urls")),
-    path("", views.home, name="home"),
+    path("", include("common.urls")),
     path("reload-website/", views.reload_website),
-    # re_path(r'^', include('filer.server.urls')),
 ]
 
 if not os.environ.get("PYTHONANYWHERE"):

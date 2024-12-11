@@ -8,11 +8,9 @@ from bs4 import BeautifulSoup
 from django.apps import apps
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
-from django.core.files.base import ContentFile, File
-from django.core.files.storage import Storage
+from django.core.files.base import ContentFile
 from django.db import DatabaseError, models
 from django.db.models import Manager
-from django.db.models.fields.files import FieldFile
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -20,7 +18,7 @@ from storage.fields import FileField, ImageField
 
 from cate.utils.text import slugify
 
-from .fields import DatalistField
+from .fields import DatalistField, PriceField
 
 
 class Year(models.Model):
@@ -151,7 +149,7 @@ class PageBase(models.Model):
         return slug_candidate
 
     def save(self, *args, **kwargs):
-        if self._state.adding:
+        if self._state.adding and not self.slug:
             self.slug = self._generate_slug()
 
         super().save(*args, **kwargs)
@@ -210,7 +208,7 @@ class ImageBase(models.Model):
     """
 
     image = ImageField(_("image"))
-    page: "models.ForeignKey[CommonPage]"
+    page: "models.ForeignKey[Page]"
 
     def __str__(self):
         return _("Image '%s' in %s") % (self.image.url, self.page)
@@ -219,9 +217,9 @@ class ImageBase(models.Model):
         abstract = True
 
 
-class CommonPage(PageBase):
+class Page(PageBase):
     """
-    Common page class for all apps.
+    A page.
     """
 
     order = models.PositiveIntegerField(_("order"), default=0, null=False)
@@ -232,16 +230,15 @@ class CommonPage(PageBase):
 
     class Meta:
         verbose_name = _("page")
-        abstract = True
         ordering = ["order"]
 
     def get_absolute_url(self):
-        return reverse("espacecate:page", args=[self.slug])
+        return reverse("common:page", args=[self.slug])
 
 
-class CommonPageImage(ImageBase):
+class PageImage(ImageBase):
     """
-    Common page image class for all apps.
+    An image on a page.
     """
 
     page = models.ForeignKey("Page", on_delete=models.CASCADE, verbose_name=_("Page"))
@@ -294,6 +291,28 @@ class CommonGroup(models.Model):
         abstract = True
 
 
+class Classes(models.TextChoices):
+    PS = "PS", "Petite section"
+    MS = "MS", "Moyenne section"
+    GS = "GS", "Grande section"
+    CP = "CP", "CP"
+    CE1 = "CE1", "CE1"
+    CE2 = "CE2", "CE2"
+    CM1 = "CM1", "CM1"
+    CM2 = "CM2", "CM2"
+    SIXIEME = "6eme", "6ème"
+    CINQUIEME = "5eme", "5ème"
+    QUATRIEME = "4eme", "4ème"
+    TROISIEME = "3eme", "3ème"
+    SECONDE = "2nde", "2nde"
+    PREMIERE = "1ere", "1ère"
+    TERMINALE = "terminale", "Terminale"
+    AUTRE = "autre", "Autre"
+
+    def __lt__(self, other):
+        return self._sort_order_ < other._sort_order_
+
+
 class CommonChild(models.Model):
     """
     Common child class for all apps.
@@ -304,6 +323,42 @@ class CommonChild(models.Model):
     date_naissance = models.DateField("Date de naissance")
     lieu_naissance = models.CharField("Lieu de naissance", max_length=100)
     adresse = models.TextField("Adresse")
+
+    ecole = models.fields.CharField("École", max_length=100)
+    classe = models.fields.CharField("Classe", choices=Classes.choices, max_length=10)
+
+    bapteme = models.fields.BooleanField("Baptême")
+    date_bapteme = models.fields.DateField("Date du Baptême", blank=True, null=True)
+    lieu_bapteme = models.CharField("Lieu du Baptême", max_length=100, blank=True)
+
+    premiere_communion = models.fields.BooleanField("Première Communion")
+    date_premiere_communion = models.fields.DateField("Date de la Première Communion", blank=True, null=True)
+    lieu_premiere_communion = models.CharField("Lieu de la Première Communion", max_length=100, blank=True)
+
+    profession = models.fields.BooleanField("Profession de foi")
+    date_profession = models.fields.DateField("Date de la Profession de Foi", blank=True, null=True)
+    lieu_profession = models.CharField("Lieu de la Profession de Foi", max_length=100, blank=True)
+
+    confirmation = models.fields.BooleanField("Confirmation")
+    date_confirmation = models.fields.DateField("Date de la Confirmation", blank=True, null=True)
+    lieu_confirmation = models.CharField("Lieu de la Confirmation", max_length=100, blank=True)
+
+    nom_pere = models.CharField("Nom et prénom du père", blank=True, max_length=100)
+    adresse_pere = models.TextField("Adresse du père", blank=True)
+    tel_pere = models.CharField("Téléphone du père", blank=True, max_length=10)
+    email_pere = models.EmailField("Email du père", blank=True, max_length=100)
+
+    nom_mere = models.CharField("Nom et prénom de la mère", blank=True, max_length=100)
+    adresse_mere = models.TextField("Adresse de la mère", blank=True)
+    tel_mere = models.CharField("Téléphone de la mère", blank=True, max_length=10)
+    email_mere = models.EmailField("Email de la mère", blank=True, max_length=100)
+
+    freres_soeurs = models.TextField("Frères et soeurs", blank=True)
+
+    autres_infos = models.TextField("Autres informations", blank=True)
+
+    photos = models.BooleanField("Publication des photos")
+    frais = PriceField("Participation aux frais")
 
     paye = models.CharField(
         "Payé",
@@ -380,6 +435,51 @@ class CommonChild(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+    fieldsets = [
+        (
+            "Informations concernant l'enfant / le jeune",
+            {"fields": ("nom", "prenom", "date_naissance", "lieu_naissance", "adresse")},
+        ),
+        ("École", {"fields": ("ecole", "classe")}),
+        (
+            "Caté / Aumônerie",
+            {
+                "fields": (
+                    "bapteme",
+                    "date_bapteme",
+                    "lieu_bapteme",
+                    "premiere_communion",
+                    "date_premiere_communion",
+                    "lieu_premiere_communion",
+                    "profession",
+                    "date_profession",
+                    "lieu_profession",
+                    "confirmation",
+                    "date_confirmation",
+                    "lieu_confirmation",
+                )
+            },
+        ),
+        (
+            "Coordonnées",
+            {
+                "fields": (
+                    "nom_mere",
+                    "adresse_mere",
+                    "tel_mere",
+                    "email_mere",
+                    "nom_pere",
+                    "adresse_pere",
+                    "tel_pere",
+                    "email_pere",
+                    "freres_soeurs",
+                )
+            },
+        ),
+        ("Autres informations", {"fields": ("autres_infos",)}),
+        ("Autorisation", {"fields": ("photos", "frais")}),
+    ]
 
 
 class CommonDate(models.Model):

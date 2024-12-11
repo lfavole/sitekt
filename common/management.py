@@ -1,5 +1,3 @@
-from typing import Type
-
 from django.apps import AppConfig
 from django.db import DEFAULT_DB_ALIAS
 
@@ -11,34 +9,62 @@ def create_pages(
     **_kwargs,
 ):
     """
-    Automatically creates the two default groups for the `aumonerie` app.
+    Automatically creates the default pages for the `common` app.
     """
-    from common.models import CommonPage
-
-    app = app_config.name
-    if app not in ("espacecate", "aumonerie"):
+    if app_config.name != "common":
         return
 
-    Page: Type[CommonPage] = app_config.get_model("Page")  # type: ignore
+    Page = app_config.get_model("Page")  # type: ignore
+
+    pages_in_db = list(Page.objects.all())
+
+    if pages_in_db:
+        if verbosity >= 2:
+            print("Some pages are already in the database, skipping")
+        return
 
     pages = [
         Page(
             title="Accueil",
-            content="<h1>Bienvenue sur le site "
-            + {"espacecate": "du caté", "aumonerie": "de l'aumônerie"}[app]
-            + " !</h1>",
+            content="<h1>Bienvenue sur le site du caté !</h1>",
         ),
-        Page(title="Inscription", content=f"{app}:inscription"),
-        Page(title="Dates importantes", content=f"{app}:dates"),
-        Page(title="Calendrier", content=f"{app}:calendrier"),
-        Page(title="Documents téléchargeables", content=f"{app}:documents"),
-        Page(title="Articles / Photos", content=f"{app}:articles"),
+        Page(title="Inscription", content="inscription"),
     ]
-    for i, page in enumerate(pages):
-        page.slug = page._generate_slug(False)
-        page.order = i
-    Page.objects.using(using).bulk_create(pages, ignore_conflicts=True)
 
-    if verbosity >= 2:
+    for view, title in {
+        "dates": "Dates importantes",
+        "documents": "Documents téléchargeables",
+        "articles": "Articles / Photos",
+    }.items():
+        base_page = Page(title=title)
+        pages.extend([
+            base_page,
+            Page(title="Caté", slug=f"{view}_cate", content=f"espacecate_{view}", parent_page=base_page),
+            Page(title="Aumônerie", slug=f"{view}_aumonerie", content=f"aumonerie_{view}", parent_page=base_page),
+        ])
+
+    for i, page in enumerate(pages):
+        if not page.slug:
+            page.slug = page._generate_slug(False)
+        page.order = i
+
+    while pages:
+        pages_to_save = []
+        other_pages = []
+
         for page in pages:
-            print(f"Adding page '{page}'")
+            if not page.parent_page or page.parent_page.pk:
+                pages_to_save.append(page)
+            else:
+                other_pages.append(page)
+
+        pages = other_pages
+
+        for page in pages_to_save:
+            if any(page_in_db.slug == page.slug for page_in_db in pages_in_db):
+                if verbosity >= 2:
+                    print(f"Page '{page}' already exists")
+                continue
+            if verbosity >= 2:
+                print(f"Adding page '{page}'")
+            page.save()

@@ -1,3 +1,8 @@
+# for backwards compatibility
+cate/media/**
+cate/static/**
+cate/custom_settings_overrides.py
+
 db.sqlite3
 *.mo
 src/vendor/tinymce/**

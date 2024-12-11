@@ -8,8 +8,6 @@ from common.admin import (
     CommonDocumentCategoryAdmin,
     CommonGroupAdmin,
     CommonMeetingAdmin,
-    CommonPageAdmin,
-    CommonPageImagesInline,
 )
 from django.contrib import admin
 
@@ -23,26 +21,7 @@ from .models import (
     DocumentCategory,
     Group,
     Meeting,
-    Page,
-    PageImage,
 )
-
-
-class PageImagesInline(CommonPageImagesInline):
-    """
-    Inline for page images of the aumonerie app.
-    """
-
-    model = PageImage
-
-
-@admin.register(Page)
-class PageAdmin(CommonPageAdmin):
-    """
-    Admin interface for pages of the aumonerie app.
-    """
-
-    inlines = [PageImagesInline]
 
 
 class ArticleImagesInline(CommonArticleImagesInline):

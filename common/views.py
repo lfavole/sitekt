@@ -8,18 +8,19 @@ from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
 from django.http import FileResponse, HttpRequest, HttpResponseNotModified
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils.http import http_date
 from django.utils.timezone import now
 from django.views import generic
 from django.views.static import was_modified_since
 
+from .forms import SubscriptionForm
 from .models import (
     CommonArticle,
     CommonDate,
     CommonDocument,
     CommonDocumentCategory,
-    CommonPage,
+    Page,
 )
 
 
@@ -29,6 +30,17 @@ def _encode_filename(filename: str):
         return 'filename="{}"'.format(filename.replace("\\", "\\\\").replace('"', r"\""))
     except UnicodeEncodeError:
         return "filename*=utf-8''{}".format(quote(filename))
+
+
+def subscription(request):
+    if request.method == "POST":
+        form = SubscriptionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("inscription_ok")
+    else:
+        form = SubscriptionForm()
+    return render(request, "common/subscription.html", {"form": form})
 
 
 def subscription_ok(request):
@@ -73,12 +85,12 @@ class BaseView(generic.View):
         return {"app": self.request.resolver_match.app_name}
 
 
-class CommonPageView(BaseView, generic.DetailView):
+class PageView(BaseView, generic.DetailView):
     """
     View for a page.
     """
 
-    model: Type[CommonPage]
+    model = Page
     context_object_name = "page"
     template_name = "common/page.html"
 

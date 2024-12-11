@@ -1,66 +1,11 @@
 import copy
-from typing import Any, Literal, Type
 
 from django import forms
 from django.db import models
-from django.utils.safestring import SafeString
+from django.utils.safestring import mark_safe
 
-
-class DatalistWidget(forms.widgets.Select):
-    """
-    Widget for `<datalist>`.
-    """
-
-    template_name = "widgets/datalist.html"
-
-
-class DatalistFormField(forms.ChoiceField, forms.CharField):
-    """
-    Text field with `<datalist>`.
-    """
-
-    widget = DatalistWidget
-
-    def __init__(self, *args, choices=(), **kwargs) -> None:
-        choices = [(choice, choice) for choice in choices]
-        super().__init__(*args, **kwargs)
-        attrs = self.widget.attrs
-        attrs |= self.widget_attrs(self.widget)  # type: ignore
-        self.widget = DatalistWidget({**self.widget.attrs, **self.widget_attrs(self.widget)}, choices)  # type: ignore
-
-    def valid_value(self, _value):
-        return True
-
-
-class PriceInput(forms.NumberInput):
-    """
-    Number input with € after it.
-    """
-
-    def __init__(self, attrs: dict[str, Any] = {}):
-        super().__init__(attrs={"step": 0.1, **attrs})
-
-    def render(self, *args, **kwargs):
-        # font-size is for Django administration
-        return super().render(*args, **kwargs) + SafeString('<span style="font-size:1rem;margin-left:0.5em">€</span>')
-
-
-class DisplayedHTML(forms.Widget):
-    def __init__(self, html: str, *args, **kwargs):
-        self.html = SafeString(html)
-        super().__init__(*args, **kwargs)
-
-    def render(self, *_args, **_kwargs):
-        return self.html
-
-
-class DisplayedHTMLField(forms.Field):
-    def __init__(self, html: str, *args, **kwargs):
-        kwargs["widget"] = DisplayedHTML(html)
-        super().__init__(*args, label="", label_suffix="", **kwargs)
-
-    def validate(self, _value):
-        pass
+from .fields import DisplayedHTMLField
+from .models import Classes, CommonChild, Year
 
 
 class BooleanField(forms.BooleanField):
@@ -87,133 +32,144 @@ class BooleanField(forms.BooleanField):
         super().validate(value)
 
 
-def get_subscription_form(app: Literal["espacecate", "aumonerie"], target_model: Type[models.Model]):
-    """
-    Return the subscription form for the given `Child` model.
-    """
-    from .models import Year  # avoid circular import
+def formfield_for_dbfield(db_field, **kwargs):
+    if isinstance(db_field, models.DateField):
+        kwargs["widget"] = forms.DateInput(
+            format="%Y-%m-%d",
+            attrs={"type": "date"},
+        )
+    if isinstance(db_field, models.BooleanField):
+        kwargs["form_class"] = BooleanField
+    return db_field.formfield(**kwargs)
 
-    def formfield_for_dbfield(db_field, **kwargs):
-        if isinstance(db_field, models.DateField):
-            kwargs["widget"] = forms.DateInput(
-                format="%Y-%m-%d",
-                attrs={"type": "date"},
-            )
-        if isinstance(db_field, models.BooleanField):
-            kwargs["form_class"] = BooleanField
-        return db_field.formfield(**kwargs)
+class SubscriptionForm(forms.Form):
+    autorisation = DisplayedHTMLField(
+        "Un document intitulé <b>« Autorisation et engagement »</b> devra être signé par vos soins.<br>"
+        "Après avoir terminé l'inscription, vous pourrez le télécharger, "
+        "l'imprimer, le compléter, le signer et nous le rapporter à la prochaine rencontre du catéchisme, "
+        "sinon une version papier vous sera donnée."
+    )
 
-    nom = {"espacecate": "l'enfant", "aumonerie": "le jeune"}[app]
+    fieldsets_template = "common/form_as_fieldsets.html"
 
-    class SubscriptionForm(forms.ModelForm):
-        autorisation = DisplayedHTMLField(
-            "Un document intitulé <b>« Autorisation et engagement »</b> devra être signé par vos soins.<br>"
-            'Vous pouvez <a class="autorisation" href="#">le télécharger</a>, '
-            "l'imprimer, le compléter, le signer et nous le rapporter à la prochaine rencontre du catéchisme, "
-            "sinon une version papier vous sera donnée."
+    def as_fieldsets(self):
+        """Render as <fieldset> elements."""
+        return self.render(self.fieldsets_template)  # type: ignore
+
+    def as_fieldsets_with_numbers(self):
+        """Render as <fieldset> elements."""
+        return self.render(self.fieldsets_template, {**self.get_context(), "numbers": True})  # type: ignore
+
+    def save(self, *args, **kwargs):
+        if Classes(self.cleaned_data["classe"]) >= Classes.SIXIEME:  # includes "Autre"
+            app = "aumonerie"
+            from aumonerie.models import Child
+        else:
+            app = "espacecate"
+            from espacecate.models import Child
+
+        child = Child()
+
+        for f in Child._meta.fields:
+            if f.name not in self.fields:
+                continue
+            # Leave defaults for fields that aren't in POST data, except for
+            # checkbox inputs because they don't appear in POST data if not checked.
+            if (
+                f.has_default()
+                and self[f.name].field.widget.value_omitted_from_data(
+                    self.data, self.files, self.add_prefix(f.name)
+                )  # type: ignore
+                and self.cleaned_data.get(f.name) in self[f.name].field.empty_values
+            ):
+                continue
+            f.save_form_data(child, self.cleaned_data[f.name])
+
+        if app == "aumonerie":
+            from aumonerie.models import Group
+
+            group_name = None
+            if child.classe in ["6e", "5e", "4e", "3e"]:
+                group_name = "Collège"
+            if child.classe in ["2nde", "1ere", "terminale"]:
+                group_name = "Lycée"
+            child.groupe = Group.objects.get(name=group_name) if group_name else None
+
+        child.paye = "non"
+        child.signe = False
+
+        child.save()
+        return child
+
+    def get_context(self):
+        context = super().get_context()  # type: ignore
+        fieldsets = []
+
+        for title, data in self.Meta.fieldsets:
+            fieldset = (title, [])
+            for field in data["fields"]:
+                bf = self[field]
+                errors = self.error_class(bf.errors, renderer=self.renderer)
+                fieldset[1].append((bf, errors))
+
+            fieldsets.append(fieldset)
+
+        context["fieldsets"] = fieldsets
+        context["numbers"] = False
+        return context
+
+    class Meta:
+        labels = {
+            "nom": "Nom de famille",
+            "adresse": "Adresse où vit l'enfant / le jeune",
+            "ecole": f"École pour l'année scolaire {Year.get_current().formatted_year}",
+            "bapteme": mark_safe("Votre enfant a-t-il reçu <b>le Baptême</b>"),
+            "pardon": mark_safe("Votre enfant a-t-il vécu <b>le Sacrement du Pardon</b>"),
+            "premiere_communion": mark_safe("Votre enfant a-t-il vécu <b>la Première Communion</b>"),
+            "profession": mark_safe("Votre enfant a-t-il vécu <b>la Profession de Foi</b>"),
+            "confirmation": mark_safe("Votre enfant a-t-il vécu <b>la Confirmation</b>"),
+            "adresse_mere": mark_safe("Adresse <small>(si différente de celle où vit l'enfant / le jeune)</small>"),
+            "tel_mere": "Téléphone",
+            "email_mere": "Email",
+            "adresse_pere": mark_safe("Adresse <small>(si différente de celle où vit l'enfant / le jeune)</small>"),
+            "tel_pere": "Téléphone",
+            "email_pere": "Email",
+            "photos": (
+                "J'autorise la publication des photos de mon enfant prises au cours "
+                "des différentes manifestations liées aux activités du catéchisme / de l'Aumônerie "
+                " (plaquettes, presse municipale et locale, site Internet, ...)"
+            ),
+            "frais": mark_safe(
+                "En fonction de leurs possibilités, les familles sont invitées à participer "
+                "aux <b>frais du Catéchisme / de l'Aumônerie à partir de 35 euros par enfant</b> "
+                "(livres, photocopies, matériel pédagogique, chauffage...).<br>"
+                "Participation aux frais, en espèces ou par chèque, à l'ordre de « Aumônerie des Jeunes d'Embrun »"
+            ),
+        }
+
+        fieldsets = copy.deepcopy(CommonChild.fieldsets)
+        # Add authorization document information
+        fieldsets[-1][1]["fields"] = (
+            fieldsets[-1][1]["fields"][0],
+            "autorisation",
+            *fieldsets[-1][1]["fields"][1:],
         )
 
-        class Meta:
-            model = target_model
-            labels = {
-                "nom": "Nom de famille",
-                "adresse": f"Adresse où vit {nom}",
-                "ecole": f"École pour l'année scolaire {Year.get_current().formatted_year}",
-                "bapteme": SafeString("Votre enfant a-t-il reçu <b>le Baptême</b>"),
-                "pardon": SafeString("Votre enfant a-t-il vécu <b>le Sacrement du Pardon</b>"),
-                "premiere_communion": SafeString("Votre enfant a-t-il vécu <b>la Première Communion</b>"),
-                "profession": SafeString("Votre enfant a-t-il vécu <b>la Profession de Foi</b>"),
-                "confirmation": SafeString("Votre enfant a-t-il vécu <b>la Confirmation</b>"),
-                "adresse_mere": SafeString(f"Adresse <small>(si différente de celle où vit {nom})</small>"),
-                "tel_mere": "Téléphone",
-                "email_mere": "Email",
-                "adresse_pere": SafeString(f"Adresse <small>(si différente de celle où vit {nom})</small>"),
-                "tel_pere": "Téléphone",
-                "email_pere": "Email",
-                "freres_soeurs": "Frères et sœurs (prénoms et âges)",
-                "infos": (
-                    "Autres informations à nous communiquer "
-                    "(histoire de l'enfant, problèmes de santé, difficultés rencontrées, ...)"
-                ),
-                "photos": (
-                    "J'autorise la publication des photos de mon enfant prises au cours "
-                    + "des différentes manifestations liées aux activités "
-                    + {"espacecate": "du catéchisme", "aumonerie": "de l'Aumônerie"}[app]
-                    + " (plaquettes, presse municipale et locale, site Internet, ...)"
-                ),
-                "frais": SafeString(
-                    "En fonction de leurs possibilités, les familles sont invitées à participer "
-                    "aux <b>frais du Catéchisme à partir de 35 euros par enfant</b> "
-                    "(livres, photocopies, matériel pédagogique, chauffage...).<br>"
-                    "Participation aux frais, en espèces ou par chèque, à l'ordre de « Aumônerie des Jeunes d'Embrun »"
-                )
-                if app == "espacecate"
-                else (
-                    f"Participation aux frais (cotisation pour l'année {Year.get_current().formatted_year} : "
-                    "en espèces ou par chèque, à partir de 35 euros à l'ordre de « Aumônerie des Jeunes d'Embrun »)"
-                ),
-            }
-            formfield_callback = formfield_for_dbfield
-            fieldsets = copy.deepcopy(target_model.fieldsets)  # type: ignore
-
-            # the admin section is excluded
-            exclude = list(fieldsets[-1][1]["fields"])
-            fieldsets.pop()  # remove admin section
-            # add authorization document information
-            fieldsets[-1][1]["fields"] = (
-                fieldsets[-1][1]["fields"][0],
-                "autorisation",
-                *fieldsets[-1][1]["fields"][1:],
-            )
-
-        fieldsets_template = "common/form_as_fieldsets.html"
-
-        def get_context(self):
-            context = super().get_context()  # type: ignore
-            fieldsets = []
-
-            for title, data in self.Meta.fieldsets:  # type: ignore
-                fieldset = (title, [])
-                for field in data["fields"]:
-                    bf = self[field]
-                    errors = self.error_class(bf.errors, renderer=self.renderer)
-                    fieldset[1].append((bf, errors))
-
-                fieldsets.append(fieldset)
-
-            context["fieldsets"] = fieldsets
-            context["numbers"] = False
-            return context
-
-        def as_fieldsets(self):
-            """
-            Render as <fieldset> elements.
-            """
-            return self.render(self.fieldsets_template)  # type: ignore
-
-        def as_fieldsets_with_numbers(self):
-            """
-            Render as <fieldset> elements.
-            """
-            return self.render(self.fieldsets_template, {**self.get_context(), "numbers": True})  # type: ignore
-
-        def save(self, *args, **kwargs):
-            if app == "espacecate":
-                self.instance.communion_cette_annee = self.instance.annees_kt == 2
-            if app == "aumonerie":
-                from aumonerie.models import Group
-
-                self.instance.profession_cette_annee = False
-                self.instance.confirmation_cette_annee = False
-                group_name = None
-                if self.instance.classe in ["6e", "5e", "4e", "3e"]:
-                    group_name = "Collège"
-                if self.instance.classe in ["2nde", "1ere", "terminale"]:
-                    group_name = "Lycée"
-                self.instance.groupe = Group.objects.get(name=group_name) if group_name else None
-
-            self.instance.paye = "non"
-            self.instance.signe = False
-            return super().save(*args, **kwargs)
-
-    return SubscriptionForm
+for title, data in SubscriptionForm.Meta.fieldsets:
+    for field_name in data["fields"]:
+        for field in CommonChild._meta.fields:
+            field: models.Field = field
+            if field.name == field_name:
+                kwargs = {}
+                if isinstance(field, models.TextField):
+                    kwargs["widget"] = forms.Textarea()
+                if isinstance(field, models.DateField):
+                    kwargs["widget"] = forms.DateInput(
+                        format="%Y-%m-%d",
+                        attrs={"type": "date"},
+                    )
+                if isinstance(field, models.BooleanField):
+                    kwargs["form_class"] = BooleanField
+                field_obj = field.formfield(**kwargs)
+                field_obj.label = SubscriptionForm.Meta.labels.get(field_name, field_obj.label)
+                SubscriptionForm.base_fields[field.name] = field_obj

@@ -98,10 +98,6 @@ def google(_request, id):
     raise Http404()
 
 
-def home(request: HttpRequest):
-    return render(request, "cate/home.html", {"app": "home"})
-
-
 DEBUG_ENGINE = Engine(
     dirs=[str(Path(__file__).parent / "templates")],
     debug=True,
@@ -160,7 +156,6 @@ $(function() {
         processors=[
             django_cps.request,  # for the navbar
             cps.app_name,
-            cps.navbar_processor,
         ],
         use_l10n=False,
     )  # type: ignore

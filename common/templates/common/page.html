@@ -1,6 +1,6 @@
-{% extends app|add:"/page_base.html" %}
+{% extends "cate/site_base.html" %}
 
-{% block page-title %}{{ page.title }}{% endblock %}
+{% block title %}{% block page-title %}{{ page.title }}{% endblock %} – {{ SITE_NAME }}{% endblock %}
 
 {% block content %}
 {{ page.content|safe }}

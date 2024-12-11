@@ -5,15 +5,15 @@
     <li>
         Listes récapitulatives des enfants, triés par classe :
         <ul>
-            <li><a href="{% url cl.opts.app_label|add:":list" %}" target="_blank">Enfants non regroupés</a></li>
-            <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=classe" target="_blank">Enfants regroupés par classe</a></li>
+            <li><a href="{% url cl.opts.app_label|add:"_list" %}" target="_blank">Enfants non regroupés</a></li>
+            <li><a href="{% url cl.opts.app_label|add:"_list" %}?regroup=classe" target="_blank">Enfants regroupés par classe</a></li>
             {% if cl.opts.app_label == "espacecate" %}
-                <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=annees" target="_blank">Enfants regroupés par années</a></li>
+                <li><a href="{% url cl.opts.app_label|add:"_list" %}?regroup=annees" target="_blank">Enfants regroupés par années</a></li>
             {% endif %}
-            <li><a href="{% url cl.opts.app_label|add:":list" %}?regroup=groupe" target="_blank">Enfants regroupés par groupe</a></li>
+            <li><a href="{% url cl.opts.app_label|add:"_list" %}?regroup=groupe" target="_blank">Enfants regroupés par groupe</a></li>
         </ul>
     </li>
-    <li><a href="{% url cl.opts.app_label|add:":autorisation" %}?exemplaires=2" target="_blank">Modèle d'autorisation à imprimer</a></li>
+    <li><a href="{% url cl.opts.app_label|add:"_autorisation" %}?exemplaires=2" target="_blank">Modèle d'autorisation à imprimer</a></li>
 </ul>
 {{ block.super }}
 {% endblock result_list %}

@@ -6,7 +6,7 @@ from django.apps.registry import Apps
 from django.core.serializers import deserialize, serialize
 from django.db import models
 
-from .models import CommonPage
+from .models import Page
 
 
 def get_primary_key():
@@ -75,7 +75,7 @@ def import_data(app, reverse=False):
                 del fields[field]
             new_pk = (
                 # we must use the method from CommonPage because the models in migrations don't have methods
-                CommonPage._generate_slug(apps.get_model(model_name)(**fields))
+                Page._generate_slug(apps.get_model(model_name)(**fields))
                 if reverse  # type: ignore
                 else pk_generators[model_name]()
             )

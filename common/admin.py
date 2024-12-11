@@ -5,9 +5,9 @@ from adminsortable2.admin import SortableAdminMixin
 from common.models import (
     CommonArticle,
     CommonArticleImage,
-    CommonPage,
-    CommonPageImage,
     ImageBase,
+    Page,
+    PageImage,
 )
 from django import forms
 from django.contrib import admin
@@ -80,21 +80,21 @@ class CommonImagesInline(admin.TabularInline):
         return False
 
 
-class CommonPageImagesInline(CommonImagesInline):
+class PageImagesInline(CommonImagesInline):
     """
     Inline for page images.
     """
 
-    model: Type[CommonPageImage]
+    model = PageImage
     extra = 0
 
 
-class CommonPageAdminForm(forms.ModelForm):
+class PageAdminForm(forms.ModelForm):
     """
     Form in the admin interface for pages.
     """
 
-    model: Type[CommonPage]
+    model = Page
 
     class Meta:
         widgets = {
@@ -102,12 +102,13 @@ class CommonPageAdminForm(forms.ModelForm):
         }
 
 
-class CommonPageAdmin(SortableAdminMixin, admin.ModelAdmin):
+@admin.register(Page)
+class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     """
     Admin interface for pages.
     """
 
-    form = CommonPageAdminForm
+    form = PageAdminForm
 
 
 class CommonArticleImagesInline(CommonImagesInline):
@@ -119,7 +120,7 @@ class CommonArticleImagesInline(CommonImagesInline):
     extra = 0
 
 
-class CommonArticleAdminForm(CommonPageAdminForm):
+class CommonArticleAdminForm(PageAdminForm):
     """
     Form in the admin interface for articles.
     """
