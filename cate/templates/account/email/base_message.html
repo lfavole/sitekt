@@ -1,0 +1,60 @@
+{% load static %}<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{{ subject }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Montserrat, Arial, Helvetica, sans-serif;
+            max-width: 600px;
+            margin: 8px auto;
+        }
+        header {
+            display: flex;
+        }
+        header img {
+            display: block;
+            width: 5em;
+            height: 5em;
+            text-align: center;
+            vertical-align: middle;
+            position: relative;
+            border-radius: 0.5em;
+        }
+        header img::before, header img::after {
+            content: attr(alt);
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: #fff59d;
+            border: 0.2em dashed #fbc02d;
+            border-radius: 0.5em;
+        }
+        .title {
+            font-size: 3em;
+            font-weight: bold;
+            margin: auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="image">
+            <img src="{{ request.scheme }}://{{ request.get_host }}{% static "favicon.png" %}" alt="{{ SITE_NAME }}">
+        </div>
+        <div class="title">{{ SITE_NAME }}</div>
+    </header>
+    {{ data|safe }}
+</body>
+</html>

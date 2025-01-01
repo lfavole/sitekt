@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-from .management import create_pages
+from .management import create_pages, create_year
 
 
 class CommonConfig(AppConfig):
@@ -13,4 +13,8 @@ class CommonConfig(AppConfig):
         post_migrate.connect(
             create_pages,
             dispatch_uid="common.management.create_pages",
+        )
+        post_migrate.connect(
+            create_year,
+            dispatch_uid="common.management.create_year",
         )

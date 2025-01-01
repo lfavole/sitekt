@@ -4,7 +4,7 @@
 
 {% block title %}{% block head_title %}{% endblock head_title %}{% endblock title %}
 
-{% block main-content %}
+{% block navbar %}
 <nav>
     <label class="ouvrir-menu" for="menu-checkbox">Menu</label>
     <input type="checkbox" id="menu-checkbox" class="sr-only">
@@ -35,8 +35,4 @@
         {% endif %}
     </ul>
 </nav>
-<main class="content">
-{% block content %}{% endblock %}
-</main>
-{% block extra_body %}{% endblock %}
 {% endblock %}

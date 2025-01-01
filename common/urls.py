@@ -42,7 +42,7 @@ for app in ("espacecate", "aumonerie"):
 
 urlpatterns += [
     path("autorisation", lambda _: HttpResponse("TODO"), name="autorisation"),
-    path("inscription/ok", views.subscription_ok, name="inscription_ok"),
+    path("inscription/new", views.subscription_new, name="inscription_nouveau"),
     path("inscription", views.subscription, name="inscription"),
     path("index", views.PageView.as_view(), kwargs={"slug": "accueil"}),
     path("", views.PageView.as_view(), name="accueil", kwargs={"slug": "accueil"}),

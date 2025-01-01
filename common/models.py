@@ -3,6 +3,7 @@ import datetime as dt
 import mimetypes
 from typing import Any, Callable, Type
 from urllib.parse import urlparse
+import warnings
 
 from bs4 import BeautifulSoup
 from django.apps import apps
@@ -14,6 +15,7 @@ from django.db.models import Manager
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from cate import settings
 from storage.fields import FileField, ImageField
 
 from cate.utils.text import slugify
@@ -33,6 +35,7 @@ class Year(models.Model):
 
     class Meta:
         verbose_name = _("school year")
+        verbose_name_plural = _("school years")
         ordering = ["-start_year"]
 
     def _get_end_year(self):
@@ -90,7 +93,7 @@ class Year(models.Model):
         return super().delete(*args, **kwargs)
 
     @classmethod
-    def get_current(cls):
+    def get_current(cls, save=False):
         """
         Return the current year.
         """
@@ -99,9 +102,18 @@ class Year(models.Model):
             try:
                 year = cls.objects.get(is_active=True)
             except (cls.DoesNotExist, DatabaseError):
-                return Year(start_year=dt.date.today().year, is_active=True)
+                ret = Year(start_year=dt.date.today().year, is_active=True)
+                if save:
+                    ret.save()
+                else:
+                    warnings.warn("No active Year object. Creating a fake object")
+                return ret
             cache.set("current_year", year)
         return year
+
+    @classmethod
+    def get_current_pk(cls):
+        return cls.get_current(True).pk
 
     @property
     def trs(self):
@@ -372,6 +384,8 @@ class CommonChild(models.Model):
     )
     signe = models.BooleanField("Signé", default=False)
     groupe = models.ForeignKey("Group", on_delete=models.SET_NULL, verbose_name="Groupe", blank=True, null=True)
+    year = models.ForeignKey(Year, verbose_name=_("School year"), on_delete=models.CASCADE, default=Year.get_current_pk, related_name="+")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("User"), on_delete=models.SET_NULL, blank=True, null=True, related_name="+")
     photo = ImageField("Photo", blank=True, null=True)
     date_inscription = models.DateTimeField("Date et heure d'inscription", auto_now_add=True)
 
@@ -480,6 +494,15 @@ class CommonChild(models.Model):
         ("Autres informations", {"fields": ("autres_infos",)}),
         ("Autorisation", {"fields": ("photos", "frais")}),
     ]
+    admin_fields = (
+        "paye",
+        "signe",
+        "groupe",
+        "year",
+        "user",
+        "photo",
+        "date_inscription",
+    )
 
 
 class CommonDate(models.Model):

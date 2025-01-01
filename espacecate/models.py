@@ -68,7 +68,7 @@ class Child(CommonChild):
         *CommonChild.fieldsets,
         (
             "Espace administrateur",
-            {"fields": ("communion_cette_annee", "paye", "signe", "groupe", "photo", "date_inscription")},
+            {"fields": ("communion_cette_annee", *CommonChild.admin_fields)},
         ),
     ]
 

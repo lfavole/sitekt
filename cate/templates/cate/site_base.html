@@ -23,11 +23,18 @@
 {% endif %}
 </div>
 </header>
+{% block navbar %}
 <nav>
     <label class="ouvrir-menu" for="menu-checkbox">Menu</label>
     <input type="checkbox" id="menu-checkbox" class="sr-only">
     {% nav %}
 </nav>
+{% endblock navbar %}
+<ul class="messagelist">
+    {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+    {% endfor %}
+</ul>
 {% block main-content %}
 <main>
 {% block content %}{% endblock %}

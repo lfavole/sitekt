@@ -66,11 +66,7 @@ class Child(CommonChild):
                 "fields": (
                     "profession_cette_annee",
                     "confirmation_cette_annee",
-                    "paye",
-                    "signe",
-                    "groupe",
-                    "photo",
-                    "date_inscription",
+                    *CommonChild.admin_fields,
                 )
             },
         ),

@@ -2,8 +2,10 @@ import mimetypes
 from pathlib import Path
 from typing import Literal, Type
 from urllib.parse import quote
+from django.conf import settings
 
 from django.contrib.auth import get_permission_codename
+from django.contrib.auth.decorators import login_required
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
@@ -13,6 +15,9 @@ from django.utils.http import http_date
 from django.utils.timezone import now
 from django.views import generic
 from django.views.static import was_modified_since
+
+import aumonerie
+import espacecate
 
 from .forms import SubscriptionForm
 from .models import (
@@ -32,7 +37,15 @@ def _encode_filename(filename: str):
         return "filename*=utf-8''{}".format(quote(filename))
 
 
+@login_required
 def subscription(request):
+    children = []
+    children.extend(aumonerie.models.Child.objects.filter(user=request.user))
+    children.extend(espacecate.models.Child.objects.filter(user=request.user))
+    return render(request, "common/subscription.html", {"children": children})
+
+
+def subscription_new(request):
     if request.method == "POST":
         form = SubscriptionForm(request.POST)
         if form.is_valid():
@@ -40,11 +53,7 @@ def subscription(request):
             return redirect("inscription_ok")
     else:
         form = SubscriptionForm()
-    return render(request, "common/subscription.html", {"form": form})
-
-
-def subscription_ok(request):
-    return render(request, "common/subscription_ok.html")
+    return render(request, "common/subscription_new.html", {"form": form})
 
 
 def has_permission_for_view(view: generic.View, permission="view"):

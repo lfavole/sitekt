@@ -73,6 +73,10 @@ msgstr "année active"
 msgid "school year"
 msgstr "année scolaire"
 
+#: common/models.py:38
+msgid "school years"
+msgstr "années scolaires"
+
 #: .\common\models.py:43
 msgid "End year"
 msgstr "Année de fin"
@@ -168,6 +172,10 @@ msgstr "nom"
 #: .\common\models.py:292
 msgid "group"
 msgstr "groupe"
+
+#: /common/models.py:388
+msgid "User"
+msgstr "Utilisateur"
 
 #: .\common\models.py:323
 msgid "child"

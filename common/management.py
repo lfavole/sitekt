@@ -68,3 +68,22 @@ def create_pages(
             if verbosity >= 2:
                 print(f"Adding page '{page}'")
             page.save()
+
+
+def create_year(
+    app_config: AppConfig,
+    verbosity=2,
+    using=DEFAULT_DB_ALIAS,
+    **_kwargs,
+):
+    """
+    Automatically creates the default year.
+    """
+    if app_config.name != "common":
+        return
+
+    Year = app_config.get_model("Year")  # type: ignore
+
+    if verbosity >= 2:
+        print(f"Saving current year '{current_year}'")
+    Year.get_current(True)
