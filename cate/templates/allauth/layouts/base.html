@@ -13,15 +13,16 @@
         {% nav_link "home" "Return to the website" "arrow" %}
 
         {% if user.is_authenticated %}
-        {% if admin_permission %}
-        {% nav_link "admin:index" "Administration" %}
-        {% endif %}
         <li>
             <form method="post" action="{% url "account_logout" %}" class="logout-form">
                 {% csrf_token %}
                 <input type="submit" class="link" value="{% trans "Log out" %}">
             </form>
         </li>
+
+        {% if user.is_staff %}
+        {% nav_link "admin:index" "Administration" %}
+        {% endif %}
 
         {% nav_link "socialaccount_connections" "Account Connections" %}
         {% nav_link "account_email" "Change Email" %}
