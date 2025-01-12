@@ -2,6 +2,7 @@ import datetime as dt
 import hmac
 import importlib
 import mimetypes
+import os
 import sys
 from hashlib import sha1
 from ipaddress import ip_address, ip_network
@@ -93,6 +94,9 @@ def export(request, format: str, app_label: str, model_name: str, elements_pk: s
 
 def google(_request, id):
     google_file = DATA / f"google{id}.html"
+    """Return the Google site verification file."""
+    if os.getenv("GOOGLE_SITE_VERIFICATION_ID", "") == id:
+        return HttpResponse(f"google-site-verification: google{os.getenv('GOOGLE_SITE_VERIFICATION_ID')}.html")
     if google_file.exists():
         return FileResponse(google_file.open("rb"))
     raise Http404()
