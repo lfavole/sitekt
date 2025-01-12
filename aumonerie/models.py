@@ -20,7 +20,7 @@ class Article(CommonArticle):
     """
 
     def get_absolute_url(self):
-        return reverse("aumonerie:article", args=[self.slug])
+        return reverse("aumonerie_article", args=[self.slug])
 
 
 class ArticleImage(CommonArticleImage):

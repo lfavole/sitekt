@@ -17,10 +17,11 @@ import os
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps import views as sitemap_views
 from django.urls import include, path
 from django.views.static import serve
 
-from . import views
+from . import sitemap, views
 
 # from django.contrib.staticfiles.views import serve
 
@@ -31,6 +32,12 @@ handler500 = views.handler_500
 
 def add_website(name: str):
     return path(name.replace("_", "-") + "/", include(name + ".urls", namespace=name))
+
+
+sitemaps = {
+    "articles": sitemap.ArticlesSitemap,
+    "pages": sitemap.PagesSitemap,
+}
 
 
 urlpatterns = [
@@ -46,6 +53,18 @@ urlpatterns = [
     path("google<str:id>.html", views.google),
     path("old/", include("old_website.urls")),
     path("robots.txt", views.robots),
+    path(
+        "sitemap.xml",
+        sitemap_views.index,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.index",
+    ),
+    path(
+        "sitemap-<section>.xml",
+        sitemap_views.sitemap,
+        {"sitemaps": sitemaps},
+        name="django.contrib.sitemaps.views.sitemap",
+    ),
     path("tinymce/upload-image", views.upload_image, name="tinymce-upload-image"),
     path("tinymce/", include("tinymce.urls")),
     path("tracking/", include("tracking.urls")),

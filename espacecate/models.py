@@ -22,7 +22,7 @@ class Article(CommonArticle):
     """
 
     def get_absolute_url(self):
-        return reverse("espacecate:article", args=[self.slug])
+        return reverse("espacecate_article", args=[self.slug])
 
 
 class ArticleImage(CommonArticleImage):

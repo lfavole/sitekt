@@ -29,20 +29,10 @@ class NavItem:
             return mark_safe(ret)
 
         ret = ""
-        href = None
-        if page.content == "":
-            href = "#"
-        elif len(page.content) < 100 and page.content[0] != "<":
-            try:
-                href = reverse(page.content)
-            except Resolver404:
-                href = None
-
-        if not href:
-            href = reverse("page", kwargs={"slug": page.slug})
+        href = page.get_absolute_url()
 
         try:
-            match = resolve(href) if href and href != "#" else None
+            match = resolve(href) if href != "#" else None
         except Resolver404:
             match = None
 
