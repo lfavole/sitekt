@@ -1,7 +1,10 @@
 from functools import partial
+import sys
 from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
+from django.db.models.query import QuerySet
+from django.http.request import HttpRequest
 from common.models import (
     CommonArticle,
     CommonArticleImage,
@@ -151,6 +154,7 @@ class CommonChildAdmin(admin.ModelAdmin):
     """
 
     model: Type[CommonChild]
+    other_model: Type[CommonChild]
     change_list_template = "admin/change_list_child.html"
 
     list_display = ("nom", "prenom")  # this is not useful !
@@ -200,6 +204,29 @@ class CommonChildAdmin(admin.ModelAdmin):
             "action_checkbox_name": admin.helpers.ACTION_CHECKBOX_NAME,
         }
         return render(request, "admin/change_group.html", context)
+
+    def redirect_to(self, obj):
+        # Get the name of the previously called function in the stack
+        # (the one that called get_obj_does_not_exist_redirect)
+        caller = sys._getframe(2).f_code.co_name
+        view_name = f"admin:{obj._meta.app_label}_{obj._meta.model_name}_"
+        if "delete" in caller:
+            return redirect(view_name + "delete", obj.id)
+        if "history" in caller:
+            return redirect(view_name + "history", obj.id)
+        return redirect(view_name + "change", obj.id)
+
+    def _get_obj_does_not_exist_redirect(self, request, opts, object_id):
+        try:
+            return self.redirect_to(self.other_model.objects.get(pk=object_id))
+        except self.other_model.DoesNotExist:
+            return super()._get_obj_does_not_exist_redirect(request, opts, object_id)
+
+
+class OldChildMixin:
+    """
+    Mixin for children from previous years.
+    """
 
 
 class CommonDateAdmin(admin.ModelAdmin):

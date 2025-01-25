@@ -334,10 +334,24 @@ class Classes(models.TextChoices):
         return self._sort_order_ < other._sort_order_
 
 
+class ChildManager(models.Manager):
+    """Manager for children. Returns only children for the current year (and the future years)."""
+    def get_queryset(self):
+        return super().get_queryset().filter(year__gte=Year.get_current())
+
+
+class OldChildManager(models.Manager):
+    """Manager for old children. Returns only children for the previous years."""
+    def get_queryset(self):
+        return super().get_queryset().filter(year__lt=Year.get_current())
+
+
 class CommonChild(models.Model):
     """
     Common child class for all apps.
     """
+
+    objects = ChildManager()
 
     nom = models.CharField("Nom de famille", max_length=100)
     prenom = models.CharField("Prénom", max_length=100)
@@ -434,12 +448,6 @@ class CommonChild(models.Model):
         def check_sacrament(name: str, msg: str):
             if not getattr(self, name):
                 return  # the sacrament hasn't been done
-
-            if name == "pardon":
-                # special case
-                if self.annee_pardon and self.annee_pardon > today.year:  # type: ignore
-                    add_error(f"annee_{name}", f"L'année {msg} ne doit pas être dans le futur.")
-                return
 
             check_not_future(f"date_{name}", f"la date {msg}")
             check_after_birth(f"date_{name}", f"la date {msg}")

@@ -10,6 +10,7 @@ from common.models import (
     CommonDocumentCategory,
     CommonGroup,
     CommonMeeting,
+    OldChildManager,
 )
 from django.db import models
 from django.urls import reverse
@@ -74,9 +75,21 @@ class Child(CommonChild):
 
     sacraments_checks = {
         "bapteme": "du baptême",
-        "pardon": "du Sacrement du Pardon",
         "premiere_communion": "de la première communion",
     }
+
+
+class OldChild(Child):
+    """
+    Old child on `espacecate` app.
+    """
+
+    objects = OldChildManager()
+
+    class Meta:
+        verbose_name = _("old child")
+        verbose_name_plural = _("old children")
+        proxy = True
 
 
 class Date(CommonDate):

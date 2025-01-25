@@ -21,8 +21,6 @@ webpage_def_args = DefaultArgs(
         "bapteme": True,
         "date_bapteme": dt.date(2000, 7, 1),
         "lieu_bapteme": "X",
-        "pardon": True,
-        "annee_pardon": 2009,
         "premiere_communion": True,
         "date_premiere_communion": dt.date(2009, 6, 1),
         "lieu_premiere_communion": "X",

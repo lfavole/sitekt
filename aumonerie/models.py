@@ -8,6 +8,7 @@ from common.models import (
     CommonDocumentCategory,
     CommonGroup,
     CommonMeeting,
+    OldChildManager,
 )
 from django.db import models
 from django.urls import reverse
@@ -78,6 +79,19 @@ class Child(CommonChild):
         "profession": "de la profession de foi",
         "confirmation": "de la Confirmation",
     }
+
+
+class OldChild(Child):
+    """
+    Old child on `aumonerie` app.
+    """
+
+    objects = OldChildManager()
+
+    class Meta:
+        verbose_name = _("old child")
+        verbose_name_plural = _("old children")
+        proxy = True
 
 
 class Date(CommonDate):

@@ -18,6 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\aumonerie\models.py:199 .\espacecate\models.py:211
+#: aumonerie/models.py:92 espacecate/models.py:90
+msgid "old child"
+msgstr "ancien enfant"
+
+#: aumonerie/models.py:93 espacecate/models.py:91
+msgid "old children"
+msgstr "anciens enfants"
+
+#: aumonerie/models.py:115 espacecate/models.py:112
 msgid "kind"
 msgstr "type"

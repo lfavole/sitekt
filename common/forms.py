@@ -124,7 +124,6 @@ class SubscriptionForm(forms.Form):
             "adresse": "Adresse où vit l'enfant / le jeune",
             "ecole": f"École pour l'année scolaire {Year.get_current().formatted_year}",
             "bapteme": mark_safe("Votre enfant a-t-il reçu <b>le Baptême</b>"),
-            "pardon": mark_safe("Votre enfant a-t-il vécu <b>le Sacrement du Pardon</b>"),
             "premiere_communion": mark_safe("Votre enfant a-t-il vécu <b>la Première Communion</b>"),
             "profession": mark_safe("Votre enfant a-t-il vécu <b>la Profession de Foi</b>"),
             "confirmation": mark_safe("Votre enfant a-t-il vécu <b>la Confirmation</b>"),

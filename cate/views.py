@@ -93,6 +93,9 @@ def export(request, format: str, app_label: str, model_name: str, elements_pk: s
 
 
 def google(_request, id):
+    """Return the Google site verification file."""
+    if os.getenv("GOOGLE_SITE_VERIFICATION_ID", "") == id:
+        return HttpResponse(f"google-site-verification: google{os.getenv('GOOGLE_SITE_VERIFICATION_ID')}.html")
     google_file = DATA / f"google{id}.html"
     """Return the Google site verification file."""
     if os.getenv("GOOGLE_SITE_VERIFICATION_ID", "") == id:

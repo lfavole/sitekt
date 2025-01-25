@@ -73,7 +73,6 @@ class List(PDF):
 
     sacraments = {
         "bapteme": ("date", "lieu"),
-        "pardon": ("annee",),
         "premiere_communion": ("date", "lieu"),
         "profession": ("date", "lieu"),
         "confirmation": ("date", "lieu"),
@@ -151,6 +150,7 @@ class List(PDF):
         self.Child: Type[CommonChild] = self.get_model("Child")  # type: ignore
         fields: dict[str, tuple[str, int]] = {
             "espacecate": {
+                # FIXME recalculate the width of the columns
                 "nom": ("Nom", 23),  # not "Nom de famille" ! (too long)
                 "prenom": ("", 20),
                 "classe": ("", 15),
@@ -159,7 +159,6 @@ class List(PDF):
                 "telephone": ("Téléphone", 35),
                 "email": ("Email", 55),
                 "bapteme": ("", 26),
-                "pardon": ("", 24),
                 "premiere_communion": ("", 27),
             },
             "aumonerie": {

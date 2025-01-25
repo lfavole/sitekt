@@ -8,6 +8,7 @@ from common.admin import (
     CommonDocumentCategoryAdmin,
     CommonGroupAdmin,
     CommonMeetingAdmin,
+    OldChildMixin,
 )
 from django.contrib import admin
 
@@ -21,6 +22,7 @@ from .models import (
     DocumentCategory,
     Group,
     Meeting,
+    OldChild,
 )
 
 
@@ -54,6 +56,7 @@ class ChildAdmin(CommonChildAdmin):
     Admin interface for childs of the espacecate app.
     """
 
+    other_model = OldChild
     list_display = ("nom", "prenom", "classe", "paye", "signe", "groupe")
     readonly_fields = ("date_inscription",)
     search_fields = ("nom", "prenom")
@@ -67,6 +70,14 @@ class ChildAdmin(CommonChildAdmin):
         "premiere_communion",
         "photos",
     )
+
+
+@admin.register(OldChild)
+class OldChildAdmin(OldChildMixin, CommonChildAdmin):
+    """
+    Admin interface for old children of the espacecate app.
+    """
+    other_model = Child
 
 
 class AttendancesInline(CommonAttendancesInline):
