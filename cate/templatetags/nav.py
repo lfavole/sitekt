@@ -101,7 +101,7 @@ def nav_link(context, value, label, notrans=""):
     if notrans == "":
         label = mark_safe(gettext(label))
     elif notrans == "arrow":
-        label = mark_safe('<span class="fleche fl-gauche"></span> ') + label
+        label = mark_safe('<span class="fleche fl-gauche"></span> ' + gettext(label))
     elif notrans == "notrans":
         label = mark_safe(label)
     else:

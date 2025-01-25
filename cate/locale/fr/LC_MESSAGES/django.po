@@ -51,10 +51,18 @@ msgstr "Gérer le compte"
 msgid "Please use the above links to set up your account."
 msgstr "Veuillez utiliser les liens ci-dessus pour configurer votre compte."
 
+#: cate/templates/allauth/layouts/base.html:13
+msgid "Return to the website"
+msgstr "Retour au site"
+
 #: cate/templates/allauth/layouts/base.html:19
 #: cate/templates/cate/site_base.html:18
 msgid "Log out"
 msgstr "Se déconnecter"
+
+#: cate/templates/allauth/layouts/base.html:35
+msgid "Sign up"
+msgstr "Création de compte"
 
 #: cate/templates/cate/404.html:4 cate/templates/cate/404.html:7
 msgid "Page not found"

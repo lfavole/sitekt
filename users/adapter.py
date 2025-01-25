@@ -12,7 +12,7 @@ from django.contrib.messages import info
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import resolve_url
 from django.template.loader import render_to_string as real_render_to_string
-from django.urls import resolve
+from django.urls import Resolver404, resolve
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -43,20 +43,24 @@ def patch(old):
 
         ret["GOOGLE_REDIRECT_URI"] = self.request.build_absolute_uri(resolve_url("google_callback"))
 
-        resolver_match = resolve(ret["redirect_field_value"])
-        if resolver_match.route.split("_")[0] == "inscription":
-            info(
-                self.request,
-                mark_safe(
-                    escape(
-                        _("Starting this year, you will need to create an account to register your child.")
-                        if Year.get_current().start_year <= 2024
-                        else _("You need to create an account to register your child.")
-                    )
-                    + "<br>"
-                    + escape(_("This will help us to simplify the registering process."))
-                ),
-            )
+        try:
+            resolver_match = resolve(ret["redirect_field_value"])
+        except Resolver404:
+            pass
+        else:
+            if resolver_match.route.split("_")[0] == "inscription":
+                info(
+                    self.request,
+                    mark_safe(
+                        escape(
+                            _("Starting this year, you will need to create an account to register your child.")
+                            if Year.get_current().start_year <= 2024
+                            else _("You need to create an account to register your child.")
+                        )
+                        + "<br>"
+                        + escape(_("This will help us to simplify the registering process."))
+                    ),
+                )
 
         return ret
 
