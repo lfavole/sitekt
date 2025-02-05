@@ -73,7 +73,8 @@ $(function() {
 {% endblock js %}
 
 {% block content %}
-<h1>Inscription</h1>
+<h1><a href="{% url "inscription" %}"><span class="fleche fl-gauche"></span></a>{% block h1 %}Inscription{% endblock h1 %}</h1>
+{% block before_form %}{% endblock before_form %}
 <form name="subscription" action="{% url "inscription" %}" method="post">
 	{% csrf_token %}
 	{{ form.as_fieldsets_with_numbers }}

@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from common.models import (
+    ClassesMixin,
     CommonArticle,
     CommonArticleImage,
     CommonAttendance,
@@ -47,7 +48,7 @@ class Child(CommonChild):
     A subscribed child.
     """
 
-    class Classes(models.TextChoices):
+    class Classes(ClassesMixin, models.TextChoices):
         PS = "PS", "Petite section"
         MS = "MS", "Moyenne section"
         GS = "GS", "Grande section"
@@ -57,9 +58,6 @@ class Child(CommonChild):
         CM1 = "CM1", "CM1"
         CM2 = "CM2", "CM2"
         AUTRE = "autre", "Autre"
-
-        def __lt__(self, other):
-            return self._sort_order_ < other._sort_order_
 
     classe = models.fields.TextField("Classe", choices=Classes.choices, max_length=5)
 

@@ -4,7 +4,17 @@
 
 {% block content %}
 <h1>Inscription</h1>
+{% if registered_children %}
+	<ul class="registered-children">
+		{% for child in registered_children %}
+			<li>{{ child }} a été inscrit</li>
+		{% endfor %}
+	</ul>
+{% endif %}
 <ul>
+	{% for child in children %}
+		<li><a href="{% url "inscription_ancien" child.app child.id %}">Réinscrire {{ child }}</a></li>
+	{% endfor %}
 	<li><a href="{% url "inscription_nouveau" %}">Nouvelle inscription</a></li>
 </ul>
 {% endblock %}

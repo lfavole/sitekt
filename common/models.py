@@ -1,5 +1,6 @@
 import base64
 import datetime as dt
+from functools import total_ordering
 import mimetypes
 from typing import Any, Callable, Type
 from urllib.parse import urlparse
@@ -346,6 +347,26 @@ class OldChildManager(models.Manager):
         return super().get_queryset().filter(year__lt=Year.get_current())
 
 
+@total_ordering
+class ClassesMixin:
+    """Common methods to the `Classes` enums."""
+    def __lt__(self, other):
+        return self._sort_order_ < other._sort_order_
+
+    def __getitem__(self, index):
+        if isinstance(index, int):
+            return type(self)(self._member_names_[index])
+        return super().__getitem__(index)
+
+    def __add__(self, count):
+        return type(self)(self._sort_order_ + self._member_names_[count])
+
+    def __sub__(self, other):
+        if isinstance(other, type(self)):
+            return self._sort_order_ - other._sort_order_
+        return type(self)(self._sort_order_ + self._member_names_[count])
+
+
 class CommonChild(models.Model):
     """
     Common child class for all apps.
@@ -416,6 +437,10 @@ class CommonChild(models.Model):
         verbose_name = _("child")
         ordering = ["nom", "prenom"]
         abstract = True
+
+    @property
+    def app(self):
+        return self._meta.app_label
 
     def __str__(self):
         return f"{self.prenom} {self.nom}"

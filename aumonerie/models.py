@@ -1,4 +1,5 @@
 from common.models import (
+    ClassesMixin,
     CommonArticle,
     CommonArticleImage,
     CommonAttendance,
@@ -41,7 +42,7 @@ class Child(CommonChild):
     A subscribed child.
     """
 
-    class Classes(models.TextChoices):
+    class Classes(ClassesMixin, models.TextChoices):
         SIXIEME = "6eme", "6ème"
         CINQUIEME = "5eme", "5ème"
         QUATRIEME = "4eme", "4ème"

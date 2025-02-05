@@ -9,8 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
-from django.http import FileResponse, HttpRequest, HttpResponseNotModified
-from django.shortcuts import redirect, render
+from django.http import FileResponse, Http404, HttpRequest, HttpResponseNotModified
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import http_date
 from django.utils.timezone import now
 from django.views import generic
@@ -40,9 +40,33 @@ def _encode_filename(filename: str):
 @login_required
 def subscription(request):
     children = []
-    children.extend(aumonerie.models.Child.objects.filter(user=request.user))
-    children.extend(espacecate.models.Child.objects.filter(user=request.user))
-    return render(request, "common/subscription.html", {"children": children})
+    children.extend(aumonerie.models.OldChild.objects.filter(user=request.user))
+    children.extend(espacecate.models.OldChild.objects.filter(user=request.user))
+
+    registered_children = []
+    registered_children.extend(aumonerie.models.Child.objects.filter(user=request.user))
+    registered_children.extend(espacecate.models.Child.objects.filter(user=request.user))
+
+    return render(request, "common/subscription.html", {"children": children, "registered_children": registered_children})
+
+
+def subscription_old(request, site, pk):
+    if site == "aumonerie":
+        app = aumonerie
+    elif site == "espacecate":
+        app = espacecate
+    else:
+        raise Http404
+    child = get_object_or_404(app.models.OldChild.objects.filter(user=request.user), id=pk)
+    if request.method == "POST":
+        form = SubscriptionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("inscription_ok")
+    else:
+        data = child.__dict__
+        form = SubscriptionForm(data)
+    return render(request, "common/subscription_old.html", {"child": child, "form": form})
 
 
 def subscription_new(request):
