@@ -1,0 +1,24 @@
+{% extends "admin/change_form.html" %}
+
+{% block after_related_objects %}
+    {{ block.super }}
+    <p id="present-count"></p>
+    <script>
+        window.addEventListener("DOMContentLoaded", function() {
+            var present_count = document.getElementById("present-count");
+            var children_checkboxes = document.querySelectorAll("#attendances-group .field-is_present input:not([name*=__prefix__])");
+            function updatePresentCount() {
+                var count = 0;
+                for (var checkbox of children_checkboxes) {
+                    if (checkbox.checked)
+                        count++;
+                }
+                present_count.textContent = count + " enfant" + (count > 1 ? "s" : "") + " présent" + (count > 1 ? "s" : "") + " sur " + children_checkboxes.length + ". Taux de présence : " + (count / children_checkboxes.length * 100).toFixed(2) + "%";
+            }
+            for (var checkbox of children_checkboxes) {
+                checkbox.addEventListener("change", updatePresentCount);
+            }
+            updatePresentCount();
+        });
+    </script>
+{% endblock after_related_objects %}

@@ -243,6 +243,7 @@ class CommonMeetingAdmin(admin.ModelAdmin):
     """
 
     change_list_template = "admin/change_list_meeting.html"
+    change_form_template = "admin/change_form_meeting.html"
 
     fields = ("date", "kind", "name")
     list_display = ("__str__", "date")
