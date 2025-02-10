@@ -6,6 +6,8 @@ from django.conf import settings
 
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages import add_message
+from django.contrib.messages.constants import WARNING
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
@@ -21,11 +23,13 @@ import espacecate
 
 from .forms import SubscriptionForm
 from .models import (
+    Classes,
     CommonArticle,
     CommonDate,
     CommonDocument,
     CommonDocumentCategory,
     Page,
+    Year,
 )
 
 
@@ -42,6 +46,7 @@ def subscription(request):
     children = []
     children.extend(aumonerie.models.OldChild.objects.filter(user=request.user))
     children.extend(espacecate.models.OldChild.objects.filter(user=request.user))
+    children = [child for child in children if child.can_register_again()]
 
     registered_children = []
     registered_children.extend(aumonerie.models.Child.objects.filter(user=request.user))
@@ -64,8 +69,18 @@ def subscription_old(request, site, pk):
             form.save()
             return redirect("inscription_ok")
     else:
-        data = child.__dict__
-        form = SubscriptionForm(data)
+        old_class = Classes(child.classe)
+        try:
+            child.classe = (Classes(child.classe) + (Year.get_current() - child.year)).value
+        except IndexError:
+            add_message(request, WARNING, f"Impossible de réinscrire {child} pour cette année scolaire.")
+            return redirect("inscription")
+
+        if old_class.changed_school(Classes(child.classe)):
+            child.ecole = None
+        child.redoublement = False
+        form = SubscriptionForm(child.__dict__)
+
     return render(request, "common/subscription_old.html", {"child": child, "form": form})
 
 

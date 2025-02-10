@@ -115,6 +115,25 @@ class Year(models.Model):
         return year
 
     @classmethod
+    def get(cls, start_year: int, save=False):
+        """
+        Return the year with the given start year.
+        """
+        year = cache.get(f"year_{start_year}")
+        if not year:
+            try:
+                year = cls.objects.get(start_year=start_year)
+            except (cls.DoesNotExist, DatabaseError):
+                ret = Year(start_year=dt.date.today().year,)
+                if save:
+                    ret.save()
+                else:
+                    warnings.warn(f"No Year object starting in {start_year}. Creating a fake object")
+                return ret
+            cache.set(f"year_{start_year}", year)
+        return year
+
+    @classmethod
     def get_current_pk(cls):
         return cls.get_current(True).pk
 
@@ -133,6 +152,14 @@ class Year(models.Model):
     @property
     def tr3(self):
         return (dt.date(self.end_year, 4, 1), dt.date(self.end_year, 7, 1))
+
+    def __sub__(self, other):
+        if isinstance(other, int):
+            return Year.get(self.start_year - other)
+        return self.start_year - other.start_year
+
+    def __add__(self, other):
+        return Year.get(self.start_year + other)
 
 
 class PageBase(models.Model):
@@ -331,7 +358,40 @@ class CommonGroup(models.Model):
         abstract = True
 
 
-class Classes(models.TextChoices):
+@total_ordering
+class ClassesMixin:
+    """Common methods to the `Classes` enums."""
+    def __lt__(self, other):
+        return self._sort_order_ < other._sort_order_
+
+    def __getitem__(self, index):
+        if isinstance(index, int):
+            return type(self)(self._hashable_values_[index])
+        return super().__getitem__(index)
+
+    def __add__(self, count):
+        return type(self)(self._hashable_values_[self._sort_order_ + count])
+
+    def __sub__(self, other):
+        if isinstance(other, type(self)):
+            return self._sort_order_ - other._sort_order_
+        return type(self)(self._hashable_values_[self._sort_order_ - count])
+
+    def changed_school(self, other):
+        """Return `True` if the child changed school between the two classes, `False` otherwise."""
+        groups = [
+            ("PS", "MS", "GS"),
+            ("CP", "CE1", "CE2", "CM1", "CM2"),
+            ("6eme", "5eme", "4eme", "3eme"),
+            ("2nde", "1ere", "terminale"),
+        ]
+        for group in groups:
+            if self in group and other in group:
+                return False
+        return True
+
+
+class Classes(ClassesMixin, models.TextChoices):
     PS = "PS", "Petite section"
     MS = "MS", "Moyenne section"
     GS = "GS", "Grande section"
@@ -349,9 +409,6 @@ class Classes(models.TextChoices):
     TERMINALE = "terminale", "Terminale"
     AUTRE = "autre", "Autre"
 
-    def __lt__(self, other):
-        return self._sort_order_ < other._sort_order_
-
 
 class ChildManager(models.Manager):
     """Manager for children. Returns only children for the current year (and the future years)."""
@@ -363,26 +420,6 @@ class OldChildManager(models.Manager):
     """Manager for old children. Returns only children for the previous years."""
     def get_queryset(self):
         return super().get_queryset().filter(year__lt=Year.get_current())
-
-
-@total_ordering
-class ClassesMixin:
-    """Common methods to the `Classes` enums."""
-    def __lt__(self, other):
-        return self._sort_order_ < other._sort_order_
-
-    def __getitem__(self, index):
-        if isinstance(index, int):
-            return type(self)(self._member_names_[index])
-        return super().__getitem__(index)
-
-    def __add__(self, count):
-        return type(self)(self._sort_order_ + self._member_names_[count])
-
-    def __sub__(self, other):
-        if isinstance(other, type(self)):
-            return self._sort_order_ - other._sort_order_
-        return type(self)(self._sort_order_ + self._member_names_[count])
 
 
 class CommonChild(models.Model):
@@ -466,6 +503,14 @@ class CommonChild(models.Model):
     @property
     def official_name(self):
         return f"{self.nom} {self.prenom}"
+
+    def can_register_again(self):
+        """Return `True` if the child can be registered again, `False` otherwise."""
+        try:
+            _ = self.Classes(self.classe) + (Year.get_current() - self.year)
+            return True
+        except IndexError:
+            return False
 
     sacraments_checks: dict[str, str] = {}
 
