@@ -1,6 +1,6 @@
 import mimetypes
 from pathlib import Path
-from typing import Literal, Type
+from typing import Any, Literal, Type
 from urllib.parse import quote
 from django.conf import settings
 
@@ -137,6 +137,12 @@ class CommonArticleListView(BaseView, generic.ListView):
     context_object_name = "articles"
     template_name = "common/articles.html"
 
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return {
+            **super().get_context_data(**kwargs),
+            "article_view": self.request.resolver_match.view_name.replace("articles", "article", 1),
+        }
+
 
 class CommonArticleView(BaseView, generic.DetailView):
     """
@@ -146,6 +152,12 @@ class CommonArticleView(BaseView, generic.DetailView):
     model: Type[CommonArticle]
     context_object_name = "article"
     template_name = "common/article.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return {
+            **super().get_context_data(**kwargs),
+            "article_list_view": self.request.resolver_match.view_name.replace("article", "articles", 1),
+        }
 
 
 class CommonDateListView(BaseView, generic.ListView):

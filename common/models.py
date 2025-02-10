@@ -1,7 +1,9 @@
 import base64
 import datetime as dt
 from functools import total_ordering
+import hashlib
 import mimetypes
+import re
 from typing import Any, Callable, Type
 from urllib.parse import urlparse
 import warnings
@@ -278,6 +280,22 @@ class CommonArticle(PageBase):
 
     date = models.fields.DateField(_("date"), default=now)
     hidden = models.fields.BooleanField(_("hidden article"), default=False)
+
+    @property
+    def thumbnail_url(self):
+        match = re.search(r"youtube.com/embed/([a-zA-Z0-9_-]+)", self.content)
+        if match:
+            return f"https://i.ytimg.com/vi/{match.group(1)}/mqdefault.jpg"
+
+        return None
+
+    @property
+    def gradient(self):
+        hash = hashlib.md5(self.title.encode()).digest()
+        angle = int.from_bytes(hash) % 360
+        first_color = int.from_bytes(hash[:4]) % 256
+        second_color = int.from_bytes(hash[4:8]) % 256
+        return f"linear-gradient({angle}deg, #{first_color:06x}, #{second_color:06x})"
 
     class Meta:
         verbose_name = _("article")

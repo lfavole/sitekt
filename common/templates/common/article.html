@@ -5,7 +5,7 @@
 {% block content %}
 <h1>
 	{# no spaces here, otherwise there is too much space between the arrow and the title #}
-	<a href="{% url "common:"|add:app|add:"_articles" %}"><span class="fleche fl-gauche"></span></a>{{ article.title }}
+	<a href="{% url article_list_view %}"><span class="fleche fl-gauche"></span></a>{{ article.title }}
 </h1>
 {{ article.content|safe }}
 {% endblock %}

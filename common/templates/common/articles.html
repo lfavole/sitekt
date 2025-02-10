@@ -6,11 +6,6 @@
 {% block page-title %}Articles{% endblock %}
 
 {% block content %}
-<style>
-li {
-	margin:10px 0;
-}
-</style>
 <h1>Articles / Photos</h1>
 {% comment %}
 The hidden articles are already removed from the pages with views.py.
@@ -18,17 +13,18 @@ If there is a hidden article, it means the user is an admin.
 {% endcomment %}
 {% if articles %}
 	{% define ""|school_year as current_school_year %}
-	<ul>
+	<div class="grid">
 	{% for article in articles %}
 	{% ifchanged %}
 	{% if article.date|school_year != current_school_year %}
-	<li class="soustitre">
-		Année {{ article.date|school_year }}
-	</li>
+	</div>
+	<h2>Année {{ article.date|school_year }}</h2>
+	<div class="grid">
 	{% endif %}
 	{% endifchanged %}
-	<li>
-		<a href="{% url app|add:":article" article.slug %}">
+	<a href="{% url article_view article.slug %}">
+		<img src="{{ article.thumbnail_url|default:"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" }}"{% if not article.thumbnail_url %} style="background-image:{{ article.gradient }}"{% endif %}>
+		<span>
 			{% define_addable as errors %}
 			{% if not article.content %}
 				{% define errors|add:"vide" as errors %}
@@ -44,10 +40,10 @@ If there is a hidden article, it means the user is an admin.
 			{% else %}
 				{{ article.title }}
 			{% endif %}
-		</a>
-	</li>
+		</span>
+	</a>
 	{% endfor %}
-	</ul>
+	</div>
 {% else %}
 	<p>Aucun article</p>
 {% endif %}

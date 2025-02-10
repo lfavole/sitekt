@@ -548,13 +548,29 @@ h6, h6::before, .h6::before {
 	background-color:#c5e1a5;
 }
 
-.soustitre, .soustitre a {
-	font-weight:bold;
-	color:red;
+div.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	grid-gap: 1em;
+	margin-bottom: 1em;
 }
-li.soustitre {
-	list-style-type:none;
-	margin:20px 0px 5px 0px;
+a:has(img):has(span) {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	border: 1px solid black;
+	border-radius: 1em;
+}
+a img {
+	border-radius: 1em 1em 0 0;
+	background-image: linear-gradient(90deg, #ede464, #fc9833);
+	aspect-ratio: 16/9;
+	object-fit: cover;
+}
+a span {
+	border-radius: 0 0 1em 1em;
+	background-color: #fff59d;
+	padding: 4px 8px;
 }
 
 table {
