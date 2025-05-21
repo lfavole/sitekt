@@ -194,7 +194,7 @@ DATABASES = {
     "default": dj_database_url.config(default=os.environ.get("POSTGRES_URL")),
 }
 
-ADMINS = [item.split(":", 1) for item in os.environ.get("ADMINS", "").split(",")]
+ADMINS = [(item.split(":", 1) if ":" in item else item) for item in os.environ.get("ADMINS", "").split(",")]
 
 DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ.get("SERVER_EMAIL", "") or os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
