@@ -18,12 +18,15 @@ class MinifyHtmlMiddleware:
         response = self.get_response(request)
         if self.should_minify(request, response):
             content = response.content.decode(response.charset)
-            response.content = minify_html.minify(  # type: ignore
-                content,
-                minify_css=True,
-                minify_js=True,
-                do_not_minify_doctype=True,
-            )
+            try:
+                content = minify_html.minify(  # type: ignore
+                    content,
+                    minify_css=True,
+                    minify_js=True,
+                )
+            except:
+                return response
+            response.content = content
             if "Content-Length" in response:
                 response["Content-Length"] = len(response.content)
         return response
