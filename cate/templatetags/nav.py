@@ -37,7 +37,7 @@ class NavItem:
             match = None
 
         def is_active(match, req_match):
-            if not match:
+            if not match or not req_match:
                 return False
 
             # check for view_class if as_view() is used multiple times:
