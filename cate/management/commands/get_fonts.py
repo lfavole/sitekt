@@ -15,6 +15,7 @@ class Command(BaseCommand):
             print("Downloading " + filename)
             url = BASE_URL + "/" + filename
             req = requests.get(url, stream=True)
+            FONTS.mkdir(parents=True, exist_ok=True)
             with open(FONTS / filename, "wb") as f:
                 for chunk in req.iter_content(64 * 1024):
                     print("#", end="")
