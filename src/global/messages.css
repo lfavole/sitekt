@@ -1,6 +1,6 @@
 /* Messages */
 ul.messagelist {
-    padding: 0;
+    padding: 0 8px;
     margin: 0;
     position: sticky;
     z-index: 40;
