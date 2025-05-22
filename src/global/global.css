@@ -1131,6 +1131,7 @@ input.link {
 	height:2px;
 	background-color:currentColor;
 	margin-left:0.3em;
+	padding:0;
 	border-radius:1px;
 }
 button [class^=fl] {
