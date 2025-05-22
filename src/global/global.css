@@ -1329,6 +1329,15 @@ span[class^="input-"] input[type=number] + select {
 	border-left:1px solid black;
 }
 
+.socialaccount-login button {
+	margin: 0;
+	padding: 0;
+	background: none;
+	border: none;
+	height: 3em;
+	vertical-align: middle;
+}
+
 .registered-children {
 	color: #388e3c;
 	list-style-type: none;

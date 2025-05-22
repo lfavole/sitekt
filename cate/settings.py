@@ -13,12 +13,14 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+from allauth.templatetags import allauth as allauth_templatetags
 from debug_toolbar.settings import PANELS_DEFAULTS
 from debug_toolbar.toolbar import DebugToolbar
 import dj_database_url
 from django.contrib.auth import password_validation as pw
 from django.contrib.sites.requests import RequestSite
 from django.http import HttpRequest
+from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.functional import lazy
@@ -252,6 +254,25 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     },
 }
+
+old_render = allauth_templatetags.ElementNode.render
+
+def new_render(self, context, *args, **kwargs):
+    # Call the original render, but intercept the context just before rendering
+    def new_render_to_string(template_names, ctx, *args, **kwargs):
+        csrf_token = context.get("csrf_token", None)
+        if csrf_token is not None:
+            ctx["csrf_token"] = csrf_token
+        return render_to_string(template_names, ctx, *args, **kwargs)
+
+    allauth_templatetags.render_to_string = new_render_to_string
+    try:
+        return old_render(self, context, *args, **kwargs)
+    finally:
+        # Restore original function to avoid side effects
+        allauth_templatetags.render_to_string = render_to_string
+
+allauth_templatetags.ElementNode.render = new_render
 
 SITE_NAME = "Site du caté"
 
