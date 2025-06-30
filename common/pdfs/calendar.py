@@ -10,6 +10,7 @@ from fpdf.enums import Align, XPos, YPos
 from cate.abbreviation import abbreviation
 
 from ..models import Year
+from .holidays import get_holidays
 from . import PDF
 
 HERE = Path(__file__).resolve()
@@ -131,19 +132,11 @@ class Calendar(PDF):
         day_width = day_height + 1
         weekday_width = day_height
 
-        from_iso = datetime.date.fromisoformat
-
         special_dates = DateContainer()
         special_dates.easter_date = easter(start_year + 1)
 
-        with open(DATA / "fr_holidays.json") as f:
-            holidays_list: list[tuple[str, str, str]] = json.load(f)
-            for date in holidays_list:
-                special_dates.add_holidays(
-                    date[0],
-                    from_iso(date[1]),
-                    from_iso(date[2]),
-                )
+        for date in get_holidays(start_year):
+            special_dates.add_holidays(date[0], date[1], date[2])
 
         special_dates.add_ferie("Assomption", datetime.date(start_year, 8, 15), False)
         special_dates.add_ferie("Toussaint", datetime.date(start_year, 11, 1))

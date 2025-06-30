@@ -52,9 +52,6 @@ class Authorization(PDF):
 
         self.is_form_at_top = True
 
-        # self.add_font("Montserrat", "", str(DATA / "fonts/Montserrat-Regular.ttf"))
-        # self.add_font("Montserrat", "B", str(DATA / "fonts/Montserrat-Bold.ttf"))
-
         self.set_margin(7)
         self.set_auto_page_break(False)
 

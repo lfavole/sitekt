@@ -6,7 +6,6 @@ from django.conf import settings
 
 from django.core.management.base import BaseCommand
 
-from .get_fonts import Command as GetFonts
 from .utils import run_in_thread
 
 
@@ -51,9 +50,6 @@ class Command(BaseCommand):
         run_in_thread(compile_translations)()
         print("Collecting static files...")
         run_command_in_thread([*manage, "collectstatic", "--noinput", "--clear", "-v", "1"], check=True)
-
-        print("Getting fonts...")
-        run_in_thread(GetFonts().handle)()
 
         print("Creating the cache tables...")
         run_command_in_thread([*manage, "createcachetable"], check=True)

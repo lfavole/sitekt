@@ -18,6 +18,7 @@ from fpdf.table import Cell, Row
 
 from cate.utils.text import slugify
 
+from .fonts import get_montserrat_font
 from ..models import Year
 
 HERE = Path(__file__).resolve()
@@ -277,14 +278,8 @@ class PDF(FPDF):
 
     def set_font(self, family=None, style="", size=0) -> None:
         self._in_set_font = True
-        styles = {
-            "": "Regular",
-            "B": "Bold",
-            "I": "Italic",
-            "BI": "BoldItalic",
-        }
 
-        key_style = "".join(c for c in style.upper() if c in "BI")
+        key_style = "".join(c for c in str(style).upper() if c in "BI")
         key_family = (family or self.font_family).lower()  # don't use the property above
         if key_family == "":
             key_family = "montserrat"
@@ -294,7 +289,7 @@ class PDF(FPDF):
                 self.add_font(
                     key_family,
                     key_style,  # type: ignore
-                    str(DATA / f"fonts/Montserrat-{styles[key_style]}.ttf"),
+                    get_montserrat_font(key_style),
                 )
 
         super().set_font(key_family, style, size)
