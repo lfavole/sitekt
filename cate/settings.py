@@ -17,6 +17,7 @@ from allauth.templatetags import allauth as allauth_templatetags
 from debug_toolbar.settings import PANELS_DEFAULTS
 from debug_toolbar.toolbar import DebugToolbar
 import dj_database_url
+from django import VERSION as django_version
 from django.contrib.auth import password_validation as pw
 from django.contrib.sites.requests import RequestSite
 from django.http import HttpRequest
@@ -197,6 +198,13 @@ DATABASES = {
 }
 
 ADMINS = [(item.split(":", 1) if ":" in item else item) for item in os.environ.get("ADMINS", "").split(",")]
+# Fix admins setting format for Django < 5.3
+if django_version[:2] < (5, 3):
+    ADMINS = [
+        (email.split("@")[0], email)
+        for email in ADMINS
+        if isinstance(email, str)
+    ]
 
 DEFAULT_FROM_EMAIL = SERVER_EMAIL = os.environ.get("SERVER_EMAIL", "") or os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
