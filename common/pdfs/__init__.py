@@ -321,13 +321,10 @@ class PDF(FPDF):
     filename: str
 
     @classmethod
-    def as_view(cls):
+    def as_view(cls, app):
         def view(request: HttpRequest):
             from ..views import _encode_filename  # avoid circular import
 
-            app = request.resolver_match.app_name if request.resolver_match else ""
-            if not app:
-                raise RuntimeError("Could not determine app to render the PDF")
             pdf = cls()
             pdf.app = app  # type: ignore
             pdf.request = request  # type: ignore

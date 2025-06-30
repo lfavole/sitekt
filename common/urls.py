@@ -37,7 +37,10 @@ for app in ("espacecate", "aumonerie"):
         if not callable(view):
             view = getattr(importlib.import_module(f"{app}.views"), view)
             if hasattr(view, "as_view"):
-                view = view.as_view()
+                try:
+                    view = view.as_view()
+                except TypeError:
+                    view = view.as_view(app)
         urlpatterns.append(path(route, view, name=f"{app}_{name}"))
 
 urlpatterns += [

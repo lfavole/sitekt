@@ -16,12 +16,12 @@ from django.shortcuts import get_object_or_404
 from .models import Article, Date, Document
 
 
-authorization = Authorization.as_view()
-calendar = Calendar.as_view()
-dates_list = DatesList.as_view()
-list = List.as_view()
-quick_list = QuickList.as_view()
-meetings = Meetings.as_view()
+authorization = Authorization.as_view("espacecate")
+calendar = Calendar.as_view("espacecate")
+dates_list = DatesList.as_view("espacecate")
+list = List.as_view("espacecate")
+quick_list = QuickList.as_view("espacecate")
+meetings = Meetings.as_view("espacecate")
 
 
 class ArticleListView(CommonArticleListView):
