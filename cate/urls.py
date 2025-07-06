@@ -51,6 +51,7 @@ urlpatterns = [
     path("debug/", include("debug_toolbar.urls")),
     path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name="export"),
     path("google<str:id>.html", views.google),
+    path("import/", views.import_, name="import"),
     path("old/", include("old_website.urls")),
     path("robots.txt", views.robots),
     path(

@@ -64,7 +64,6 @@ GITHUB_WEBHOOK_KEY = os.environ.get("GITHUB_WEBHOOK_KEY")
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
     "django.contrib.admindocs",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -89,7 +88,8 @@ INSTALLED_APPS = [
     "calendrier_avent_2023",
     "calendrier_avent_2024",
     "old_website",
-    # allauth (for template overridding)
+    # admin and allauth (for template overridding)
+    "django.contrib.admin",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",

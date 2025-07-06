@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+<li>
+    <a href="{% url "export" "json" cl.opts.app_label cl.opts.model_name "all" %}">Tout exporter</a>
+</li>
+<li>
+    <a href="{% url "import" %}">Importer</a>
+</li>
+{{ block.super }}
+{% endblock %}
