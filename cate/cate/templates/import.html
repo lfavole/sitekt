@@ -1,0 +1,14 @@
+{% extends "cate/site_base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% trans "Import backups" %}</h1>
+<p>{% trans "You can use the following form to import backups." %}</p>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p>
+        <input type="submit" value="OK">
+    </p>
+</form>
+{% endblock content %}

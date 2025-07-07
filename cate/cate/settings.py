@@ -50,7 +50,6 @@ GITHUB_WEBHOOK_KEY = custom_settings.GITHUB_WEBHOOK_KEY
 # Application definition
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
     "django.contrib.admindocs",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -74,6 +73,8 @@ INSTALLED_APPS = [
     "calendrier_avent_2023",
     "calendrier_avent_2024",
     "old_website",
+    # admin (for template overridding)
+    "django.contrib.admin",
     "django_cleanup",  # must be placed last
 ]
 

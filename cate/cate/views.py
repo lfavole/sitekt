@@ -5,6 +5,7 @@ import mimetypes
 import sys
 from hashlib import sha1
 from ipaddress import ip_address, ip_network
+from itertools import chain
 from pathlib import Path
 from typing import Type
 from urllib.parse import quote, urlparse
@@ -15,7 +16,8 @@ from common.views import _encode_filename, has_permission
 from django.apps import apps
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.core.serializers import get_serializer
+from django.core.serializers import deserialize, get_serializer, _serializers
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import (
     FileResponse,
     Http404,
@@ -40,6 +42,9 @@ from . import context_processors as cps
 
 DATA = settings.DATA
 
+DjangoJSONEncoder.item_separator = ","
+DjangoJSONEncoder.key_separator = ":"
+
 fetch_cache = None
 
 
@@ -59,13 +64,10 @@ def get_fetch_function():
 
 
 def export(request, format: str, app_label: str, model_name: str, elements_pk: str):
-    # Run the operations that don't need the database first
     pk_list = None if elements_pk == "all" else elements_pk.split(",")
     serializer = get_serializer(format)()
 
-    # import this now because it is assigned during serializers loading
-    from django.core.serializers import _serializers
-
+    # Determine file extension
     for ext, module in _serializers.items():
         if module.__name__ == serializer.__module__:
             extension = ext
@@ -75,35 +77,48 @@ def export(request, format: str, app_label: str, model_name: str, elements_pk: s
     if extension == "python":
         extension = "py"
 
-    content_type = get_object_or_404(ContentType, app_label=app_label, model=model_name)
-    model = content_type.model_class()
+    if app_label == "all" and model_name == "all":
+        # Export all models from all apps
+        all_models = apps.get_models()
+    elif model_name == "all":
+        # Export all models from a given app
+        all_models = apps.get_app_config(app_label).get_models()
+    else:
+        # Export a single model as before
+        all_models = [get_object_or_404(ContentType, app_label=app_label, model=model_name).model_class()]
 
-    if not model:
+    all_querysets = []
+    for model in all_models:
+        # Exclude some auto-generated models
+        if model._meta.label.lower() in (
+            "admin.logentry",
+            "auth.permission",
+            "contenttypes.contenttype",
+            "easy_thumbnails.source",
+            "easy_thumbnails.thumbnail",
+            "sessions.session",
+        ):
+            continue
+        if not has_permission(request, model):
+            continue
+        queryset = model.objects.all()
+        if pk_list:
+            queryset = queryset.filter(pk__in=pk_list)
+        all_querysets.append(queryset)
+
+    if not all_querysets:
         raise Http404
 
-    # Check for permission
-    if not has_permission(request, model):
-        if not settings.DEBUG:
-            raise Http404
-        return HttpResponseForbidden("Permission denied.")
-
-    queryset = model.objects.all()
-    if pk_list:
-        queryset = queryset.filter(pk__in=pk_list)
-    if model.__name__.lower() == "meeting":
-        queryset2 = apps.get_model(model._meta.app_label, "Attendance").objects.filter(meeting__in=queryset)
-        queryset = list(queryset) + list(queryset2)
-    if not isinstance(queryset, list):
-        queryset = list(queryset)
-
+    filename = f"export_{app_label}_{model_name}_{dt.datetime.now().strftime('%Y%m%d_%H%M%S')}.{extension}"
     response = HttpResponse()
-
-    date = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"export_{content_type.app_label}_{content_type.model}_{date}.{extension}"
-    response.headers["Content-Type"] = mimetypes.guess_type(f"x.{extension}")[0]  # type: ignore
-    response.headers["Content-Disposition"] = "attachment; " + _encode_filename(filename)  # type: ignore
-
-    serializer.serialize(queryset, stream=response)
+    response.headers["Content-Type"] = mimetypes.guess_type(f"x.{extension}")[0]
+    response.headers["Content-Disposition"] = "attachment; " + _encode_filename(filename)
+    serializer.serialize(
+        chain.from_iterable(list(qs) for qs in all_querysets),
+        stream=response,
+        use_natural_foreign_keys=True,
+        use_natural_primary_keys=True,
+    )
     return response
 
 
