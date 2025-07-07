@@ -18,6 +18,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.serializers import deserialize, get_serializer, _serializers
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import (
     FileResponse,
     Http404,
@@ -43,6 +44,9 @@ from .management.commands.fetch import Command as Fetch
 from . import context_processors as cps
 
 DATA = settings.DATA
+
+DjangoJSONEncoder.item_separator = ","
+DjangoJSONEncoder.key_separator = ":"
 
 
 def export(request, format: str, app_label: str, model_name: str, elements_pk: str):
