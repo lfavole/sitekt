@@ -12,3 +12,4 @@ static/**
 data/**
 venv*/**
 .env
+uv.lock
