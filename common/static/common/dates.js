@@ -79,9 +79,9 @@ $(function() {
         updateDisplay();
     });
     // Add it at the correct spot (after the last .past)
-    $(".dates table tr.past:last").after(pastSeparator);
+    $("main table tr.past:last").after(pastSeparator);
 
-    $(".dates table").addClass("colored");
+    $("main table").addClass("colored");
 
     updateDisplay();
 });

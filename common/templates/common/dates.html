@@ -34,48 +34,49 @@ var categorySlugs = {
 
 {% block content %}
 <h1>Dates importantes</h1>
-<div class="dates">
-    <div class="filters"></div>
+<p class="filters"></p>
+<p>
+    Dates pour les catégories sélectionnées :
     <add-to-calendar-button url="{% url "dates_ics" %}"></add-to-calendar-button>
     <a class="pdf-link" href="{% url "liste_dates" %}" target="_blank">Télécharger en PDF</a>
-    <table cellspacing="0">
-        <tr>
-            <th>{% translate "date"|capfirst %}</th>
-            <th>{% translate "time"|capfirst %}</th>
-            <th>{% translate "name"|capfirst %}</th>
-            <th>{% translate "place"|capfirst %}</th>
+</p>
+<table cellspacing="0">
+    <tr>
+        <th>{% translate "date"|capfirst %}</th>
+        <th>{% translate "time"|capfirst %}</th>
+        <th>{% translate "name"|capfirst %}</th>
+        <th>{% translate "place"|capfirst %}</th>
+    </tr>
+    {% for date in dates %}
+        {% define_addable as classes %}
+        {% if date.is_past %}
+            {% define classes|add:"past" as classes %}
+        {% endif %}
+        {% if date.is_current %}
+            {% define classes|add:"current" as classes %}
+        {% endif %}
+        {% if date.cancelled %}
+            {% define classes|add:"cancelled" as classes %}
+        {% endif %}
+        <tr class="{{ classes|join:" " }}" data-ids="{% for category in date.categories.all %}{{ category.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
+            <td>
+                {{ date.start_date|format_date:date.end_date }}
+            </td>
+            <td>
+                {% if date.time_text %}
+                    {{ date.time_text }}
+                {% else %}
+                    {{ date.start_time|date:"G:i" }}
+                    {% if date.end_time %} – {{ date.end_time|date:"G:i" }}{% endif %}
+                {% endif %}
+            </td>
+            <td>{{ date.name }}</td>
+            <td>{{ date.place }}</td>
         </tr>
-        {% for date in dates %}
-            {% define_addable as classes %}
-            {% if date.is_past %}
-                {% define classes|add:"past" as classes %}
-            {% endif %}
-            {% if date.is_current %}
-                {% define classes|add:"current" as classes %}
-            {% endif %}
-            {% if date.cancelled %}
-                {% define classes|add:"cancelled" as classes %}
-            {% endif %}
-            <tr class="{{ classes|join:" " }}" data-ids="{% for category in date.categories.all %}{{ category.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
-                <td>
-                    {{ date.start_date|format_date:date.end_date }}
-                </td>
-                <td>
-                    {% if date.time_text %}
-                        {{ date.time_text }}
-                    {% else %}
-                        {{ date.start_time|date:"G:i" }}
-                        {% if date.end_time %} – {{ date.end_time|date:"G:i" }}{% endif %}
-                    {% endif %}
-                </td>
-                <td>{{ date.name }}</td>
-                <td>{{ date.place }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="4">Aucune date pour le moment...</td>
-            </tr>
-        {% endfor %}
-    </table>
-</div>
+    {% empty %}
+        <tr>
+            <td colspan="4">Aucune date pour le moment...</td>
+        </tr>
+    {% endfor %}
+</table>
 {% endblock %}
