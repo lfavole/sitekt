@@ -117,16 +117,24 @@ class Occurrence:
 
 
 def dates_ics(request):
+    categories = DateCategory.objects.all()
+    categories_query = [category for category in request.GET.get("categories", "").split(",") if category]
+    if categories_query:
+        categories = categories.filter(slug__in=categories_query)
     occurrences = [
         Occurrence(date)
         for date
-        in Date.objects.filter(categories__slug__in=request.GET.get("categories", "").split(",")).distinct()
+        in Date.objects.filter(categories__in=categories).distinct()
     ]
 
     now = datetime.datetime.now()
 
     cal = ICalendar()
-    cal.calendar_name = "Calendrier caté"
+    cal.calendar_name = (
+        "Toutes les dates"
+        if not categories_query
+        else ", ".join(category.title for category in categories)
+    )
     cal.description = cal.calendar_name
     cal.add("PRODID", f"-//Secteur paroissial de l'Embrunais et du Savinois//Espace caté {Year.get_current().formatted_year} (https://github.com/lfavole/sitekt)//")
     cal.add("VERSION", "2.0")

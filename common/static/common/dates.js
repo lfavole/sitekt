@@ -60,12 +60,14 @@ $(function() {
         pastSeparator.toggle(filteredPastCount > 0);
         pastSeparator.find("a").text(label + " (" + filteredPastCount + ")");
 
+        var categoriesParameter = allSelected ? "" : selectedCategories.map(category => categorySlugs[category]).join(",");
+
         var calendarURL = new URL($("add-to-calendar-button").attr("url"), location.href);
-        calendarURL.searchParams.set("categories", selectedCategories.map(category => categorySlugs[category]).join(","));
+        calendarURL.searchParams.set("categories", categoriesParameter);
         $("add-to-calendar-button").attr("url", calendarURL + "");
 
         var pdfURL = new URL($(".pdf-link").attr("href"), location.href);
-        pdfURL.searchParams.set("categories", selectedCategories.map(category => categorySlugs[category]).join(","));
+        pdfURL.searchParams.set("categories", categoriesParameter);
         $(".pdf-link").attr("href", pdfURL + "");
     }
 
