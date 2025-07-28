@@ -100,7 +100,6 @@ ul.messagelist li.error {
 
 ul.messagelist li::before {
     background-position: center;
-    background-size: contain;
     background-repeat: no-repeat;
 }
 /* Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com

@@ -130,7 +130,10 @@ def import_(request):
                 format = file.name.split(".")[-1]
                 objs_with_deferred_fields = []
 
-                for obj in deserialize(format, file, handle_forward_references=True):
+                # Evaluate each object to avoid an inconsistent database state
+                objs = [*deserialize(format, file, handle_forward_references=True)]
+
+                for obj in objs:
                     obj.save()
                     if obj.deferred_fields is not None:
                         objs_with_deferred_fields.append(obj)

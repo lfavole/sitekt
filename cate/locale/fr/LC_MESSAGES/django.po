@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-09 18:05+0100\n"
+"POT-Creation-Date: 2025-07-27 14:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 "Votre mot de passe ne doit pas avoir été trouvé dans une faille de sécurité "
 "majeure."
 
-#: cate/settings.py:325
+#: cate/settings.py:355
 msgid ""
 "You must first create the article, then insert the image. Don't worry, the "
 "image will be uploaded after reloading."
@@ -51,18 +51,10 @@ msgstr "Gérer le compte"
 msgid "Please use the above links to set up your account."
 msgstr "Veuillez utiliser les liens ci-dessus pour configurer votre compte."
 
-#: cate/templates/allauth/layouts/base.html:13
-msgid "Return to the website"
-msgstr "Retour au site"
-
 #: cate/templates/allauth/layouts/base.html:19
 #: cate/templates/cate/site_base.html:18
 msgid "Log out"
 msgstr "Se déconnecter"
-
-#: cate/templates/allauth/layouts/base.html:35
-msgid "Sign up"
-msgstr "Création de compte"
 
 #: cate/templates/cate/404.html:4 cate/templates/cate/404.html:7
 msgid "Page not found"
@@ -115,6 +107,14 @@ msgstr "Compte"
 msgid "Log in"
 msgstr "Se connecter"
 
+#: cate/templates/import.html:5
+msgid "Import backups"
+msgstr "Importer des sauvegardes"
+
+#: cate/templates/import.html:6
+msgid "You can use the following form to import backups."
+msgstr "Vous pouvez utiliser le formulaire suivant pour importer des sauvegardes."
+
 #: cate/templatetags/join_last.py:9
 msgid ", "
 msgstr ", "
@@ -123,12 +123,12 @@ msgstr ", "
 msgid "and"
 msgstr "et"
 
-#: cate/views.py:143
+#: cate/views.py:188
 msgid "You have the permission to view the error details!"
 msgstr "Vous avez la permission de voir les détails de l'erreur !"
 
 #. Translators: %(djdt)s is the DjDT logo
-#: cate/views.py:146
+#: cate/views.py:191
 #, python-format
 msgid ""
 "Open the debug toolbar (%(djdt)s at top-right) and click on the Error tab."

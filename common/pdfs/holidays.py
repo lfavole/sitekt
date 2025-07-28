@@ -1,7 +1,9 @@
 import datetime as dt
+from functools import lru_cache
 
 import requests
 
+@lru_cache
 def get_holidays(start_year) -> list[tuple[str, dt.date, dt.date]]:
     req = requests.get(
         "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/records",

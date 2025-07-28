@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import DatabaseError, models
 from django.db.models import Manager
-from django.urls import Resolver404, reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from cate import settings
@@ -297,7 +297,7 @@ class Page(PageBase):
         if len(self.content) < 100 and self.content[0] != "<":
             try:
                 return reverse(self.content)
-            except Resolver404:
+            except NoReverseMatch:
                 pass
 
         return reverse("page", kwargs={"slug": self.slug})

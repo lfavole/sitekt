@@ -130,7 +130,7 @@ class GitHubClient:
 
     @property
     def api_data(self) -> dict[str, Any]:
-        if os.environ.get("OFFLINE"):
+        if os.environ.get("OFFLINE") or not os.environ.get("GITHUB_REPO"):
             return {}
 
         if time() - self._data[0] < 60 and self._data[1]:

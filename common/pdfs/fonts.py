@@ -3,7 +3,11 @@ from pathlib import Path
 
 import requests
 
+_fonts_paths: dict[str, Path] = {}
+
 def get_montserrat_font(style: str):
+    if style in _fonts_paths and _fonts_paths[style].exists():
+        return _fonts_paths[style]
     styles = {
         "": "Regular",
         "B": "Bold",
@@ -16,4 +20,5 @@ def get_montserrat_font(style: str):
     req.raise_for_status()
     file = tempfile.mktemp(".ttf")
     Path(file).write_bytes(req.content)
+    _fonts_paths[style] = file
     return file

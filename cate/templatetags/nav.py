@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 
 from django import template
-from django.shortcuts import resolve_url
-from django.urls import NoReverseMatch, Resolver404, resolve, reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
@@ -32,8 +31,8 @@ class NavItem:
         href = page.get_absolute_url()
 
         try:
-            match = resolve(href) if href != "#" else None
-        except Resolver404:
+            match = reverse(href) if href != "#" else None
+        except NoReverseMatch:
             match = None
 
         def is_active(match, req_match):
@@ -92,7 +91,7 @@ def nav(context):
 @register.simple_tag(takes_context=True)
 def nav_link(context, value, label, notrans=""):
     try:
-        value = resolve_url(value)
+        value = reverse(value)
     except NoReverseMatch:
         return ""
     if not value:

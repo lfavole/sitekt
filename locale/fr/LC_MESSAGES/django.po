@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-29 15:41+0200\n"
+"POT-Creation-Date: 2025-07-27 14:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,14 +18,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: aumonerie/models.py:92 espacecate/models.py:90
+#: aumonerie/models.py:92 espacecate/models.py:87
 msgid "old child"
 msgstr "ancien enfant"
 
-#: aumonerie/models.py:93 espacecate/models.py:91
+#: aumonerie/models.py:93 espacecate/models.py:88
 msgid "old children"
 msgstr "anciens enfants"
 
-#: aumonerie/models.py:115 espacecate/models.py:112
+#: aumonerie/models.py:109 espacecate/models.py:103
 msgid "kind"
 msgstr "type"
+
+#: calendrier_avent_2023/models.py:36 calendrier_avent_2024/models.py:35
+msgid "Day"
+msgstr "Jour"
+
+#: calendrier_avent_2023/models.py:39 calendrier_avent_2024/models.py:38
+msgid "day image"
+msgstr "image de jour"
+
+#: calendrier_avent_2023/models.py:40 calendrier_avent_2024/models.py:39
+msgid "day images"
+msgstr "images de jour"
