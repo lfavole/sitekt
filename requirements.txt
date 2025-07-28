@@ -10,6 +10,7 @@ django-debug-toolbar ~= 4.2
 docutils ~= 0.21
 easy-thumbnails ~= 2.10
 fpdf2 ~= 2.8
+icalendar ~= 6.3
 minify-html ~= 0.11
 python-dateutil ~= 2.9
 python-dotenv ~= 1.0

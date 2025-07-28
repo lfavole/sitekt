@@ -1,3 +1,4 @@
+import datetime
 import mimetypes
 from pathlib import Path
 from typing import Any, Literal, Type
@@ -11,12 +12,13 @@ from django.contrib.messages.constants import WARNING
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
-from django.http import FileResponse, Http404, HttpRequest, HttpResponseNotModified
+from django.http import FileResponse, Http404, HttpRequest, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.http import http_date
+from django.utils.http import content_disposition_header, http_date
 from django.utils.timezone import now
 from django.views import generic
 from django.views.static import was_modified_since
+from icalendar import Alarm, Calendar as ICalendar, Event
 
 import aumonerie
 import espacecate
@@ -25,12 +27,18 @@ from .forms import SubscriptionForm
 from .models import (
     Classes,
     CommonArticle,
-    CommonDate,
     CommonDocument,
     CommonDocumentCategory,
+    Date,
+    DateCategory,
     Page,
     Year,
 )
+from .pdfs.calendar import Calendar
+from .pdfs.dates_list import DatesList
+
+calendar = Calendar.as_view("")
+dates_list = DatesList.as_view("")
 
 
 def _encode_filename(filename: str):
@@ -93,6 +101,81 @@ def subscription_new(request):
     else:
         form = SubscriptionForm()
     return render(request, "common/subscription_new.html", {"form": form})
+
+
+class Occurrence:
+    def __init__(self, event: Date):
+        self.event = event
+
+    @property
+    def start(self) -> datetime.datetime:
+        return self.event.start
+
+    @property
+    def end(self) -> datetime.datetime | None:
+        return self.event.end
+
+
+def dates_ics(request):
+    occurrences = [
+        Occurrence(date)
+        for date
+        in Date.objects.filter(categories__slug__in=request.GET.get("categories", "").split(",")).distinct()
+    ]
+
+    now = datetime.datetime.now()
+
+    cal = ICalendar()
+    cal.calendar_name = "Calendrier caté"
+    cal.description = cal.calendar_name
+    cal.add("PRODID", f"-//Secteur paroissial de l'Embrunais et du Savinois//Espace caté {Year.get_current().formatted_year} (https://github.com/lfavole/sitekt)//")
+    cal.add("VERSION", "2.0")
+    cal.add("X-WR-CALNAME", cal.calendar_name)
+    cal.add("X-WR-CALDESC", cal.calendar_name)
+
+    for i, occurrence in enumerate(occurrences, start=1):
+        event = Event()
+        event.add("summary", occurrence.event.name)
+        event.add("DTSTAMP", now)
+        event.uid = f"{occurrence.event.pk}_{i}"
+        event.start = occurrence.start
+
+        # Default to 1 hour duration, will not trigger on all-day events (1 hour < 1 day)
+        event.end = occurrence.end or occurrence.start + datetime.timedelta(hours=1)
+
+        # Add reminders
+        # Reminder 1: 1 day before at 5 PM
+        alarm1 = Alarm()
+        alarm1.add("action", "DISPLAY")
+        alarm1.add("description", f'"{occurrence.event.name}" commence demain' + (f" à {occurrence.start.time()}" if isinstance(occurrence.start, datetime.datetime) else ""))
+        # 1 day before at 5 PM
+        alarm1.TRIGGER = datetime.datetime.combine(occurrence.start, datetime.time(17, 0, 0)) - datetime.timedelta(days=1)
+        event.add_component(alarm1)
+
+        # Reminder 2: 15 minutes before (only if not an all-day event)
+        if isinstance(occurrence.start, datetime.datetime):
+            alarm2 = Alarm()
+            alarm2.add("action", "DISPLAY")
+            alarm2.add("description", f'"{occurrence.event.name}" commence dans 15 minutes')
+            # 15 minutes before
+            alarm2.add("trigger", occurrence.start - datetime.timedelta(minutes=15))
+            event.add_component(alarm2)
+
+        cal.add_component(event)
+
+    cal.add_missing_timezones()
+
+    # Add filename
+    return HttpResponse(
+        cal.to_ical(),
+        content_type="text/calendar",
+        headers={
+            "Content-Disposition": content_disposition_header(
+                True,
+                "dates_" + now.strftime("%Y%m%d_%H%M%S") + ".ics"
+            ),
+        },
+    )
 
 
 def has_permission_for_view(view: generic.View, permission="view"):
@@ -175,14 +258,22 @@ class CommonArticleView(BaseView, generic.DetailView):
         }
 
 
-class CommonDateListView(BaseView, generic.ListView):
+class DateListView(BaseView, generic.ListView):
     """
     View for a date list.
     """
 
-    model: Type[CommonDate]
+    model = Date
     context_object_name = "dates"
     template_name = "common/dates.html"
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("categories")
+
+    def get_context_data(self, **kwargs):
+        ret = super().get_context_data(**kwargs)
+        ret["categories"] = DateCategory.objects.all()
+        return ret
 
 
 class CommonDocumentListView(BaseView, generic.ListView):

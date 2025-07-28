@@ -4,7 +4,6 @@ from common.models import (
     CommonArticleImage,
     CommonAttendance,
     CommonChild,
-    CommonDate,
     CommonDocument,
     CommonDocumentCategory,
     CommonGroup,
@@ -93,12 +92,6 @@ class OldChild(Child):
         verbose_name = _("old child")
         verbose_name_plural = _("old children")
         proxy = True
-
-
-class Date(CommonDate):
-    """
-    Date on `aumonerie` app.
-    """
 
 
 class Meeting(CommonMeeting):

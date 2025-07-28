@@ -8,6 +8,8 @@ from django.http.request import HttpRequest
 from common.models import (
     CommonArticle,
     CommonArticleImage,
+    Date,
+    DateCategory,
     ImageBase,
     Page,
     PageImage,
@@ -23,6 +25,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
 from tinymce.widgets import AdminTinyMCE
 
+from .forms import DateForm
 from .models import CommonAttendance, CommonChild, Year
 
 admin.site.site_title = "Administration site du caté"
@@ -229,23 +232,21 @@ class OldChildMixin:
     """
 
 
-class CommonDateAdmin(admin.ModelAdmin):
+@admin.register(Date)
+class DateAdmin(admin.ModelAdmin):
     """
     Admin interface for dates.
     """
 
     list_display = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
-    fields = (
-        "name",
-        "short_name",
-        "place",
-        "start_date",
-        "end_date",
-        "start_time",
-        "end_time",
-        "time_text",
-        "cancelled",
-    )
+    form = DateForm
+
+
+@admin.register(DateCategory)
+class DateCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
+    """
+    Admin interface for date categories.
+    """
 
 
 class CommonAttendancesInline(admin.TabularInline):

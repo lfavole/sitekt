@@ -2,127 +2,80 @@
 {% load define %}
 {% load format_date %}
 {% load i18n %}
+{% load static %}
 {% load urls %}
 
 {% block page-title %}Dates importantes{% endblock %}
 
-{% block content %}
-<h1>
-	Dates importantes
-	{% if dates %}
-	<small>
-		(voir <a href="{% url_for_app "calendrier" %}" target="_blank">le calendrier récapitulatif</a>
-		- <a href="{% url_for_app "dates" %}" target="_blank">la liste des dates en PDF</a>)
-	</small>
-	{% endif %}
-</h1>
-{% if dates %}
-<style>
-.dates {
-	text-align:center;
-    display:block;
-    overflow-x:auto;
-}
-tr:nth-child(2n+1) {
-	background-color:#eee;
-}
-body.mode-nuit tr:nth-child(2n+1) {
-	background-color:#666;
-}
-tr:first-child {
-	background-color:#ffab91 !important;
-	font-weight:bold;
-}
-.current {
-    animation: current-date 1s ease-in-out infinite;
-}
-@keyframes current-date {
-    0%, 100% {
-        background-color: #fff9c4;
-    }
-    50% {
-        background-color:#ffeb3b;
-    }
-}
-.separation td {
-	padding:0;
-	background-color:#ffe082;
-}
-.separation a {
-	color:unset;
-	text-decoration:none;
-	display:block;
-	width:100%;
-	height:100%;
-	padding:0 1em;
-}
-</style>
-<script>
-$(function() {
-	$(".separation.show a").click(function(e) {
-		e.preventDefault();
-		$(".past").show();
-		$(".separation.show").hide();
-		$(".separation.hide").show();
-	});
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static "common/dates.css" %}">
+{% endblock css %}
 
-	$(".separation.hide a").click(function(e) {
-		e.preventDefault();
-		$(".past").hide();
-		$(".separation.hide").hide();
-		$(".separation.show").show();
-	}).click();
-});
+{% block js %}
+{{ block.super }}
+<script src="{% url "javascript-catalog" %}"></script>
+<script>
+var categories = [{% for category in categories %}{{ category.id }}{% if not forloop.last %},{% endif %}{% endfor %}];
+var categoryNames = {
+    {% for category in categories %}
+        {{ category.id }}: "{{ category.title|escapejs }}",
+    {% endfor %}
+};
+var categorySlugs = {
+    {% for category in categories %}
+        {{ category.id }}: "{{ category.slug|escapejs }}",
+    {% endfor %}
+};
 </script>
-{% define 0 as has_past %}
-{% define 0 as sep_shown %}
+<script src="{% static "common/add-to-calendar-button.js" %}"></script>
+<script src="{% static "common/dates.js" %}"></script>
+{% endblock js %}
+
+{% block content %}
+<h1>Dates importantes</h1>
 <div class="dates">
-<table cellspacing="0">
-	<tr>
-		<th>{% translate "date"|capfirst %}</th>
-		<th>{% translate "time"|capfirst %}</th>
-		<th>{% translate "name"|capfirst %}</th>
-		<th>{% translate "place"|capfirst %}</th>
-	</tr>
-	{% for date in dates %}
-	{% define_addable as classes %}
-	{% if date.is_past %}
-		{% define 1 as has_past %}
-		{% define classes|add:"past" as classes %}
-	{% elif has_past and not sep_shown %}
-		<tr class="separation show">
-			<td colspan="4"><a href="#">{% translate "Show past dates" %}</a></td>
-		</tr>
-		<tr class="separation hide">
-			<td colspan="4"><a href="#">{% translate "Hide past dates" %}</a></td>
-		</tr>
-		{% define 1 as sep_shown %}
-	{% endif %}
-	{% if date.is_current %}
-		{% define classes|add:"current" as classes %}
-	{% endif %}
-	{% if date.cancelled %}
-		{% define classes|add:"cancelled" as classes %}
-	{% endif %}
-	<tr class="{{ classes|join:" " }}">
-		<td>
-			{{ date.start_date|format_date:date.end_date }}
-		</td>
-		<td>
-			{% if date.time_text %}
-				{{ date.time_text }}
-			{% else %}
-				{{ date.start_time|date:"G:i" }}
-				{% if date.end_time %} – {{ date.end_time|date:"G:i" }}{% endif %}
-			{% endif %}
-		</td>
-		<td>{{ date.name }}</td>
-		<td>{{ date.place }}</td>
-	</tr>
-	{% endfor %}
-</table>
+    <div class="filters"></div>
+    <add-to-calendar-button url="{% url "dates_ics" %}"></add-to-calendar-button>
+    <a class="pdf-link" href="{% url "liste_dates" %}" target="_blank">Télécharger en PDF</a>
+    <table cellspacing="0">
+        <tr>
+            <th>{% translate "date"|capfirst %}</th>
+            <th>{% translate "time"|capfirst %}</th>
+            <th>{% translate "name"|capfirst %}</th>
+            <th>{% translate "place"|capfirst %}</th>
+        </tr>
+        {% for date in dates %}
+            {% define_addable as classes %}
+            {% if date.is_past %}
+                {% define classes|add:"past" as classes %}
+            {% endif %}
+            {% if date.is_current %}
+                {% define classes|add:"current" as classes %}
+            {% endif %}
+            {% if date.cancelled %}
+                {% define classes|add:"cancelled" as classes %}
+            {% endif %}
+            <tr class="{{ classes|join:" " }}" data-ids="{% for category in date.categories.all %}{{ category.id }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                <td>
+                    {{ date.start_date|format_date:date.end_date }}
+                </td>
+                <td>
+                    {% if date.time_text %}
+                        {{ date.time_text }}
+                    {% else %}
+                        {{ date.start_time|date:"G:i" }}
+                        {% if date.end_time %} – {{ date.end_time|date:"G:i" }}{% endif %}
+                    {% endif %}
+                </td>
+                <td>{{ date.name }}</td>
+                <td>{{ date.place }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">Aucune date pour le moment...</td>
+            </tr>
+        {% endfor %}
+    </table>
 </div>
-{% else %}
-	<p>Aucune date pour le moment...</p>
-{% endif %}
 {% endblock %}

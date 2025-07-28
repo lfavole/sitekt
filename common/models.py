@@ -162,15 +162,13 @@ class Year(models.Model):
         return Year.get(self.start_year + other)
 
 
-class PageBase(models.Model):
+class HasSlug(models.Model):
     """
-    Base class for pages and articles.
+    Base class for models that have a slug.
     """
 
     slug = models.fields.SlugField(_("slug"), max_length=100, unique=True, editable=False)
     title = models.fields.CharField(_("title"), max_length=100)
-    content = models.fields.TextField(_("content"), blank=True)
-    hidden = models.fields.BooleanField(_("hidden page"), default=False)
 
     class Meta:
         abstract = True
@@ -194,6 +192,24 @@ class PageBase(models.Model):
         if self._state.adding and not self.slug:
             self.slug = self._generate_slug()
 
+        super().save(*args, **kwargs)
+
+    def __str__(self):  # pylint: disable=E0307
+        return self.title
+
+
+class PageBase(HasSlug):
+    """
+    Base class for pages and articles.
+    """
+
+    content = models.fields.TextField(_("content"), blank=True)
+    hidden = models.fields.BooleanField(_("hidden page"), default=False)
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
         self._write_base64_images()
@@ -610,7 +626,20 @@ class CommonChild(models.Model):
     )
 
 
-class CommonDate(models.Model):
+class DateCategory(HasSlug):
+    """
+    Category for dates.
+    """
+
+    order = models.PositiveIntegerField(_("order"), default=0, null=False)
+
+    class Meta:
+        verbose_name = _("date category")
+        verbose_name_plural = _("date categories")
+        ordering = ["order"]
+
+
+class Date(models.Model):
     start_date = models.fields.DateField(_("start date"))
     end_date = models.fields.DateField(_("end date"), blank=True, null=True)
     start_time = models.fields.TimeField(_("start time"), blank=True, null=True)
@@ -622,11 +651,13 @@ class CommonDate(models.Model):
     short_name = models.fields.CharField(_("short name"), max_length=50, blank=True)
     place = models.fields.CharField(_("place"), max_length=100, blank=True)
     cancelled = models.fields.BooleanField(_("cancelled"))
+    categories = models.ManyToManyField(
+        DateCategory, verbose_name=_("Categories"), blank=True, related_name="dates", related_query_name="date",
+    )
 
     class Meta:
         verbose_name = _("date")
         ordering = ["start_date", "start_time"]
-        abstract = True
 
     def clean(self):
         if self.end_date and self.start_date > self.end_date:

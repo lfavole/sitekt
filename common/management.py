@@ -2,6 +2,38 @@ from django.apps import AppConfig
 from django.db import DEFAULT_DB_ALIAS
 
 
+def create_date_categories(
+    app_config: AppConfig,
+    verbosity=2,
+    using=DEFAULT_DB_ALIAS,
+    **_kwargs,
+):
+    """
+    Automatically creates the default date categories.
+    """
+    if app_config.name != "common":
+        return
+
+    DateCategory = app_config.get_model("DateCategory")  # type: ignore
+
+    date_categories_in_db = list(DateCategory.objects.all())
+    if date_categories_in_db:
+        if verbosity >= 2:
+            print("Some date categories are already in the database, skipping")
+        return
+
+    date_categories = [
+        DateCategory(title="Éveil à la foi"),
+        DateCategory(title="Caté"),
+        DateCategory(title="Aumônerie collège"),
+        DateCategory(title="Aumônerie lycée"),
+    ]
+    for date_category in date_categories:
+        if verbosity >= 2:
+            print(f"Adding date category '{date_category}'")
+        date_category.save()
+
+
 def create_pages(
     app_config: AppConfig,
     verbosity=2,
@@ -29,10 +61,10 @@ def create_pages(
             content="<h1>Bienvenue sur le site du caté !</h1>",
         ),
         Page(title="Inscription", content="inscription"),
+        Page(title="Dates importantes", content="dates"),
     ]
 
     for view, title in {
-        "dates": "Dates importantes",
         "documents": "Documents téléchargeables",
         "articles": "Articles / Photos",
     }.items():
@@ -61,10 +93,6 @@ def create_pages(
         pages = other_pages
 
         for page in pages_to_save:
-            if any(page_in_db.slug == page.slug for page_in_db in pages_in_db):
-                if verbosity >= 2:
-                    print(f"Page '{page}' already exists")
-                continue
             if verbosity >= 2:
                 print(f"Adding page '{page}'")
             page.save()
@@ -85,5 +113,5 @@ def create_year(
     Year = app_config.get_model("Year")  # type: ignore
 
     if verbosity >= 2:
-        print(f"Saving current year '{current_year}'")
+        print("Saving current year")
     Year.get_current(True)

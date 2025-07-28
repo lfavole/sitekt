@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Literal
 
-from common.views import has_permission  # noqa
 from django.apps import apps
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponse
@@ -305,6 +304,8 @@ class PDF(FPDF):
                 self.x, self.y = x, y
 
     def get_model(self, model: str):
+        from common.views import has_permission  # noqa
+
         ret = apps.get_model(self.app, model)  # type: ignore
         if not has_permission(self.request, ret):  # type: ignore
             raise PermissionDenied
@@ -329,7 +330,7 @@ class PDF(FPDF):
             ret.headers["Content-Type"] = "application/pdf"  # type: ignore
 
             datetime = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"{app}_" + normalize_filename(pdf.filename).removesuffix(".pdf") + f"_{datetime}.pdf"
+            filename = (f"{app}_" if app else "") + normalize_filename(pdf.filename).removesuffix(".pdf") + f"_{datetime}.pdf"
             disposition = "attachment" if bool(request.GET.get("dl")) else "inline"
             ret.headers["Content-Disposition"] = f"{disposition}; {_encode_filename(filename)}"  # type: ignore
             return ret

@@ -29,7 +29,7 @@ class PagesSitemap(Sitemap):
     priority = 1
 
     def changefreq(self, obj):
-        return "daily" if obj.content in ("aumonerie_dates", "espacecate_dates") else "weekly"
+        return "daily" if obj.content == "dates" else "weekly"
 
     def items(self):
         return [item for item in get_queryset(PageView) if item.get_absolute_url() != "#"]

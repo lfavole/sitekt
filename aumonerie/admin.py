@@ -3,7 +3,6 @@ from common.admin import (
     CommonArticleImagesInline,
     CommonAttendancesInline,
     CommonChildAdmin,
-    CommonDateAdmin,
     CommonDocumentAdmin,
     CommonDocumentCategoryAdmin,
     CommonGroupAdmin,
@@ -17,7 +16,6 @@ from .models import (
     ArticleImage,
     Attendance,
     Child,
-    Date,
     Document,
     DocumentCategory,
     Group,
@@ -111,11 +109,4 @@ class DocumentAdmin(CommonDocumentAdmin):
 class DocumentCategoryAdmin(CommonDocumentCategoryAdmin):
     """
     Admin interface for document categories of the aumonerie app.
-    """
-
-
-@admin.register(Date)
-class DateAdmin(CommonDateAdmin):
-    """
-    Admin interface for dates of the aumonerie app.
     """

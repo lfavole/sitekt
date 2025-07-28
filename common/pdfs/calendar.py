@@ -9,7 +9,7 @@ from fpdf.enums import Align, XPos, YPos
 
 from cate.abbreviation import abbreviation
 
-from ..models import Year
+from ..models import Date, Year
 from .holidays import get_holidays
 from . import PDF
 
@@ -155,11 +155,6 @@ class Calendar(PDF):
         special_dates.add_easter_ferie("Ascension", 39)
         special_dates.add_easter_date("Pentecôte", 49)
         special_dates.add_easter_ferie("Lundi de Pentecôte", 50, False)
-
-        if app == "espacecate":
-            from espacecate.models import Date
-        elif app == "aumonerie":
-            from aumonerie.models import Date
 
         for date in Date.objects.all():
             special_dates.add_date(

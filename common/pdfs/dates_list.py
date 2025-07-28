@@ -1,6 +1,7 @@
+import datetime
 from typing import Literal
 
-from common.models import CommonDate
+from common.models import Date
 from django.http import HttpRequest
 from django.template.defaultfilters import capfirst, date
 from django.utils.translation import gettext_lazy as _
@@ -16,25 +17,30 @@ class DatesList(PDF):
     filename = "liste_dates"
 
     def render(self, app: Literal["espacecate", "aumonerie"], request: HttpRequest):
+        from ..views import Occurrence
+
         title = "Dates importantes"
 
-        if app == "espacecate":
-            from espacecate.models import Date
-        elif app == "aumonerie":
-            from aumonerie.models import Date
-
-        def get(element: CommonDate, key: str) -> str:
+        def get(element: Occurrence, key: str) -> str:
             if key == "date":
-                return format_date(element.start_date, element.end_date)
+                return format_date(element.start.date(), None if element.start.date() == element.end.date() else element.end.date())
 
             if key == "time":
-                if element.time_text:
-                    return element.time_text
-                return date(element.start_time, "G:i") + (
-                    " - " + date(element.end_time, "G:i") if element.end_time else ""
+                if element.event.time_text:
+                    return element.event.time_text
+                if not isinstance(element.start, datetime.datetime) or element.start.time() == datetime.time.min:
+                    return ""
+                return date(element.start.time(), "G:i") + (
+                    " - " + date(element.end.time(), "G:i") if isinstance(element.end, datetime.datetime) else ""
                 )
 
-            return getattr(element, key)
+            if key == "name":
+                return element.event.name
+
+            if key == "place":
+                return element.event.place
+
+            raise ValueError(f"Invalid key: {key}")
 
         columns = {
             "date": capfirst(_("date")),
@@ -43,9 +49,15 @@ class DatesList(PDF):
             "place": capfirst(_("place")),
         }
 
+        occurrences = [
+            Occurrence(date)
+            for date
+            in Date.objects.filter(categories__slug__in=request.GET.get("categories", "").split(",")).distinct()
+        ]
+
         table_data = [
             [*columns.values()],
-            *([get(date, column) for column in columns] for date in Date.objects.all()),
+            *([get(occurrence, column) for column in columns] for occurrence in occurrences),
         ]
 
         self.add_page()

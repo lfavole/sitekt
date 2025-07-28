@@ -2,10 +2,12 @@ import copy
 
 from django import forms
 from django.db import models
+from django.forms import CheckboxSelectMultiple
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 
 from .fields import DisplayedHTMLField
-from .models import Classes, CommonChild, Year
+from .models import Classes, CommonChild, Date, Year
 
 
 class BooleanField(forms.BooleanField):
@@ -172,3 +174,29 @@ for title, data in SubscriptionForm.Meta.fieldsets:
                 field_obj = field.formfield(**kwargs)
                 field_obj.label = SubscriptionForm.Meta.labels.get(field_name, field_obj.label)
                 SubscriptionForm.base_fields[field.name] = field_obj
+
+
+class DateForm(forms.ModelForm):
+    class Meta:
+        model = Date
+        fields = (
+            "name",
+            "short_name",
+            "place",
+            "start_date",
+            "end_date",
+            "start_time",
+            "end_time",
+            "time_text",
+            "cancelled",
+            "categories",
+        )
+        widgets = {
+            "categories": CheckboxSelectMultiple,
+        }
+
+    def clean_categories(self):
+        categories = self.cleaned_data.get("categories")
+        if not categories:
+            raise forms.ValidationError(_("At least one category must be selected."))
+        return categories
