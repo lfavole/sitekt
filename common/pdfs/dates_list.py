@@ -1,7 +1,7 @@
 import datetime
 from typing import Literal
 
-from common.models import Date
+from common.models import Date, DateCategory, Year
 from django.http import HttpRequest
 from django.template.defaultfilters import capfirst, date
 from django.utils.translation import gettext_lazy as _
@@ -19,7 +19,15 @@ class DatesList(PDF):
     def render(self, app: Literal["espacecate", "aumonerie"], request: HttpRequest):
         from ..views import Occurrence
 
-        title = "Dates importantes"
+        categories = DateCategory.objects.all()
+        categories_query = [category for category in request.GET.get("categories", "").split(",") if category]
+        if categories_query:
+            categories = categories.filter(slug__in=categories_query)
+        title = (
+            f"Toutes les dates importantes {Year.get_current().formatted_year}"
+            if not categories_query
+            else f"Dates importantes {Year.get_current().formatted_year} : " + ", ".join(category.title for category in categories)
+        )
 
         def get(element: Occurrence, key: str) -> str:
             if key == "date":
@@ -52,7 +60,7 @@ class DatesList(PDF):
         occurrences = [
             Occurrence(date)
             for date
-            in Date.objects.filter(categories__slug__in=request.GET.get("categories", "").split(",")).distinct()
+            in Date.objects.filter(categories__in=categories).distinct()
         ]
 
         table_data = [
@@ -62,8 +70,8 @@ class DatesList(PDF):
 
         self.add_page()
 
-        with self.use_font_face(FontFace(emphasis="B", size_pt=28)):
-            self.cell(0, 12, title, align=Align.C, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        with self.use_font_face(FontFace(emphasis="B", size_pt=20)):
+            self.multi_cell(0, 8, title, align=Align.C, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         self.ln(self.font_size)
 
         Table(
