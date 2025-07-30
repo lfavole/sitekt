@@ -1,19 +1,60 @@
 {% extends "cate/site_base.html" %}
+{% load static %}
 
 {% block page-title %}Inscription{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script src="{% static "common/subscription.js" %}"></script>
+{% endblock js %}
 
 {% block content %}
 <h1>Inscription</h1>
 {% if registered_children %}
+	<h2>Enfants inscrits</h2>
 	<ul class="registered-children">
 		{% for child in registered_children %}
-			<li>{{ child }} a été inscrit</li>
+			<li>
+				{{ child }} a été inscrit·e
+				<br>
+				<span class="{{ child.paye|yesno:"ok,error" }}">
+					{% if child.paye %}
+						Payé
+					{% else %}
+						Non payé
+					{% endif %}
+				</span>
+				<br>
+				<span class="{{ child.signe|yesno:"ok,error" }}">
+					{% if child.signe %}
+						Signé
+					{% else %}
+						Non signé
+					{% endif %}
+				</span>
+				{% if not child.signe %}
+					· <a
+						class="pdf-link"
+						href="{% url "autorisation" %}?0={{ child.pk }}"
+						target="_blank"
+						{% if child.has_two_parents %}data-needs-parent-type{% endif %}
+					>Autorisation</a>
+				{% endif %}
+			</li>
 		{% endfor %}
 	</ul>
+	<form action="{% url "inscription" %}" method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<p>
+			<input type="submit" value="OK">
+		</p>
+	</form>
 {% endif %}
+<h2>Enfants à inscrire</h2>
 <ul>
 	{% for child in children %}
-		<li><a href="{% url "inscription_ancien" child.app child.id %}">Réinscrire {{ child }}</a></li>
+		<li><a href="{% url "inscription_ancien" child.id %}">Réinscrire {{ child }}</a></li>
 	{% endfor %}
 	<li><a href="{% url "inscription_nouveau" %}">Nouvelle inscription</a></li>
 </ul>

@@ -11,7 +11,7 @@ from fpdf.drawing import color_from_hex_string
 from fpdf.enums import AccessPermission, Align, XPos, YPos
 from fpdf.fonts import FontFace
 
-from ..models import CommonChild, Year
+from ..models import Child, Year
 from . import PDF, Table
 
 
@@ -19,7 +19,7 @@ class List(PDF):
     MARKDOWN_LINK_COLOR = color_from_hex_string("#0d47a1")
 
     lines: dict[str, int] = {}
-    Child: Type[CommonChild]
+    Child: Type[Child]
 
     def __init__(self, *args, **kwargs):
         super().__init__("L", *args, **kwargs)
@@ -50,7 +50,7 @@ class List(PDF):
     def classes(self):
         return list(self.classes_dict.keys())
 
-    def get_mother_father(self, element: CommonChild, key: str):
+    def get_mother_father(self, element: Child, key: str):
         real_key = "tel" if key == "telephone" else key
         ret = []
         for parent in ("mere", "pere"):
@@ -78,7 +78,7 @@ class List(PDF):
         "confirmation": ("date", "lieu"),
     }
 
-    def get_sacrament(self, element: CommonChild, key: str):
+    def get_sacrament(self, element: Child, key: str):
         if not getattr(element, key):
             return "Non"
 
@@ -197,7 +197,7 @@ class List(PDF):
         self.add_page()
         self.set_font("Montserrat", "", 8)
 
-        def get(element: CommonChild, key: str) -> str:
+        def get(element: Child, key: str) -> str:
             if key in ("telephone", "email"):
                 return self.get_mother_father(element, key)
 

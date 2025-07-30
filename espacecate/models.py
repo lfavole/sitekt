@@ -1,79 +1,34 @@
-from datetime import datetime
+import datetime
 
 from common.models import (
-    ClassesMixin,
-    CommonArticle,
-    CommonArticleImage,
-    CommonAttendance,
-    CommonChild,
-    CommonDocument,
-    CommonDocumentCategory,
-    CommonGroup,
-    CommonMeeting,
+    Attendance as CommonAttendance,
+    Child as CommonChild,
+    ChildManager,
+    items_for,
+    Meeting as CommonMeeting,
     OldChildManager,
 )
-from django.db import models
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-
-class Article(CommonArticle):
-    """
-    Article on `espacecate` app.
-    """
-
-    def get_absolute_url(self):
-        return reverse("espacecate_article", args=[self.slug])
-
-
-class ArticleImage(CommonArticleImage):
-    """
-    Article image on `espacecate` app.
-    """
-
-
 def get_current_year():
-    return datetime.now().year
-
-
-class Group(CommonGroup):
-    """
-    Group on `espacecate` app.
-    """
+    return datetime.date.today().year
 
 
 class Child(CommonChild):
     """
     A subscribed child.
     """
-
-    class Classes(ClassesMixin, models.TextChoices):
-        PS = "PS", "Petite section"
-        MS = "MS", "Moyenne section"
-        GS = "GS", "Grande section"
-        CP = "CP", "CP"
-        CE1 = "CE1", "CE1"
-        CE2 = "CE2", "CE2"
-        CM1 = "CM1", "CM1"
-        CM2 = "CM2", "CM2"
-        AUTRE = "autre", "Autre"
-
-    classe = models.fields.TextField("Classe", choices=Classes.choices, max_length=5)
-
-    communion_cette_annee = models.BooleanField("Communion cette année", default=False)
-
-    fieldsets = [
-        *CommonChild.fieldsets,
-        (
-            "Espace administrateur",
-            {"fields": ("communion_cette_annee", *CommonChild.admin_fields)},
-        ),
-    ]
+    objects = items_for("espacecate", ChildManager)
 
     sacraments_checks = {
         "bapteme": "du baptême",
         "premiere_communion": "de la première communion",
     }
+
+    class Meta:
+        verbose_name = _("child")
+        verbose_name_plural = _("children")
+        proxy = True
 
 
 class OldChild(Child):
@@ -81,7 +36,7 @@ class OldChild(Child):
     Old child on `espacecate` app.
     """
 
-    objects = OldChildManager()
+    objects = items_for("espacecate", OldChildManager)
 
     class Meta:
         verbose_name = _("old child")
@@ -93,45 +48,17 @@ class Meeting(CommonMeeting):
     """
     Meeting on `espacecate` app.
     """
+    objects = items_for("espacecate")
 
-    class Kind(models.TextChoices):
-        CATE = "KT", "Rencontre de caté"
-        EVF = "EVF", "Rencontre d'éveil à la foi"
-        TEMPS_FORT = "TF", "Temps fort"
-        MESSE_FAMILLES = "MF", "Messe des familles"
-
-    kind = models.CharField(_("kind"), max_length=5, blank=True, choices=Kind.choices)
-
-    def get_childs(self):
-        """
-        Returns all the `Childs` that match the kind of this `Meeting`.
-        """
-        kind = self.kind
-        objs = Child.objects.all()
-
-        if kind == Meeting.Kind.CATE:
-            groups_ok = ["Giang", "Eliane", "Carine"]
-            return objs.filter(groupe__name__in=groups_ok)
-
-        if kind == Meeting.Kind.EVF:
-            return objs.filter(groupe__name="EVF")
-
-        return objs
+    class Meta:
+        proxy = True
 
 
 class Attendance(CommonAttendance):
     """
     Attendance on `espacecate` app.
     """
+    objects = items_for("espacecate")
 
-
-class DocumentCategory(CommonDocumentCategory):
-    """
-    Document category on `espacecate` app.
-    """
-
-
-class Document(CommonDocument):
-    """
-    Document on `espacecate` app.
-    """
+    class Meta:
+        proxy = True

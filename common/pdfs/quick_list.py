@@ -8,7 +8,7 @@ from django.utils.crypto import get_random_string
 from fpdf.enums import AccessPermission, Align, XPos, YPos
 from fpdf.fonts import FontFace
 
-from ..models import CommonChild, Year
+from ..models import Child, Year
 from . import PDF, Cell, Table
 
 
@@ -94,7 +94,7 @@ class CustomTable(Table):
 
 class QuickList(PDF):
     lines: dict[str, int] = {}
-    Child: Type[CommonChild]
+    Child: Type[Child]
 
     def __init__(self, *args, **kwargs):
         super().__init__("P", *args, **kwargs)

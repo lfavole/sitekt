@@ -2,7 +2,7 @@ import re
 from datetime import date
 from typing import Type
 
-from common.models import CommonArticle
+from common.models import Article
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -55,7 +55,7 @@ def _old_slugify(text):
 
 
 def redirect_articles(request, app):
-    not_found = HttpResponsePermanentRedirect(resolve_url(app + ":articles"))
+    not_found = HttpResponsePermanentRedirect(resolve_url("articles"))
 
     id = _old_slugify(request.GET.get("id", ""))
 
@@ -63,7 +63,6 @@ def redirect_articles(request, app):
         # avoid hitting the database for a short ID that doesn't exist
         return not_found
 
-    Article: Type[CommonArticle] = apps.get_model(app, "Article")  # type: ignore
     # get only old articles
     articles = Article.objects.filter(date__lt=date(2023, 8, 1))
 

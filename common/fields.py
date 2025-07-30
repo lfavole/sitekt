@@ -79,3 +79,21 @@ class DisplayedHTMLField(forms.Field):
 
     def validate(self, _value):
         pass
+
+
+# must allow for custom choices and serialize to the selected choices, newline-separated
+# use a CheckboxSelectMultiple widget to display the choices
+class CustomMultipleChoiceField(forms.MultipleChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs["widget"] = forms.CheckboxSelectMultiple
+        super().__init__(*args, **kwargs)
+
+    def prepare_value(self, value):
+        if isinstance(value, str):
+            return value.splitlines()
+        return super().prepare_value(value)
+
+    def to_python(self, value):
+        if isinstance(value, str):
+            return value.splitlines()
+        return super().to_python(value)

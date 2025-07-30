@@ -1,51 +1,17 @@
 from common.admin import (
-    CommonArticleAdmin,
-    CommonArticleImagesInline,
     CommonAttendancesInline,
     CommonChildAdmin,
-    CommonDocumentAdmin,
-    CommonDocumentCategoryAdmin,
-    CommonGroupAdmin,
     CommonMeetingAdmin,
     OldChildMixin,
 )
 from django.contrib import admin
 
 from .models import (
-    Article,
-    ArticleImage,
     Attendance,
     Child,
-    Document,
-    DocumentCategory,
-    Group,
     Meeting,
     OldChild,
 )
-
-
-class ArticleImagesInline(CommonArticleImagesInline):
-    """
-    Inline for article images of the aumonerie app.
-    """
-
-    model = ArticleImage
-
-
-@admin.register(Article)
-class ArticleAdmin(CommonArticleAdmin):
-    """
-    Admin interface for articles of the espacecate app.
-    """
-
-    inlines = [ArticleImagesInline]
-
-
-@admin.register(Group)
-class GroupAdmin(CommonGroupAdmin):
-    """
-    Admin interface for groups of the espacecate app.
-    """
 
 
 @admin.register(Child)
@@ -93,17 +59,3 @@ class MeetingAdmin(CommonMeetingAdmin):
     """
 
     inlines = [AttendancesInline]
-
-
-@admin.register(Document)
-class DocumentAdmin(CommonDocumentAdmin):
-    """
-    Admin interface for documents of the espacecate app.
-    """
-
-
-@admin.register(DocumentCategory)
-class DocumentCategoryAdmin(CommonDocumentCategoryAdmin):
-    """
-    Admin interface for document categories of the espacecate app.
-    """

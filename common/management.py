@@ -34,6 +34,30 @@ def create_date_categories(
         date_category.save()
 
 
+def create_groups(
+    app_config: AppConfig,
+    verbosity=2,
+    using=DEFAULT_DB_ALIAS,
+    **_kwargs,
+):
+    """
+    Automatically creates the default groups.
+    """
+    from .models import Group
+
+    groups = [
+        Group(name="Éveil à la foi", app="espacecate", classes="ps\nms\ngs\ncp"),
+        Group(name="Caté", app="espacecate", classes="ce1\nce2\ncm1\ncm2"),
+        Group(name="Aumônerie collège", app="aumonerie", classes="6eme\n5eme\n4eme\n3eme"),
+        Group(name="Aumônerie lycée", app="aumonerie", classes="2nde\n1ere\nterminale"),
+    ]
+    Group.objects.using(using).bulk_create(groups, ignore_conflicts=True)
+
+    if verbosity >= 2:
+        for group in groups:
+            print(f"Adding group '{group}'")
+
+
 def create_pages(
     app_config: AppConfig,
     verbosity=2,
@@ -62,6 +86,8 @@ def create_pages(
         ),
         Page(title="Inscription", content="inscription"),
         Page(title="Dates importantes", content="dates"),
+        Page(title="Documents téléchargeables", content="documents"),
+        Page(title="Articles / Photos", content="articles"),
     ]
 
     for view, title in {

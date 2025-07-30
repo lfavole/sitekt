@@ -16,9 +16,9 @@ from fpdf.enums import (
 )
 
 from ..models import (  # pylint: disable=E0402
-    CommonChild,
-    CommonGroup,
-    CommonMeeting,
+    Child,
+    Group,
+    Meeting,
     Year,
 )
 from . import PDF
@@ -28,7 +28,7 @@ class Meetings(PDF):
     MARKDOWN_LINK_COLOR = color_from_hex_string("#0d47a1")
 
     lines: dict[str, int] = {}
-    Child: Type[CommonChild]
+    Child: Type[Child]
 
     def __init__(self, *args, **kwargs):
         super().__init__("L", *args, **kwargs)
@@ -71,10 +71,9 @@ class Meetings(PDF):
 
         Meeting: Type[CommonMeeting] = self.get_model("Meeting")  # type: ignore
         self.Meeting = Meeting
-        Group: Type[CommonGroup] = self.get_model("Group")  # type: ignore
 
         meetings = list(Meeting.objects.prefetch_related("attendances"))
-        groups: list[CommonGroup | None] = list(Group.objects.all())  # type: ignore
+        groups: list[Group | None] = list(Group.objects.all())  # type: ignore
         groups.append(None)  # all groups
 
         meetings_for_tr: defaultdict[tuple[date, date], list[CommonMeeting]] = defaultdict(list)
@@ -93,7 +92,7 @@ class Meetings(PDF):
         with self.local_context(font_size=10):
             self.cell(0, self.font_size, message, align=Align.C)
 
-    def render_group(self, tr_n, group, meetings: list[CommonMeeting]):
+    def render_group(self, tr_n, group, meetings: list[Meeting]):
         self.add_page()
         group_name = str(group) if group else "Tous les groupes"
         with self.local_context(font_style="BU", font_size=28):
@@ -113,7 +112,7 @@ class Meetings(PDF):
 
         # the set removes duplicate elements
         # for the order: see sorted() 5 lines below
-        childs: Iterable[CommonChild] = set()
+        childs: Iterable[Child] = set()
         for meeting in meetings:
             childs_for_meeting: set[CommonChild] = {att.child for att in meeting.attendances.all()}  # type: ignore
             if group:

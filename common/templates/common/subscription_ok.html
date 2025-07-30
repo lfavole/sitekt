@@ -1,0 +1,31 @@
+{% extends "cate/site_base.html" %}
+{% load static %}
+
+{% block page-title %}Inscription{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script src="{% static "common/subscription.js" %}"></script>
+{% endblock js %}
+
+{% block content %}
+<h1>
+    <a href="{% url "inscription" %}"><span class="fleche fl-gauche"></span></a>
+    Inscription
+</h1>
+<p>
+    {% if child %}
+        L'inscription de {{ child }}
+    {% else %}
+        Votre inscription
+    {% endif %}
+    a bien été enregistrée.
+</p>
+<p>
+    Pensez à <a
+        href="{% url "autorisation" %}?0={{ child.pk }}"
+        target="_blank"
+        {% if child.has_two_parents %}data-needs-parent-type{% endif %}
+    >télécharger l'autorisation</a> !
+</p>
+{% endblock %}

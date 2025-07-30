@@ -2,9 +2,7 @@ from argparse import Namespace
 from django.contrib.sitemaps import Sitemap
 from django.contrib.auth.models import AnonymousUser
 
-from aumonerie.views import ArticleView as AumonerieArticleView
-from common.views import PageView
-from espacecate.views import ArticleView as EspacecateArticleView
+from common.views import ArticleView, PageView
 
 
 def get_queryset(view_class):
@@ -16,10 +14,7 @@ class ArticlesSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        return [
-            *get_queryset(AumonerieArticleView),
-            *get_queryset(EspacecateArticleView),
-        ]
+        return [*get_queryset(ArticleView)]
 
     def lastmod(self, obj):
         return obj.date

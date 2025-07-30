@@ -3,9 +3,10 @@ from pathlib import Path
 from typing import Any, Literal
 
 from django.http import HttpRequest, QueryDict
+from django.shortcuts import get_object_or_404
 from fpdf.enums import Align, XPos, YPos
 
-from ..models import Year
+from ..models import Child, Year
 from . import PDF
 
 HERE = Path(__file__).resolve()
@@ -17,28 +18,57 @@ class AuthorizationData:
     Data that is used to render the authorization form.
     """
 
-    def __init__(self, data: dict[str, Any] | QueryDict | None = None):
+    def __init__(self, request: HttpRequest, data: dict[str, Any] | QueryDict | None = None):
         if data is None:
             data = {}
 
+        if "" in data:
+            if data[""].isdecimal():
+                data["pk"] = data[""]
+            else:
+                data["app"] = data[""]
+
+        if data.get("pk"):
+            if request.user.has_perm("common.view_child"):
+                child = get_object_or_404(Child, pk=data["pk"])
+            else:
+                child = get_object_or_404(Child, user=request.user, pk=data["pk"])
+            data = {
+                **data,
+                "app": child.groupe.app,
+                "child_name": str(child),
+                "photos": child.photos,
+            }
+            self.child = child
+        else:
+            self.child = None
+
+        self.app: str = data.get("app", "")
         parent_type: str = data.get("parent_type", "")
         if parent_type not in ("mother", "father", ""):
             parent_type = ""
         self.parent_type: Literal["mother", "father", ""] = parent_type  # type: ignore
 
-        self.parent_name: str = data.get("parent_name", "")
+        if parent_type and not data.get("parent_name") and child:
+            parent_name = {
+                "mother": child.nom_mere,
+                "father": child.nom_pere,
+            }.get(parent_type, "")
+        else:
+            parent_name = data.get("parent_name", "")
+        self.parent_name: str = parent_name
 
         self.child_name: str = data.get("child_name", "")
 
         photos = data.get("photos")
         if photos is not None:
-            if photos.lower() in ("false", "0"):
+            if str(photos).lower() in ("false", "0"):
                 photos = False
             else:
                 photos = bool(photos)
         self.photos: bool | None = photos
 
-        if self.parent_type or self.parent_name or self.child_name or self.photos:
+        if self.parent_type or self.parent_name or self.child_name or self.photos or data.get("date"):
             self.date = dt.date.today()
         else:
             self.date = None
@@ -120,21 +150,20 @@ class Authorization(PDF):
         if value:
             self.write(txt=value)
 
-    def render_form(self, app: Literal["espacecate", "aumonerie"], data: AuthorizationData | None = None):
+    def render_form(self, data: AuthorizationData | None = None):
         if data is None:
             data = AuthorizationData()
 
         if self.is_form_at_top:
             self.add_page()
         else:
-            self.line(0, self.y, self.w, self.y)
             self.ln(self.t_margin)
 
         self.is_form_at_top = not self.is_form_at_top
 
         self.set_font("Montserrat", "", 10)
         self.cell(0, txt="Secteur paroissial de l'Embrunais et du Savinois", align=Align.L)
-        title = {"espacecate": "Catéchisme", "aumonerie": "Aumônerie des Jeunes"}[app]
+        title = {"espacecate": "Catéchisme", "aumonerie": "Aumônerie des Jeunes"}[data.app]
         self.cell(0, txt=f"{title} pour l'année scolaire {Year.get_current().formatted_year}", align=Align.R)
         self.ln(self.line_h * 1.5)
 
@@ -167,7 +196,7 @@ class Authorization(PDF):
         text = {
             "espacecate": f"du catéchisme des Paroisses de l'Embrunais et du Savinois pour l'année scolaire {Year.get_current().formatted_year}",
             "aumonerie": "de l'Aumônerie des Jeunes",
-        }[app]
+        }[data.app]
         self.write(txt=f"autorise mon enfant à participer aux activités {text}.")
         self.ln()
 
@@ -186,7 +215,7 @@ class Authorization(PDF):
         self.write(txt="n'autorise pas")
 
         self.ln()
-        text = {"espacecate": "du catéchisme", "aumonerie": "de l'Aumônerie"}[app]
+        text = {"espacecate": "du catéchisme", "aumonerie": "de l'Aumônerie"}[data.app]
         self.write(
             txt=f"la publication des photos de mon enfant prises au cours des différentes manifestations liées aux activités {text} (plaquettes, presse municipale et locale, site Internet, ...)."
         )
@@ -201,7 +230,7 @@ class Authorization(PDF):
             f"à ce que mon enfant participe de manière régulière aux rencontres {text}",
             "à prévenir impérativement en cas d'absence",
         ]
-        if app == "aumonerie":
+        if data.app == "aumonerie":
             lines.append("à ce que mon enfant n'utilise pas son téléphone portable pendant les rencontres")
         for line in lines:
             self.ln()
@@ -236,17 +265,30 @@ class Authorization(PDF):
 
         self.cell(30)
         self.write(txt="Signature(s) :")
-        self.ln()
-        self.ln()
+
+        self.y = self.h / 2
+
+        if not self.is_form_at_top:
+            self.line(0, self.y, self.w, self.y)
 
     def render(self, app: Literal["espacecate", "aumonerie"], request: HttpRequest):
-        try:
-            number = int(request.GET.get("exemplaires", 1))
-        except ValueError:
-            number = 1
+        # Group all the ones that start with a number by their number e.g. 0.app
+        items = {}
+        for key, value in request.GET.items():
+            if "." in key or key.isdecimal():
+                number, _, attr = key.partition(".")
+            else:
+                number = ""
+                attr = key
+            items.setdefault(number, {})[attr] = value
 
-        data = AuthorizationData(request.GET)
-        for _ in range(number):
-            self.render_form(app, data)
+        default = items.pop("", {})
+        for item in items.values():
+            for key, value in default.items():
+                if key not in item:
+                    item[key] = value
+
+        for item in items.values():
+            self.render_form(AuthorizationData(request, item))
 
     filename = "autorisation"

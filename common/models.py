@@ -15,6 +15,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import DatabaseError, models
 from django.db.models import Manager
+from django.db.utils import NotSupportedError
 from django.urls import NoReverseMatch, reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -316,7 +317,7 @@ class PageImage(ImageBase):
         abstract = True
 
 
-class CommonArticle(PageBase):
+class Article(PageBase):
     """
     Common article class for all apps.
     """
@@ -342,11 +343,10 @@ class CommonArticle(PageBase):
 
     class Meta:
         verbose_name = _("article")
-        abstract = True
         ordering = ["-date"]
 
 
-class CommonArticleImage(ImageBase):
+class ArticleImage(ImageBase):
     """
     Common article image class for all apps.
     """
@@ -356,22 +356,24 @@ class CommonArticleImage(ImageBase):
     class Meta:
         verbose_name = _("article image")
         verbose_name_plural = _("article images")
-        abstract = True
 
 
-class CommonGroup(models.Model):
+class Group(models.Model):
     """
     Common group class for all apps.
     """
 
     name = models.fields.CharField(_("name"), max_length=100, unique=True)
+    app = models.fields.CharField(_("app"), max_length=100, blank=True)
+    classes = models.fields.TextField(
+        _("classes"), blank=True, help_text=_("Classes that can be in this group")
+    )
 
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = _("group")
-        abstract = True
 
 
 @total_ordering
@@ -391,7 +393,7 @@ class ClassesMixin:
     def __sub__(self, other):
         if isinstance(other, type(self)):
             return self._sort_order_ - other._sort_order_
-        return type(self)(self._hashable_values_[self._sort_order_ - count])
+        return type(self)(self._hashable_values_[self._sort_order_ - other])
 
     def changed_school(self, other):
         """Return `True` if the child changed school between the two classes, `False` otherwise."""
@@ -407,25 +409,6 @@ class ClassesMixin:
         return True
 
 
-class Classes(ClassesMixin, models.TextChoices):
-    PS = "PS", "Petite section"
-    MS = "MS", "Moyenne section"
-    GS = "GS", "Grande section"
-    CP = "CP", "CP"
-    CE1 = "CE1", "CE1"
-    CE2 = "CE2", "CE2"
-    CM1 = "CM1", "CM1"
-    CM2 = "CM2", "CM2"
-    SIXIEME = "6eme", "6ème"
-    CINQUIEME = "5eme", "5ème"
-    QUATRIEME = "4eme", "4ème"
-    TROISIEME = "3eme", "3ème"
-    SECONDE = "2nde", "2nde"
-    PREMIERE = "1ere", "1ère"
-    TERMINALE = "terminale", "Terminale"
-    AUTRE = "autre", "Autre"
-
-
 class ChildManager(models.Manager):
     """Manager for children. Returns only children for the current year (and the future years)."""
     def get_queryset(self):
@@ -438,10 +421,65 @@ class OldChildManager(models.Manager):
         return super().get_queryset().filter(year__lt=Year.get_current())
 
 
-class CommonChild(models.Model):
+class LastVersionManager(models.Manager):
+    """Manager for children's last version. Returns the most recent version of a child."""
+    def get_queryset(self):
+        seen_previous_years = set()
+        seen_this_year = set()
+        previous_year = None
+        pks = []
+
+        for child in super().get_queryset().order_by("year"):
+            if child.year != previous_year:
+                seen_previous_years.update(seen_this_year)
+                seen_this_year.clear()
+
+            if (child.nom, child.prenom) not in seen_previous_years:
+                pks.append(child.pk)
+            seen_this_year.add((child.nom, child.prenom))
+
+            previous_year = child.year
+
+        return super().get_queryset().order_by("year").filter(pk__in=pks)
+
+
+def items_for(app, manager_class=models.Manager):
+    class ItemsFor(manager_class):
+        def get_queryset(self):
+            return super().get_queryset().filter(groupe__app=app)
+
+    return ItemsFor()
+
+
+def get_default_group():
+    return Group.objects.get_or_create(name="Autre")[0].pk
+
+
+class Child(models.Model):
     """
     Common child class for all apps.
     """
+
+    class Classes(ClassesMixin, models.TextChoices):
+        PS = "PS", "Petite section"
+        MS = "MS", "Moyenne section"
+        GS = "GS", "Grande section"
+        CP = "CP", "CP"
+        CE1 = "CE1", "CE1"
+        CE2 = "CE2", "CE2"
+        CM1 = "CM1", "CM1"
+        CM2 = "CM2", "CM2"
+        SIXIEME = "6eme", "6ème"
+        CINQUIEME = "5eme", "5ème"
+        QUATRIEME = "4eme", "4ème"
+        TROISIEME = "3eme", "3ème"
+        SECONDE = "2nde", "2nde"
+        PREMIERE = "1ere", "1ère"
+        TERMINALE = "terminale", "Terminale"
+        AUTRE = "autre", "Autre"
+
+        def __lt__(self, other):
+            return self._sort_order_ < other._sort_order_
 
     objects = ChildManager()
 
@@ -487,27 +525,20 @@ class CommonChild(models.Model):
     photos = models.BooleanField("Publication des photos")
     frais = PriceField("Participation aux frais")
 
-    paye = models.CharField(
-        "Payé",
-        max_length=10,
-        default="non",
-        choices=[
-            ("non", "Non"),
-            ("attente", "En attente"),
-            ("oui", "Oui"),
-        ],
-    )
+    communion_cette_annee = models.BooleanField("Communion cette année", default=False)
+    profession_cette_annee = models.BooleanField("Profession de Foi cette année", default=False)
+    confirmation_cette_annee = models.BooleanField("Confirmation cette année", default=False)
+    paye = models.BooleanField("Payé", default=False)
     signe = models.BooleanField("Signé", default=False)
-    groupe = models.ForeignKey("Group", on_delete=models.SET_NULL, verbose_name="Groupe", blank=True, null=True)
-    year = models.ForeignKey(Year, verbose_name=_("School year"), on_delete=models.CASCADE, default=Year.get_current_pk, related_name="+")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("User"), on_delete=models.SET_NULL, blank=True, null=True, related_name="+")
+    groupe = models.ForeignKey(Group, verbose_name="Groupe", default=get_default_group, on_delete=models.CASCADE)
+    year = models.ForeignKey(Year, verbose_name=_("School year"), on_delete=models.CASCADE, default=Year.get_current_pk)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("User"), on_delete=models.SET_NULL, blank=True, null=True)
     photo = ImageField("Photo", blank=True, null=True)
     date_inscription = models.DateTimeField("Date et heure d'inscription", auto_now_add=True)
 
     class Meta:
         verbose_name = _("child")
         ordering = ["nom", "prenom"]
-        abstract = True
 
     @property
     def app(self):
@@ -520,13 +551,17 @@ class CommonChild(models.Model):
     def official_name(self):
         return f"{self.nom} {self.prenom}"
 
-    def can_register_again(self):
-        """Return `True` if the child can be registered again, `False` otherwise."""
-        try:
-            _ = self.Classes(self.classe) + (Year.get_current() - self.year)
-            return True
-        except IndexError:
-            return False
+    def get_assigned_group(self):
+        """Return the group assigned to this child based on their class."""
+        groups = Group.objects.all()
+        for group in groups:
+            if any(self.classe == classe.strip() for classe in group.classes.splitlines()):
+                return group
+        return get_default_group()
+
+    def has_two_parents(self) -> bool:
+        """Return True if the child has two parents, False otherwise."""
+        return bool(self.nom_mere and self.nom_pere)
 
     sacraments_checks: dict[str, str] = {}
 
@@ -614,16 +649,50 @@ class CommonChild(models.Model):
         ),
         ("Autres informations", {"fields": ("autres_infos",)}),
         ("Autorisation", {"fields": ("photos", "frais")}),
+        (
+            "Espace administrateur",
+            {
+                "fields": (
+                    "communion_cette_annee",
+                    "profession_cette_annee",
+                    "confirmation_cette_annee",
+                    "paye",
+                    "signe",
+                    "groupe",
+                    "year",
+                    "user",
+                    "photo",
+                    "date_inscription",
+                )
+            },
+        ),
     ]
-    admin_fields = (
-        "paye",
-        "signe",
-        "groupe",
-        "year",
-        "user",
-        "photo",
-        "date_inscription",
-    )
+
+
+class OldChild(Child):
+    """
+    Common old child class for all apps.
+    """
+
+    objects = OldChildManager()
+
+    class Meta:
+        verbose_name = _("old child")
+        verbose_name_plural = _("old children")
+        proxy = True
+
+
+class LastChildVersion(Child):
+    """
+    Common last child version class for all apps.
+    """
+
+    objects = LastVersionManager()
+
+    class Meta:
+        verbose_name = _("last child version")
+        verbose_name_plural = _("last child versions")
+        proxy = True
 
 
 class DateCategory(HasSlug):
@@ -712,17 +781,29 @@ class Date(models.Model):
         return self.name
 
 
-class CommonMeeting(models.Model):
+class Meeting(models.Model):
     """
     Common meeting class for all apps.
     """
 
-    Kind: "models.TextChoices"
-    kind: "models.CharField[str]"
+    class Kind(models.TextChoices):
+        CATE = "KT", "Rencontre de caté"
+        EVF = "EVF", "Rencontre d'éveil à la foi"
+        TEMPS_FORT = "TF", "Temps fort"
+        MESSE_FAMILLES = "MF", "Messe des familles"
+        AUMONERIE_COLLEGE = "A_COL", "Rencontre d'aumônerie (collège)"
+        AUMONERIE_LYCEE = "A_LYC", "Rencontre d'aumônerie (lycée)"
+        PROFESSION = "PF", "Profession de Foi"
+        CONFIRMATION = "CONF", "Confirmation"
+
+    kind = models.CharField(_("kind"), max_length=5, blank=True, choices=Kind.choices)
+
     date = models.fields.DateField(_("date"))
     name = models.CharField(_("name"), blank=True, max_length=100, help_text=_("Replaces the meeting kind"))
 
-    get_childs: Callable[[], Manager[CommonChild]]
+    group = models.ForeignKey(Group, verbose_name=_("group"), related_name="+", related_query_name="+", on_delete=models.CASCADE, default=get_default_group)
+
+    get_childs: Callable[[], Manager[Child]]
 
     def save(self, *args, **kwargs):
         add = self._state.adding
@@ -738,26 +819,25 @@ class CommonMeeting(models.Model):
     class Meta:
         verbose_name = _("meeting")
         ordering = ["date"]
-        abstract = True
 
 
-class CommonAttendance(models.Model):
+class Attendance(models.Model):
     """
     Common attendance class for all apps.
     """
 
-    child: "models.ForeignKey[CommonChild]" = models.ForeignKey(
-        "Child",
+    child = models.ForeignKey(
+        Child,
         on_delete=models.CASCADE,
-        related_name="attendances",
-        related_query_name="attendance",
+        related_name="+",
+        related_query_name="+",
         verbose_name=_("Child"),
     )
-    meeting: "models.ForeignKey[CommonMeeting]" = models.ForeignKey(
-        "Meeting",
+    meeting = models.ForeignKey(
+        Meeting,
         on_delete=models.CASCADE,
-        related_name="attendances",
-        related_query_name="attendance",
+        related_name="+",
+        related_query_name="+",
         verbose_name=_("Meeting"),
     )
     is_present = models.BooleanField(_("present"))
@@ -778,10 +858,9 @@ class CommonAttendance(models.Model):
 
     class Meta:
         verbose_name = _("attendance")
-        abstract = True
 
 
-class CommonDocumentCategory(models.Model):
+class DocumentCategory(models.Model):
     """
     Common document category class for all apps.
     """
@@ -794,23 +873,19 @@ class CommonDocumentCategory(models.Model):
     class Meta:
         verbose_name = _("document category")
         verbose_name_plural = _("document categories")
-        abstract = True
 
 
-class CommonDocument(models.Model):
+class Document(models.Model):
     """
     Common document class for all apps.
     """
 
     title = models.fields.CharField(_("document title"), max_length=100)
     file = FileField(_("file"), null=True)
-    categories: "models.ManyToManyField[CommonDocumentCategory, Any]" = models.ManyToManyField(
-        "DocumentCategory", verbose_name=_("Categories"), blank=True
-    )
+    categories = models.ManyToManyField(DocumentCategory, verbose_name=_("Categories"), blank=True)
 
     class Meta:
         verbose_name = _("document")
-        abstract = True
 
     def __str__(self):  # pylint: disable=E0307
         return self.title

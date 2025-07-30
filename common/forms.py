@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from .fields import DisplayedHTMLField
-from .models import Classes, CommonChild, Date, Year
+from .models import Child, Date, Group, LastChildVersion, Year
 
 
 class BooleanField(forms.BooleanField):
@@ -62,14 +62,7 @@ class SubscriptionForm(forms.Form):
         """Render as <fieldset> elements."""
         return self.render(self.fieldsets_template, {**self.get_context(), "numbers": True})  # type: ignore
 
-    def save(self, *args, **kwargs):
-        if Classes(self.cleaned_data["classe"]) >= Classes.SIXIEME:  # includes "Autre"
-            app = "aumonerie"
-            from aumonerie.models import Child
-        else:
-            app = "espacecate"
-            from espacecate.models import Child
-
+    def save(self, request):
         child = Child()
 
         for f in Child._meta.fields:
@@ -87,18 +80,8 @@ class SubscriptionForm(forms.Form):
                 continue
             f.save_form_data(child, self.cleaned_data[f.name])
 
-        if app == "aumonerie":
-            from aumonerie.models import Group
-
-            group_name = None
-            if child.classe in ["6e", "5e", "4e", "3e"]:
-                group_name = "Collège"
-            if child.classe in ["2nde", "1ere", "terminale"]:
-                group_name = "Lycée"
-            child.groupe = Group.objects.get(name=group_name) if group_name else None
-
-        child.paye = "non"
-        child.signe = False
+        child.group = child.get_assigned_group()
+        child.user = request.user
 
         child.save()
         return child
@@ -148,7 +131,8 @@ class SubscriptionForm(forms.Form):
             ),
         }
 
-        fieldsets = copy.deepcopy(CommonChild.fieldsets)
+        fieldsets = copy.deepcopy(Child.fieldsets)
+        del fieldsets[-1]
         # Add authorization document information
         fieldsets[-1][1]["fields"] = (
             fieldsets[-1][1]["fields"][0],
@@ -158,7 +142,7 @@ class SubscriptionForm(forms.Form):
 
 for title, data in SubscriptionForm.Meta.fieldsets:
     for field_name in data["fields"]:
-        for field in CommonChild._meta.fields:
+        for field in Child._meta.fields:
             field: models.Field = field
             if field.name == field_name:
                 kwargs = {}

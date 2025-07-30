@@ -6,10 +6,13 @@ from adminsortable2.admin import SortableAdminMixin
 from django.db.models.query import QuerySet
 from django.http.request import HttpRequest
 from common.models import (
-    CommonArticle,
-    CommonArticleImage,
+    Article,
+    ArticleImage,
     Date,
     DateCategory,
+    Document,
+    DocumentCategory,
+    Group,
     ImageBase,
     Page,
     PageImage,
@@ -26,7 +29,7 @@ from django.utils.translation import pgettext_lazy
 from tinymce.widgets import AdminTinyMCE
 
 from .forms import DateForm
-from .models import CommonAttendance, CommonChild, Year
+from .models import Attendance, Child, Year
 
 admin.site.site_title = "Administration site du caté"
 admin.site.site_header = "Administration du site du caté"
@@ -117,33 +120,35 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     form = PageAdminForm
 
 
-class CommonArticleImagesInline(CommonImagesInline):
+class ArticleImagesInline(CommonImagesInline):
     """
     Inline for article images.
     """
 
-    model: Type[CommonArticleImage]
+    model = ArticleImage
     extra = 0
 
 
-class CommonArticleAdminForm(PageAdminForm):
+class ArticleAdminForm(PageAdminForm):
     """
     Form in the admin interface for articles.
     """
 
-    model: Type[CommonArticle]
+    model = Article
 
 
-class CommonArticleAdmin(admin.ModelAdmin):
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
     """
     Admin interface for articles.
     """
 
-    form = CommonArticleAdminForm
+    form = ArticleAdminForm
     list_display = ("title", "date")
 
 
-class CommonGroupAdmin(admin.ModelAdmin):
+@admin.register(Group)
+class GroupAdmin(admin.ModelAdmin):
     """
     Admin interface for groups.
     """
@@ -156,8 +161,8 @@ class CommonChildAdmin(admin.ModelAdmin):
     Admin interface for childs.
     """
 
-    model: Type[CommonChild]
-    other_model: Type[CommonChild]
+    model: Type[Child]
+    other_model: Type[Child]
     change_list_template = "admin/change_list_child.html"
 
     list_display = ("nom", "prenom")  # this is not useful !
@@ -254,7 +259,7 @@ class CommonAttendancesInline(admin.TabularInline):
     Inline for attendances.
     """
 
-    model: Type[CommonAttendance]
+    model = Attendance
     fields = ("child", "is_present", "has_warned")
     readonly_fields = ("child",)
     extra = 0
@@ -279,7 +284,7 @@ class CommonMeetingAdmin(admin.ModelAdmin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.attendance_class: Type[CommonAttendance] = self.inlines[0].model
+        self.attendance_class: Type[Attendance] = self.inlines[0].model
 
     def get_inlines(self, request, obj=None):
         if obj is None:  # add form
@@ -287,7 +292,8 @@ class CommonMeetingAdmin(admin.ModelAdmin):
         return super().get_inlines(request, obj)  # type: ignore
 
 
-class CommonDocumentAdmin(admin.ModelAdmin):
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
     """
     Admin interface for documents.
     """
@@ -295,7 +301,8 @@ class CommonDocumentAdmin(admin.ModelAdmin):
     list_display = ("title", "file")
 
 
-class CommonDocumentCategoryAdmin(admin.ModelAdmin):
+@admin.register(DocumentCategory)
+class DocumentCategoryAdmin(admin.ModelAdmin):
     """
     Admin interface for document categories.
     """

@@ -2,7 +2,7 @@ import datetime
 import mimetypes
 from pathlib import Path
 from typing import Any, Literal, Type
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 from django.conf import settings
 
 from django.contrib.auth import get_permission_codename
@@ -14,29 +14,31 @@ from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.http import content_disposition_header, http_date
 from django.utils.timezone import now
 from django.views import generic
 from django.views.static import was_modified_since
 from icalendar import Alarm, Calendar as ICalendar, Event
 
-import aumonerie
-import espacecate
-
 from .forms import SubscriptionForm
 from .models import (
-    Classes,
-    CommonArticle,
-    CommonDocument,
-    CommonDocumentCategory,
+    Article,
+    Child,
     Date,
     DateCategory,
+    Document,
+    DocumentCategory,
+    LastChildVersion,
+    OldChild,
     Page,
     Year,
 )
+from .pdfs.authorization import Authorization
 from .pdfs.calendar import Calendar
 from .pdfs.dates_list import DatesList
 
+autorisation = Authorization.as_view("")
 calendar = Calendar.as_view("")
 dates_list = DatesList.as_view("")
 
@@ -51,42 +53,42 @@ def _encode_filename(filename: str):
 
 @login_required
 def subscription(request):
-    children = []
-    children.extend(aumonerie.models.OldChild.objects.filter(user=request.user))
-    children.extend(espacecate.models.OldChild.objects.filter(user=request.user))
-    children = [child for child in children if child.can_register_again()]
+    children = LastChildVersion.objects.filter(user=request.user, year__lt=Year.get_current())
+    registered_children = LastChildVersion.objects.filter(user=request.user, year=Year.get_current())
 
-    registered_children = []
-    registered_children.extend(aumonerie.models.Child.objects.filter(user=request.user))
-    registered_children.extend(espacecate.models.Child.objects.filter(user=request.user))
+    return render(
+        request,
+        "common/subscription.html",
+        {
+            "children": children,
+            "registered_children": registered_children,
+        },
+    )
 
-    return render(request, "common/subscription.html", {"children": children, "registered_children": registered_children})
+
+def subscription_ok(request, pk=None):
+    child = None
+    if pk:
+        child = get_object_or_404(Child, user=request.user, pk=pk)
+    return render(request, "common/subscription_ok.html", {"child": child})
 
 
-def subscription_old(request, site, pk):
-    if site == "aumonerie":
-        app = aumonerie
-    elif site == "espacecate":
-        app = espacecate
-    else:
-        raise Http404
-    child = get_object_or_404(app.models.OldChild.objects.filter(user=request.user), id=pk)
+def subscription_old(request, pk):
+    child = get_object_or_404(OldChild.objects.filter(user=request.user), id=pk)
     if request.method == "POST":
         form = SubscriptionForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("inscription_ok")
+            new_child = form.save(request)
+            return redirect("inscription_ok_pk", new_child.pk)
     else:
-        old_class = Classes(child.classe)
+        old_class = Child.Classes(child.classe)
         try:
-            child.classe = (Classes(child.classe) + (Year.get_current() - child.year)).value
+            child.classe = (Child.Classes(child.classe) + (Year.get_current() - child.year)).value
         except IndexError:
-            add_message(request, WARNING, f"Impossible de réinscrire {child} pour cette année scolaire.")
-            return redirect("inscription")
+            child.classe = Child.Classes.AUTRE
 
-        if old_class.changed_school(Classes(child.classe)):
+        if old_class.changed_school(Child.Classes(child.classe)):
             child.ecole = None
-        child.redoublement = False
         form = SubscriptionForm(child.__dict__)
 
     return render(request, "common/subscription_old.html", {"child": child, "form": form})
@@ -96,8 +98,8 @@ def subscription_new(request):
     if request.method == "POST":
         form = SubscriptionForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("inscription_ok")
+            new_child = form.save(request)
+            return redirect("inscription_ok_pk", new_child.pk)
     else:
         form = SubscriptionForm()
     return render(request, "common/subscription_new.html", {"form": form})
@@ -234,12 +236,12 @@ class PageView(BaseView, generic.DetailView):
     template_name = "common/page.html"
 
 
-class CommonArticleListView(BaseView, generic.ListView):
+class ArticleListView(BaseView, generic.ListView):
     """
     View for an article list.
     """
 
-    model: Type[CommonArticle]
+    model = Article
     context_object_name = "articles"
     template_name = "common/articles.html"
 
@@ -250,12 +252,12 @@ class CommonArticleListView(BaseView, generic.ListView):
         }
 
 
-class CommonArticleView(BaseView, generic.DetailView):
+class ArticleView(BaseView, generic.DetailView):
     """
     View for an article.
     """
 
-    model: Type[CommonArticle]
+    model = Article
     context_object_name = "article"
     template_name = "common/article.html"
 
@@ -284,12 +286,12 @@ class DateListView(BaseView, generic.ListView):
         return ret
 
 
-class CommonDocumentListView(BaseView, generic.ListView):
+class DocumentListView(BaseView, generic.ListView):
     """
     View for an document list.
     """
 
-    model: Type[CommonDocument]
+    model = Document
     context_object_name = "docs"
     template_name = "common/docs.html"
 
@@ -298,10 +300,10 @@ class CommonDocumentListView(BaseView, generic.ListView):
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-        ret: dict[Literal[""] | CommonDocumentCategory, list[CommonDocument]] = {"": []}
+        ret: dict[Literal[""] | DocumentCategory, list[Document]] = {"": []}
 
-        obj: CommonDocument
-        cat: CommonDocumentCategory
+        obj: Document
+        cat: DocumentCategory
         for obj in self.object_list:  # type: ignore
             added = False
             for cat in obj.categories.all():
@@ -318,11 +320,11 @@ class CommonDocumentListView(BaseView, generic.ListView):
         return kwargs
 
 
-def serve(request, obj: CommonDocument | FieldFile | Path | str):
+def serve(request, obj: Document | FieldFile | Path | str):
     """
     Return a response that serves a file.
     """
-    if isinstance(obj, CommonDocument):
+    if isinstance(obj, Document):
         obj = obj.file
     if isinstance(obj, FieldFile):
         obj = obj.path
@@ -339,3 +341,7 @@ def serve(request, obj: CommonDocument | FieldFile | Path | str):
     if encoding:
         response.headers["Content-Encoding"] = encoding
     return response
+
+
+def serve_document(request, pk):
+    return serve(request, get_object_or_404(Document, pk=pk))

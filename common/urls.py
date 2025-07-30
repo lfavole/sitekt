@@ -24,11 +24,6 @@ from django.views.i18n import JavaScriptCatalog
 from . import views
 
 common_patterns = [
-    ("articles/<slug:slug>", "ArticleView", "article"),
-    ("articles/", "ArticleListView", "articles"),
-    ("autorisation", "Authorization", "autorisation"),
-    ("docs/<int:pk>", "serve_document", "document"),
-    ("docs/", "DocumentListView", "documents"),
     ("liste", "List", "list"),
 ]
 
@@ -46,12 +41,18 @@ for app in ("espacecate", "aumonerie"):
         urlpatterns.append(path(route, view, name=f"{app}_{name}"))
 
 urlpatterns += [
-    path("autorisation", lambda _: HttpResponse("TODO"), name="autorisation"),
+    path("articles/<slug:slug>", views.ArticleView.as_view(), name="article"),
+    path("articles", views.ArticleListView.as_view(), name="articles"),
+    path("autorisation", views.autorisation, name="autorisation"),
     path("calendrier", views.calendar, name="calendrier"),
     path("dates", views.DateListView.as_view(), name="dates"),
     path("dates-ics", views.dates_ics, name="dates_ics"),
+    path("docs/<int:pk>", views.serve_document, name="document"),
+    path("docs", views.DocumentListView.as_view(), name="documents"),
+    path("inscription/ok/<int:pk>", views.subscription_ok, name="inscription_ok_pk"),
+    path("inscription/ok", views.subscription_ok, name="inscription_ok"),
     path("inscription/new", views.subscription_new, name="inscription_nouveau"),
-    path("inscription/<str:site>/<int:pk>", views.subscription_old, name="inscription_ancien"),
+    path("inscription/<int:pk>", views.subscription_old, name="inscription_ancien"),
     path("inscription", views.subscription, name="inscription"),
     path("index", views.PageView.as_view(), kwargs={"slug": "accueil"}),
     path("jsi18n", cache_page(86400, key_prefix=time() if settings.DEBUG else 0)(JavaScriptCatalog.as_view(packages=["common"])), name="javascript-catalog"),

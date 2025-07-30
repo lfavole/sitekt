@@ -13,7 +13,7 @@
             <li><a href="{% url cl.opts.app_label|add:"_list" %}?regroup=groupe" target="_blank">Enfants regroupés par groupe</a></li>
         </ul>
     </li>
-    <li><a href="{% url cl.opts.app_label|add:"_autorisation" %}?exemplaires=2" target="_blank">Modèle d'autorisation à imprimer</a></li>
+    <li><a href="{% url "autorisation" %}?0={{ cl.opts.app_label }}&1={{ cl.opts.app_label }}" target="_blank">Modèle d'autorisation à imprimer</a></li>
 </ul>
 {{ block.super }}
 {% endblock result_list %}

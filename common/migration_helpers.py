@@ -6,14 +6,14 @@ from django.apps.registry import Apps
 from django.core.serializers import deserialize, serialize
 from django.db import models
 
-from .models import Page
+from .models import get_default_group
 
 
-def get_primary_key():
+def get_primary_key(min=0):
     """
     Returns a function that returns 1, 2, 3, ...
     """
-    i = 0
+    i = min
 
     def function():
         nonlocal i
@@ -25,7 +25,17 @@ def get_primary_key():
 
 all_exported_data = {}
 # must be lower case to compare with {"model": "..."}
-models_classes = ["page", "pageimage", "article", "articleimage"]
+# put them in order for the foreign keys!
+models_classes = [
+    "group",
+    "child",
+    "meeting",
+    "attendance",
+    "documentcategory",
+    "document",
+    "article",
+    "articleimage",
+]
 
 
 def _get_model_class(model):
@@ -34,26 +44,38 @@ def _get_model_class(model):
     return str(model).split(".", 1)[1]
 
 
-def export_data(app, reverse=False):
-    def function(apps: Apps, schema_editor):
+def export_data(app_or_apps):
+    if isinstance(app_or_apps, str):
+        app_or_apps = [app_or_apps]
+
+    def real_export(app, apps: Apps, schema_editor):
         models_list = [apps.get_model(app, m) for m in models_classes]
 
-        all_exported_data[app] = serialize("python", chain(*(model.objects.all() for model in models_list)))
+        # Export ALL the objects, not only e.g. the recent (!= old) children!
+        all_exported_data[app] = serialize("python", chain(*(model._base_manager.all() for model in models_list)))
         for model in models_list:
             model.objects.using(schema_editor.connection.alias).delete()
+
+    def function(apps: Apps, schema_editor):
+        for app in app_or_apps:
+            real_export(app, apps, schema_editor)
 
     return function
 
 
-def import_data(app, reverse=False):
+def import_data(new_app):
     def function(apps: Apps, schema_editor):
-        exported_data = all_exported_data.get(app)
+        exported_data = []
+        models_list = []
+
+        for app, export in all_exported_data.items():
+            exported_data.extend(export)
+            models_list.extend(apps.get_model(app, m) for m in models_classes)
+
         if not exported_data:
             return
 
-        models_list = [apps.get_model(app, m) for m in models_classes]
-
-        # Fields that have a foreign key to a page/article
+        # Fields that have a foreign key
         fields_to_check: dict[str, list[tuple[str, str]]] = {}
         for model in models_list:
             for field in model._meta.fields:
@@ -62,10 +84,12 @@ def import_data(app, reverse=False):
                         (str(field.related_model._meta), field.name)
                     )
 
-        pk_generators = defaultdict(get_primary_key)
-        old_to_new_pks: dict[str, dict[str, str | int]] = {}
+        pk_generators = {}
+        old_to_new_pks: defaultdict[str, dict[str, str | int]] = defaultdict(dict)
 
-        # Change the PKs on the pages/articles, save the correspondence in `old_to_new_pks`
+        get_default_group()  # Create the default group
+
+        # Change the PKs on the items, save the correspondence in `old_to_new_pks`
         for element in exported_data:
             model_name = element["model"]
             if _get_model_class(model_name) not in models_classes:
@@ -73,16 +97,15 @@ def import_data(app, reverse=False):
             fields = element["fields"].copy()
             for _linked_model, field in fields_to_check.get(model_name, []):
                 del fields[field]
-            new_pk = (
-                # we must use the method from CommonPage because the models in migrations don't have methods
-                Page._generate_slug(apps.get_model(model_name)(**fields))
-                if reverse  # type: ignore
-                else pk_generators[model_name]()
-            )
-            corr_for_model = old_to_new_pks.setdefault(model_name, {})
-            corr_for_model[element["pk"]] = new_pk
-            if not reverse:
-                element["fields"]["slug"] = element["pk"]  # add the slug
+
+            last_model_name = model_name.split(".", 1)[-1]
+            if last_model_name not in pk_generators:
+                model = apps.get_model("common", last_model_name)
+                biggest_pk = model.objects.aggregate(models.Max("pk"))["pk__max"] or 0
+                pk_generators[last_model_name] = get_primary_key(biggest_pk)
+
+            new_pk = pk_generators[last_model_name]()
+            old_to_new_pks[model_name][element["pk"]] = new_pk
             element["pk"] = new_pk
 
         # Change the PKs on the foreign keys
@@ -93,15 +116,51 @@ def import_data(app, reverse=False):
             for linked_model, field in fields_to_check[model_name]:
                 element["fields"][field] = old_to_new_pks[linked_model].get(element["fields"][field])
 
+        # Change the app name
+        for element in exported_data:
+            for app in all_exported_data:
+                new_model = element["model"].replace(app, new_app, 1)
+                if element["model"] != new_model:
+                    element["model"] = new_model
+                    break
+
         new_objects = deserialize("python", exported_data)
 
-        obj_for_models: dict[Type[models.Model], list[models.Model]] = {}
+        obj_for_models: defaultdict[Type[models.Model], list[models.Model]] = defaultdict(list)
         for obj in new_objects:
-            obj_for_models.setdefault(type(obj.object), []).append(obj.object)
+            obj_for_models[type(obj.object)].append(obj.object)
 
         for model, objs in obj_for_models.items():
             model.objects.using(schema_editor.connection.alias).bulk_create(objs)
 
-        del all_exported_data[app]
+        all_exported_data.clear()
 
     return function
+
+
+def merge(export_apps, import_app):
+    def function(apps: Apps, schema_editor):
+        export_data(export_apps)(apps, schema_editor)
+        import_data(import_app)(apps, schema_editor)
+
+    return function
+
+
+def migrate_paye_forwards(app):
+    def migrate(apps, schema_editor):
+        Child = apps.get_model(app, "Child")
+        for child in Child.objects.all():
+            child.paye_checkbox = child.paye == "oui"
+            child.save()
+
+    return migrate
+
+
+def migrate_paye_backwards(app):
+    def migrate(apps, schema_editor):
+        Child = apps.get_model(app, "Child")
+        for child in Child.objects.all():
+            child.paye = "oui" if child.paye_checkbox else "non"
+            child.save()
+
+    return migrate
