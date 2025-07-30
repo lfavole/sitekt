@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 from django import template
-from django.urls import NoReverseMatch, reverse
+from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext
@@ -31,8 +31,8 @@ class NavItem:
         href = page.get_absolute_url()
 
         try:
-            match = reverse(href) if href != "#" else None
-        except NoReverseMatch:
+            match = resolve(href) if href != "#" else None
+        except Resolver404:
             match = None
 
         def is_active(match, req_match):
