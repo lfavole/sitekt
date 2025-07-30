@@ -488,6 +488,9 @@ class Child(models.Model):
     date_naissance = models.DateField("Date de naissance")
     lieu_naissance = models.CharField("Lieu de naissance", max_length=100)
     adresse = models.TextField("Adresse")
+    code_postal_ville = models.CharField("Code postal et ville", max_length=100)
+    tel_jeune = models.CharField("Téléphone du jeune", max_length=10, blank=True)
+    email_jeune = models.EmailField("Email du jeune", max_length=100, blank=True)
 
     ecole = models.fields.CharField("École", max_length=100)
     classe = models.fields.CharField("Classe", choices=Classes.choices, max_length=10)
@@ -510,11 +513,13 @@ class Child(models.Model):
 
     nom_pere = models.CharField("Nom et prénom du père", blank=True, max_length=100)
     adresse_pere = models.TextField("Adresse du père", blank=True)
+    code_postal_ville_pere = models.CharField("Code postal et ville du père", blank=True, max_length=100)
     tel_pere = models.CharField("Téléphone du père", blank=True, max_length=10)
     email_pere = models.EmailField("Email du père", blank=True, max_length=100)
 
     nom_mere = models.CharField("Nom et prénom de la mère", blank=True, max_length=100)
     adresse_mere = models.TextField("Adresse de la mère", blank=True)
+    code_postal_ville_mere = models.CharField("Code postal et ville de la mère", blank=True, max_length=100)
     tel_mere = models.CharField("Téléphone de la mère", blank=True, max_length=10)
     email_mere = models.EmailField("Email de la mère", blank=True, max_length=100)
 
@@ -609,7 +614,18 @@ class Child(models.Model):
     fieldsets = [
         (
             "Informations concernant l'enfant / le jeune",
-            {"fields": ("nom", "prenom", "date_naissance", "lieu_naissance", "adresse")},
+            {
+                "fields": (
+                    "nom",
+                    "prenom",
+                    "date_naissance",
+                    "lieu_naissance",
+                    "adresse",
+                    "code_postal_ville",
+                    "tel_jeune",
+                    "email_jeune",
+                )
+            },
         ),
         ("École", {"fields": ("ecole", "classe")}),
         (
@@ -637,10 +653,12 @@ class Child(models.Model):
                 "fields": (
                     "nom_mere",
                     "adresse_mere",
+                    "code_postal_ville_mere",
                     "tel_mere",
                     "email_mere",
                     "nom_pere",
                     "adresse_pere",
+                    "code_postal_ville_pere",
                     "tel_pere",
                     "email_pere",
                     "freres_soeurs",

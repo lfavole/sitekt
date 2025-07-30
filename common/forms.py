@@ -107,15 +107,19 @@ class SubscriptionForm(forms.Form):
         labels = {
             "nom": "Nom de famille",
             "adresse": "Adresse où vit l'enfant / le jeune",
+            "tel_jeune": mark_safe("Téléphone du jeune <small>(si lycéen)</small>"),
+            "email_jeune": mark_safe("Email du jeune <small>(si lycéen)</small>"),
             "ecole": f"École pour l'année scolaire {Year.get_current().formatted_year}",
             "bapteme": mark_safe("Votre enfant a-t-il reçu <b>le Baptême</b>"),
             "premiere_communion": mark_safe("Votre enfant a-t-il vécu <b>la Première Communion</b>"),
             "profession": mark_safe("Votre enfant a-t-il vécu <b>la Profession de Foi</b>"),
             "confirmation": mark_safe("Votre enfant a-t-il vécu <b>la Confirmation</b>"),
             "adresse_mere": mark_safe("Adresse <small>(si différente de celle où vit l'enfant / le jeune)</small>"),
+            "code_postal_mere": "Code postal",
             "tel_mere": "Téléphone",
             "email_mere": "Email",
             "adresse_pere": mark_safe("Adresse <small>(si différente de celle où vit l'enfant / le jeune)</small>"),
+            "code_postal_pere": "Code postal",
             "tel_pere": "Téléphone",
             "email_pere": "Email",
             "photos": (
@@ -148,6 +152,8 @@ for title, data in SubscriptionForm.Meta.fieldsets:
                 kwargs = {}
                 if isinstance(field, models.TextField):
                     kwargs["widget"] = forms.Textarea()
+                    if field.name.split("_")[0] == "adresse":
+                        kwargs["widget"].attrs["rows"] = 3
                 if isinstance(field, models.DateField):
                     kwargs["widget"] = forms.DateInput(
                         format="%Y-%m-%d",
