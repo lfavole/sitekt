@@ -85,6 +85,7 @@ def subscription(request):
             "emails": emails,
             "children": children,
             "registered_children": registered_children,
+            "year": Year.get_current(),
         },
     )
 

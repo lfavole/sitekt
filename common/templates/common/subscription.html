@@ -21,7 +21,29 @@ var emailURL = "{{ email_url|escapejs }}";
 
 {% block content %}
 <h1>Inscription</h1>
+<div class="columns">
+<div>
+<h2>Enfants à inscrire</h2>
+{% if not children and not registered_children %}
+<p>
+	Aucun enfant à réinscrire n'est disponible.
+	<br>
+	Vérifiez votre adresse mail et cliquez sur le lien de confirmation que vous avez reçu par mail.
+	<br>
+	Veuillez vous rendre sur <a href="{% url "account_email" %}">cette page</a> pour ajouter et vérifier une ou plusieurs adresses mail que vous nous aviez communiquées précédemment.
+</p>
+{% endif %}
+<a class="label-help help-subscription" href="#">{% trans "I can't find my child" %}</a>
+<ul>
+	{% for child in children %}
+		<li><a href="{% url "inscription_ancien" child.id %}">Réinscrire {{ child }} pour l'année scolaire {{ year.formatted_year }}</a></li>
+	{% endfor %}
+	<li><a href="{% url "inscription_nouveau" %}">Inscrire un nouvel enfant</a></li>
+</ul>
+</div>
 {% if registered_children %}
+	<div class="border"></div>
+	<div>
 	<h2>Enfants inscrits</h2>
 	<ul class="registered-children">
 		{% for child in registered_children %}
@@ -61,22 +83,7 @@ var emailURL = "{{ email_url|escapejs }}";
 			<input type="submit" value="OK">
 		</p>
 	</form>
+	</div>
 {% endif %}
-<h2>Enfants à inscrire</h2>
-{% if not children and not registered_children %}
-<p>
-	Aucun enfant à réinscrire n'est disponible.
-	<br>
-	Vérifiez votre adresse mail et cliquez sur le lien de confirmation que vous avez reçu par mail.
-	<br>
-	Veuillez vous rendre sur <a href="{% url "account_email" %}">cette page</a> pour ajouter et vérifier une ou plusieurs adresses mail que vous nous aviez communiquées précédemment.
-</p>
-{% endif %}
-<a class="label-help help-subscription" href="#">{% trans "I can't find my child" %}</a>
-<ul>
-	{% for child in children %}
-		<li><a href="{% url "inscription_ancien" child.id %}">Réinscrire {{ child }}</a></li>
-	{% endfor %}
-	<li><a href="{% url "inscription_nouveau" %}">Inscrire un nouvel enfant</a></li>
-</ul>
+</div>
 {% endblock %}
