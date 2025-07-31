@@ -87,7 +87,7 @@ class YahooProvider extends CalendarProvider {
                 cancel: gettext("Cancel"),
             },
         }).then((value) => {
-            if (value === "add") {
+            if (value === "open") {
                 navigator.clipboard.writeText(url).then(() => {
                     super.addToCalendar();
                 });
