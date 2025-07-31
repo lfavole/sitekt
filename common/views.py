@@ -5,10 +5,11 @@ from typing import Any, Literal, Type
 from urllib.parse import quote, urlencode
 from django.conf import settings
 
+from allauth.account.models import EmailAddress
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages import add_message
-from django.contrib.messages.constants import WARNING
+from django.contrib.messages.constants import INFO
 from django.db.models import Model
 from django.db.models.fields.files import FieldFile
 from django.db.models.query_utils import Q
@@ -51,8 +52,29 @@ def _encode_filename(filename: str):
         return "filename*=utf-8''{}".format(quote(filename))
 
 
+def link_children(request):
+    """
+    Link unlinked children that don't have a user to a user if a verified email matches.
+    """
+    children = LastChildVersion.objects.filter(user=None)
+    email_addresses = EmailAddress.objects.filter(user=request.user, verified=True)
+    for child in children:
+        for email in email_addresses:
+            if any(
+                email_to_try == email.email
+                for email_to_try in (child.email_jeune, child.email_mere, child.email_pere)
+            ):
+                child.user = request.user
+                child.save()
+                add_message(request, INFO, f"Enfant {child} lié à votre compte.")
+                break
+
+
 @login_required
 def subscription(request):
+    link_children(request)
+
+    emails = EmailAddress.objects.filter(user=request.user)
     children = LastChildVersion.objects.filter(user=request.user, year__lt=Year.get_current())
     registered_children = LastChildVersion.objects.filter(user=request.user, year=Year.get_current())
 
@@ -60,6 +82,7 @@ def subscription(request):
         request,
         "common/subscription.html",
         {
+            "emails": emails,
             "children": children,
             "registered_children": registered_children,
         },

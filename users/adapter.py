@@ -54,7 +54,7 @@ def patch(old):
                     mark_safe(
                         escape(
                             _("Starting this year, you will need to create an account to register your child.")
-                            if Year.get_current().start_year <= 2024
+                            if Year.get_current().start_year <= 2025
                             else _("You need to create an account to register your child.")
                         )
                         + "<br>"

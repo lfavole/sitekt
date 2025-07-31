@@ -1,10 +1,21 @@
 {% extends "cate/site_base.html" %}
+{% load i18n %}
 {% load static %}
 
 {% block page-title %}Inscription{% endblock %}
 
 {% block js %}
 {{ block.super }}
+<script src="{% url "javascript-catalog" %}"></script>
+<script>
+var emails = [
+	{% for email in emails %}
+		{email: "{{ email.email|escapejs }}", isVerified: {{ email.verified|yesno:"true,false" }}},
+	{% endfor %}
+];
+{% url "account_email" as email_url %}
+var emailURL = "{{ email_url|escapejs }}";
+</script>
 <script src="{% static "common/subscription.js" %}"></script>
 {% endblock js %}
 
@@ -17,7 +28,7 @@
 			<li>
 				{{ child }} a été inscrit·e
 				<br>
-				<span class="{{ child.paye|yesno:"ok,error" }}">
+				<span class="label-{{ child.paye|yesno:"ok,error" }}">
 					{% if child.paye %}
 						Payé
 					{% else %}
@@ -25,7 +36,7 @@
 					{% endif %}
 				</span>
 				<br>
-				<span class="{{ child.signe|yesno:"ok,error" }}">
+				<span class="label-{{ child.signe|yesno:"ok,error" }}">
 					{% if child.signe %}
 						Signé
 					{% else %}
@@ -52,10 +63,20 @@
 	</form>
 {% endif %}
 <h2>Enfants à inscrire</h2>
+{% if not children and not registered_children %}
+<p>
+	Aucun enfant à réinscrire n'est disponible.
+	<br>
+	Vérifiez votre adresse mail et cliquez sur le lien de confirmation que vous avez reçu par mail.
+	<br>
+	Veuillez vous rendre sur <a href="{% url "account_email" %}">cette page</a> pour ajouter et vérifier une ou plusieurs adresses mail que vous nous aviez communiquées précédemment.
+</p>
+{% endif %}
+<a class="label-help help-subscription" href="#">{% trans "I can't find my child" %}</a>
 <ul>
 	{% for child in children %}
 		<li><a href="{% url "inscription_ancien" child.id %}">Réinscrire {{ child }}</a></li>
 	{% endfor %}
-	<li><a href="{% url "inscription_nouveau" %}">Nouvelle inscription</a></li>
+	<li><a href="{% url "inscription_nouveau" %}">Inscrire un nouvel enfant</a></li>
 </ul>
 {% endblock %}
