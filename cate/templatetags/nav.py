@@ -89,7 +89,7 @@ def nav(context):
     return get_page(None).render(context.request.resolver_match)
 
 @register.simple_tag(takes_context=True)
-def nav_link(context, value, label, notrans=""):
+def nav_link(context, value, label, additional=""):
     try:
         value = reverse(value)
     except NoReverseMatch:
@@ -97,12 +97,8 @@ def nav_link(context, value, label, notrans=""):
     if not value:
         return ""
     is_active = ' class="act"' if context.request.path == value else ""
-    if notrans == "":
-        label = mark_safe(gettext(label))
-    elif notrans == "arrow":
-        label = mark_safe('<span class="fleche fl-gauche"></span> ' + gettext(label))
-    elif notrans == "notrans":
-        label = mark_safe(label)
+    if additional == "arrow":
+        label = mark_safe('<span class="fleche fl-gauche"></span> ' + label)
     else:
-        raise ValueError("Expected an empty string or notrans")
+        label = mark_safe(label)
     return mark_safe(f'<li><a href="{escape(value)}"{is_active}>{label}</a></li>')

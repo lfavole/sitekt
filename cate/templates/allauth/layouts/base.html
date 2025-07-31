@@ -10,7 +10,8 @@
     <input type="checkbox" id="menu-checkbox" class="sr-only">
     <ul>
         <label class="fermer" for="menu-checkbox"></label>
-        {% nav_link "accueil" "Return to the website" "arrow" %}
+        {% trans "Return to the website" as return %}
+        {% nav_link "accueil" return "arrow" %}
 
         {% if user.is_authenticated %}
         <li>
@@ -21,18 +22,31 @@
         </li>
 
         {% if user.is_staff %}
-        {% nav_link "admin:index" "Administration" %}
+            {% trans "Administration" as admin %}
+            {% nav_link "admin:index" admin %}
         {% endif %}
 
-        {% nav_link "socialaccount_connections" "Account Connections" %}
-        {% nav_link "account_email" "Change Email" %}
-        {% nav_link "account_change_password" "Change Password" %}
-        {% nav_link "mfa_index" "Two-Factor Authentication" %}
-        {% nav_link "usersessions_list" "Sessions" %}
+        {% trans "Account Connections" as connections %}
+        {% nav_link "socialaccount_connections" connections %}
+
+        {% trans "Change Email" as email %}
+        {% nav_link "account_email" email %}
+
+        {% trans "Change Password" as password %}
+        {% nav_link "account_change_password" password %}
+
+        {% trans "Two-Factor Authentication" as mfa %}
+        {% nav_link "mfa_index" mfa %}
+
+        {% trans "Sessions" as sessions %}
+        {% nav_link "usersessions_list" sessions %}
 
         {% else %}
-        {% nav_link "account_login" "Log in" %}
-        {% nav_link "account_signup" "Sign up" %}
+            {% trans "Log in" as login %}
+            {% nav_link "account_login" login %}
+
+            {% trans "Sign up" as signup %}
+            {% nav_link "account_signup" signup %}
         {% endif %}
     </ul>
 </nav>
