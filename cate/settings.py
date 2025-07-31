@@ -227,7 +227,7 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = "/accounts/login"
 LOGIN_REDIRECT_URL = "/"
 
-pw.password_validators_help_text_html = lambda: ""
+pw.password_validators_help_text_html = lambda: "<p>Votre mot de passe doit contenir au minimum 8 caractères.</p>"
 
 # Allauth settings
 # https://docs.allauth.org/en/stable/account/configuration.html
@@ -309,9 +309,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-    {
-        "NAME": "cate.password_validation.PwnedPasswordValidator",
     },
 ]
 
