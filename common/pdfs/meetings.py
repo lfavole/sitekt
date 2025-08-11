@@ -72,7 +72,7 @@ class Meetings(PDF):
         Meeting: Type[CommonMeeting] = self.get_model("Meeting")  # type: ignore
         self.Meeting = Meeting
 
-        meetings = list(Meeting.objects.prefetch_related("attendances"))
+        meetings = list(Meeting.objects.prefetch_related("attendance_set"))
         groups: list[Group | None] = list(Group.objects.all())  # type: ignore
         groups.append(None)  # all groups
 

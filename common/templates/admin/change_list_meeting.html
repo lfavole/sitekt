@@ -2,8 +2,8 @@
 
 {% block result_list %}
 <ul>
-    <li><a href="{% url cl.opts.app_label|add:":meetings" %}" target="_blank">Liste récapitulative des rencontres</a></li>
-    <li><a href="{% url cl.opts.app_label|add:":meetings" %}?black_white=1" target="_blank">Liste récapitulative des rencontres en noir et blanc</a></li>
+    <li><a href="{% url cl.opts.app_label|add:"_meetings" %}" target="_blank">Liste récapitulative des rencontres</a></li>
+    <li><a href="{% url cl.opts.app_label|add:"_meetings" %}?black_white=1" target="_blank">Liste récapitulative des rencontres en noir et blanc</a></li>
 </ul>
 {{ block.super }}
 {% endblock result_list %}

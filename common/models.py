@@ -412,13 +412,13 @@ class ClassesMixin:
 class ChildManager(models.Manager):
     """Manager for children. Returns only children for the current year (and the future years)."""
     def get_queryset(self):
-        return super().get_queryset().filter(year__gte=Year.get_current())
+        return super().get_queryset().filter(year__start_year__gte=Year.get_current().start_year)
 
 
 class OldChildManager(models.Manager):
     """Manager for old children. Returns only children for the previous years."""
     def get_queryset(self):
-        return super().get_queryset().filter(year__lt=Year.get_current())
+        return super().get_queryset().filter(year__start_year__lt=Year.get_current().start_year)
 
 
 class LastVersionManager(models.Manager):
@@ -446,7 +446,7 @@ class LastVersionManager(models.Manager):
 def items_for(app, manager_class=models.Manager):
     class ItemsFor(manager_class):
         def get_queryset(self):
-            return super().get_queryset().filter(groupe__app=app)
+            return super().get_queryset().filter(**({"groupe__app": app} if hasattr(self.model, "groupe") else {}))
 
     return ItemsFor()
 
@@ -821,7 +821,29 @@ class Meeting(models.Model):
 
     group = models.ForeignKey(Group, verbose_name=_("group"), related_name="+", related_query_name="+", on_delete=models.CASCADE, default=get_default_group)
 
-    get_childs: Callable[[], Manager[Child]]
+    def get_childs(self) -> Manager[Child]:
+        """
+        Returns the children that are part of this meeting.
+        """
+        if self.kind == self.Kind.PROFESSION:
+            return Child.objects.filter(profession_cette_annee=True)
+        if self.kind == self.Kind.CONFIRMATION:
+            return Child.objects.filter(confirmation_cette_annee=True)
+        groups = {
+            self.Kind.EVF: "EVF",
+            self.Kind.CATE: "KT",
+            self.Kind.TEMPS_FORT: ("EVF", "KT"),
+            self.Kind.MESSE_FAMILLES: "",
+            self.Kind.AUMONERIE_COLLEGE: "Aumônerie collège",
+            self.Kind.AUMONERIE_LYCEE: "Aumônerie lycée",
+        }.get(self.kind)
+        if groups is None:
+            raise ValueError(f"Unknown meeting kind: {self.kind}")
+        if groups == "":
+            return Child.objects.all()
+        if isinstance(groups, str):
+            groups = [groups]
+        return Child.objects.filter(groupe__name__in=groups)
 
     def save(self, *args, **kwargs):
         add = self._state.adding
@@ -847,15 +869,11 @@ class Attendance(models.Model):
     child = models.ForeignKey(
         Child,
         on_delete=models.CASCADE,
-        related_name="+",
-        related_query_name="+",
         verbose_name=_("Child"),
     )
     meeting = models.ForeignKey(
         Meeting,
         on_delete=models.CASCADE,
-        related_name="+",
-        related_query_name="+",
         verbose_name=_("Meeting"),
     )
     is_present = models.BooleanField(_("present"))

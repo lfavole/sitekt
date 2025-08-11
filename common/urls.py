@@ -25,6 +25,7 @@ from . import views
 
 common_patterns = [
     ("liste", "List", "list"),
+    ("meetings", "Meetings", "meetings"),
 ]
 
 urlpatterns = []
