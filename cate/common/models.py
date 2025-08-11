@@ -54,6 +54,9 @@ class Year(models.Model):
     def __str__(self):
         return _("School year %s") % (self.formatted_year,)
 
+    def natural_key(self):
+        return (self.start_year,)
+
     def save(self, *args, **kwargs):
         # Note: we avoid saving the objects to avoid recursion error
         obj = type(self).objects.all()
@@ -205,6 +208,9 @@ class PageBase(models.Model):
     def __str__(self):  # pylint: disable=E0307
         return self.title
 
+    def natural_key(self):
+        return (self.slug,)
+
 
 class ImageBase(models.Model):
     """
@@ -307,6 +313,9 @@ class CommonGroup(models.Model):
     def __str__(self):
         return self.name
 
+    def natural_key(self):
+        return (self.name,)
+
     class Meta:
         verbose_name = _("group")
         abstract = True
@@ -316,6 +325,9 @@ class CommonChild(models.Model):
     """
     Common child class for all apps.
     """
+
+    def natural_key(self):
+        return (self.nom, self.prenom, )
 
     nom = models.CharField("Nom de famille", max_length=100)
     prenom = models.CharField("Prénom", max_length=100)
@@ -494,6 +506,9 @@ class CommonMeeting(models.Model):
     def __str__(self):
         return self.name or self.get_kind_display()  # type: ignore
 
+    def natural_key(self):
+        return (self.date, self.kind, self.name)
+
     class Meta:
         verbose_name = _("meeting")
         ordering = ["date"]
@@ -549,6 +564,9 @@ class CommonDocumentCategory(models.Model):
 
     def __str__(self):  # pylint: disable=E0307
         return self.title
+
+    def natural_key(self):
+        return (self.title,)
 
     class Meta:
         verbose_name = _("document category")
