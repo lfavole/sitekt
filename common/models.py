@@ -27,12 +27,19 @@ from cate.utils.text import slugify
 from .fields import DatalistField, PriceField
 
 
+class YearManager(models.Manager):
+    def get_by_natural_key(self, start_year: int) -> "Year":
+        return self.get_or_create(start_year=start_year)[0]
+
+
 class Year(models.Model):
     """
     A school year to be linked to childs, etc.
 
     It can be active (or not).
     """
+
+    objects = YearManager()
 
     start_year = models.fields.IntegerField(_("start year"), unique=True)
     is_active = models.fields.BooleanField(_("active year"))
@@ -56,6 +63,9 @@ class Year(models.Model):
 
     def __str__(self):
         return _("School year %s") % (self.formatted_year,)
+
+    def natural_key(self) -> tuple[int]:
+        return (self.start_year,)
 
     def save(self, *args, **kwargs):
         # Note: we avoid saving the objects to avoid recursion error
@@ -163,10 +173,17 @@ class Year(models.Model):
         return Year.get(self.start_year + other)
 
 
+class HasSlugManager(models.Manager):
+    def get_by_natural_key(self, slug: str) -> "HasSlug":
+        return self.get(slug=slug)
+
+
 class HasSlug(models.Model):
     """
     Base class for models that have a slug.
     """
+
+    objects = HasSlugManager()
 
     slug = models.fields.SlugField(_("slug"), max_length=100, unique=True, editable=False)
     title = models.fields.CharField(_("title"), max_length=100)
@@ -197,6 +214,9 @@ class HasSlug(models.Model):
 
     def __str__(self):  # pylint: disable=E0307
         return self.title
+
+    def natural_key(self) -> tuple[str]:
+        return (self.slug,)
 
 
 class PageBase(HasSlug):
@@ -358,10 +378,17 @@ class ArticleImage(ImageBase):
         verbose_name_plural = _("article images")
 
 
+class GroupManager(models.Manager):
+    def get_by_natural_key(self, name: str) -> "Group":
+        return self.get_or_create(name=name)[0]
+
+
 class Group(models.Model):
     """
     Common group class for all apps.
     """
+
+    objects = GroupManager()
 
     name = models.fields.CharField(_("name"), max_length=100, unique=True)
     app = models.fields.CharField(_("app"), max_length=100, blank=True)
@@ -371,6 +398,9 @@ class Group(models.Model):
 
     def __str__(self):
         return self.name
+
+    def natural_key(self) -> tuple[str]:
+        return (self.name,)
 
     class Meta:
         verbose_name = _("group")
@@ -414,14 +444,19 @@ class ChildManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(year__start_year__gte=Year.get_current().start_year)
 
+    def get_by_natural_key(self, nom: str, prenom: str, year: int | None = None) -> "Child":
+        if year is None:
+            year = Year.get_current().start_year
+        return self.get(nom=nom, prenom=prenom, year__start_year=year)
 
-class OldChildManager(models.Manager):
+
+class OldChildManager(ChildManager):
     """Manager for old children. Returns only children for the previous years."""
     def get_queryset(self):
-        return super().get_queryset().filter(year__start_year__lt=Year.get_current().start_year)
+        return super(ChildManager, self).get_queryset().filter(year__start_year__lt=Year.get_current().start_year)
 
 
-class LastVersionManager(models.Manager):
+class LastVersionManager(ChildManager):
     """Manager for children's last version. Returns the most recent version of a child."""
     def get_queryset(self):
         seen_previous_years = set()
@@ -429,7 +464,7 @@ class LastVersionManager(models.Manager):
         previous_year = None
         pks = []
 
-        for child in super().get_queryset().order_by("year"):
+        for child in super(ChildManager, self).get_queryset().order_by("year"):
             if child.year != previous_year:
                 seen_previous_years.update(seen_this_year)
                 seen_this_year.clear()
@@ -440,7 +475,7 @@ class LastVersionManager(models.Manager):
 
             previous_year = child.year
 
-        return super().get_queryset().order_by("year").filter(pk__in=pks)
+        return super(ChildManager, self).get_queryset().order_by("year").filter(pk__in=pks)
 
 
 def items_for(app, manager_class=models.Manager):
@@ -551,6 +586,9 @@ class Child(models.Model):
 
     def __str__(self):
         return f"{self.prenom} {self.nom}"
+
+    def natural_key(self) -> tuple[str, str, int]:
+        return (self.nom, self.prenom, self.year.start_year)
 
     @property
     def official_name(self):
@@ -799,10 +837,17 @@ class Date(models.Model):
         return self.name
 
 
+class MeetingManager(models.Manager):
+    def get_by_natural_key(self, date: dt.date, kind: str, name: str) -> "Meeting":
+        return self.get(date=date, kind=kind, name=name)
+
+
 class Meeting(models.Model):
     """
     Common meeting class for all apps.
     """
+
+    objects = MeetingManager()
 
     class Kind(models.TextChoices):
         CATE = "KT", "Rencontre de caté"
@@ -856,6 +901,9 @@ class Meeting(models.Model):
     def __str__(self):
         return self.name or self.get_kind_display()  # type: ignore
 
+    def natural_key(self) -> tuple[dt.date, str, str]:
+        return (self.date, self.kind, self.name)
+
     class Meta:
         verbose_name = _("meeting")
         ordering = ["date"]
@@ -870,11 +918,15 @@ class Attendance(models.Model):
         Child,
         on_delete=models.CASCADE,
         verbose_name=_("Child"),
+        blank=True,
+        null=True,
     )
     meeting = models.ForeignKey(
         Meeting,
         on_delete=models.CASCADE,
         verbose_name=_("Meeting"),
+        blank=True,
+        null=True,
     )
     is_present = models.BooleanField(_("present"))
     has_warned = models.BooleanField(_("has warned"))
@@ -896,19 +948,17 @@ class Attendance(models.Model):
         verbose_name = _("attendance")
 
 
-class DocumentCategory(models.Model):
+class DocumentCategory(HasSlug):
     """
     Common document category class for all apps.
     """
 
-    title = models.CharField(_("title"), unique=True, max_length=100)
-
-    def __str__(self):  # pylint: disable=E0307
-        return self.title
+    order = models.PositiveIntegerField(_("order"), default=0, null=False)
 
     class Meta:
         verbose_name = _("document category")
         verbose_name_plural = _("document categories")
+        ordering = ["order"]
 
 
 class Document(models.Model):
