@@ -76,13 +76,6 @@ var emailURL = "{{ email_url|escapejs }}";
 			</li>
 		{% endfor %}
 	</ul>
-	<form action="{% url "inscription" %}" method="post">
-		{% csrf_token %}
-		{{ form.as_p }}
-		<p>
-			<input type="submit" value="OK">
-		</p>
-	</form>
 	</div>
 {% endif %}
 </div>
