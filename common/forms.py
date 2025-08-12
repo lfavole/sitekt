@@ -54,6 +54,10 @@ class SubscriptionForm(forms.Form):
 
     fieldsets_template = "common/form_as_fieldsets.html"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.Meta.labels["ecole"] = f"École pour l'année scolaire {Year.get_current().formatted_year}"
+
     def as_fieldsets(self):
         """Render as <fieldset> elements."""
         return self.render(self.fieldsets_template)  # type: ignore
@@ -109,7 +113,7 @@ class SubscriptionForm(forms.Form):
             "adresse": "Adresse où vit l'enfant / le jeune",
             "tel_jeune": mark_safe("Téléphone du jeune <small>(si lycéen)</small>"),
             "email_jeune": mark_safe("Email du jeune <small>(si lycéen)</small>"),
-            "ecole": f"École pour l'année scolaire {Year.get_current().formatted_year}",
+            "ecole": "École",
             "bapteme": mark_safe("Votre enfant a-t-il reçu <b>le Baptême</b>"),
             "premiere_communion": mark_safe("Votre enfant a-t-il vécu <b>la Première Communion</b>"),
             "profession": mark_safe("Votre enfant a-t-il vécu <b>la Profession de Foi</b>"),

@@ -119,7 +119,6 @@ DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": "cate.settings.show_toolbar",
     "SHOW_COLLAPSED": True,
     "RENDER_PANELS": False,
-    "OBSERVE_REQUEST_CALLBACK": "cate.settings.observe_request",
 }
 DEBUG_TOOLBAR_PANELS = [
     *PANELS_DEFAULTS,
@@ -133,17 +132,6 @@ def show_toolbar(request: HttpRequest):
     Should we show the toolbar?
     """
     return request.user.is_authenticated and request.user.has_perm("users.can_see_debug_toolbar")  # type: ignore
-
-
-def observe_request(request: HttpRequest):
-    """
-    Should we observe the request with the toolbar?
-    """
-    if DebugToolbar.is_toolbar_request(request):
-        return False
-    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return False
-    return True
 
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
@@ -232,13 +220,12 @@ pw.password_validators_help_text_html = lambda: "<p>Votre mot de passe doit cont
 # Allauth settings
 # https://docs.allauth.org/en/stable/account/configuration.html
 ACCOUNT_ADAPTER = "users.adapter.Adapter"  # Change the login form
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_NOTIFICATIONS = True
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_USER_DISPLAY = lambda user: user.email
-ACCOUNT_USERNAME_REQUIRED = False
 
 # https://docs.allauth.org/en/stable/socialaccount/configuration.html
 SOCIALACCOUNT_QUERY_EMAIL = True
