@@ -409,21 +409,23 @@ class Group(models.Model):
 @total_ordering
 class ClassesMixin:
     """Common methods to the `Classes` enums."""
+    order = ["PS", "MS", "GS", "CP", "CE1", "CE2", "CM1", "CM2", "6eme", "5eme", "4eme", "3eme", "2nde", "1ere", "terminale"]
+
     def __lt__(self, other):
-        return self._sort_order_ < other._sort_order_
+        return self.order.index(self.value) < self.order.index(other.value)
 
     def __getitem__(self, index):
         if isinstance(index, int):
-            return type(self)(self._hashable_values_[index])
+            return type(self)(self.order[index])
         return super().__getitem__(index)
 
     def __add__(self, count):
-        return type(self)(self._hashable_values_[self._sort_order_ + count])
+        return type(self)(self.order[self.order.index(self.value) + count])
 
     def __sub__(self, other):
         if isinstance(other, type(self)):
-            return self._sort_order_ - other._sort_order_
-        return type(self)(self._hashable_values_[self._sort_order_ - other])
+            return self.order.index(self.value) - self.order.index(other.value)
+        return type(self)(self.order[self.order.index(self.value) - other])
 
     def changed_school(self, other):
         """Return `True` if the child changed school between the two classes, `False` otherwise."""
