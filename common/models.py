@@ -7,6 +7,7 @@ import re
 from typing import Any, Callable, Type
 from urllib.parse import urlparse
 import warnings
+from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 from django.apps import apps
@@ -806,7 +807,7 @@ class Date(models.Model):
         start_date = self.start_date
         # fall back to start time = midnight
         start_time = self.start_time or dt.time()
-        return dt.datetime.combine(start_date, start_time)
+        return dt.datetime.combine(start_date, start_time).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
 
     @property
     def end(self):
@@ -816,7 +817,7 @@ class Date(models.Model):
             if self.start_time is None
             else self.start_date
         )
-        ret = dt.datetime.combine(end_date, self.end_time or self.start.time())
+        ret = dt.datetime.combine(end_date, self.end_time or self.start.time()).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
         if self.start_time and self.end_time is None:
             # start time but no end time => end = 1 hour after
             # we must use this trick because we can't do time + timedelta
