@@ -1,0 +1,7 @@
+{% load allauth %}
+<span class="badge"
+class="badge {{ attrs.tags|join:' ' }}"
+{% if attrs.title %}title="{{ attrs.title }}"{% endif %}>
+    {% slot %}
+    {% endslot %}
+</span>

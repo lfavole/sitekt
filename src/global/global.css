@@ -1441,17 +1441,65 @@ hr {
 		margin: 0.5em 0.5em 1.5em;
 	}
 }
+.form-center > :first-child {
+	margin-top: 1rem;
+}
+.form-center > :last-child {
+	margin-bottom: 1rem;
+}
 .form-center h1, .form-center h2 {
 	background: none;
 	border: none;
 	padding: 0;
 	animation: none;
-	margin-top: 0.5em;
+}
+.form-center h2 {
+	margin-top: 2em;
+	position: relative;
+}
+.form-center h2::before {
+	content: "";
+	position: absolute;
+	left: -1em;
+	top: -1em;
+	width: calc(100% + 2em);
+	border-top: 1px solid #888;
 }
 .form-center hr {
 	border: none;
 	border-top: 1px solid #888;
 	margin: 1em -1em;
+}
+.form-center hr + h2::before {
+	display: none;
+}
+.form-center form > a:last-child {
+	display: block;
+	margin-top: 0.5em;
+}
+.badge {
+	padding: 0.2em 0.5em;
+	font-size: 0.9em;
+	border-radius: 1em;
+    background-color: #ce93d8;
+	border: 2px solid #7b1fa2;
+	margin-right: 0.3em;
+}
+.badge.success {
+    background-color: #c5e1a5;
+    border-color: #689f38;
+}
+.badge.warning {
+    background-color: #fff59d;
+    border-color: #fbc02d;
+}
+.badge.error {
+    background-color: #ffab91;
+    border-color: #e64a19;
+}
+.badge.info, .badge.primary {
+    background-color: #90caf9;
+    border-color: #1976d2;
 }
 
 @media (max-width: 500px) {
