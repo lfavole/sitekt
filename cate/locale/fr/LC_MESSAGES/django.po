@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-31 08:34+0200\n"
+"POT-Creation-Date: 2025-08-16 12:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 "Votre mot de passe ne doit pas avoir été trouvé dans une faille de sécurité "
 "majeure."
 
-#: cate/settings.py:354
+#: cate/settings.py:352
 msgid ""
 "You must first create the article, then insert the image. Don't worry, the "
 "image will be uploaded after reloading."
@@ -50,6 +50,40 @@ msgstr "Gérer le compte"
 #: cate/templates/account/index.html:10
 msgid "Please use the above links to set up your account."
 msgstr "Veuillez utiliser les liens ci-dessus pour configurer votre compte."
+
+#: cate/templates/account/login.html:5 cate/templates/account/login.html:15
+#: cate/templates/account/login.html:28
+msgid "Sign In"
+msgstr "Connexion"
+
+#: cate/templates/account/login.html:39
+msgid "Sign in with a passkey"
+msgstr "Se connecter avec une clé d'accès"
+
+#: cate/templates/account/login.html:44
+msgid "Send me a sign-in code"
+msgstr "Envoyez-moi un code de connexion"
+
+#: cate/templates/account/login.html:62
+#, python-format
+msgid "Don't have an account? %(link)sSign up%(end_link)s"
+msgstr "Vous n'avez pas de compte ? %(link)sCréer un compte%(end_link)s"
+
+#: cate/templates/account/signup.html:4
+msgid "Signup"
+msgstr "S'inscrire"
+
+#: cate/templates/account/signup.html:9 cate/templates/account/signup.html:28
+msgid "Sign Up"
+msgstr "Création de compte"
+
+#: cate/templates/account/signup.html:37
+msgid "Sign up using a passkey"
+msgstr "S'inscrire avec une clé d'accès"
+
+#: cate/templates/account/signup.html:43
+msgid "Already have an account? %(link)sSign in%(end_link)s"
+msgstr "Vous avez déjà un compte ? %(link)sConnexion%(end_link)s"
 
 #: cate/templates/allauth/layouts/base.html:13
 msgid "Return to the website"
@@ -92,7 +126,7 @@ msgstr "Se connecter"
 
 #: cate/templates/allauth/layouts/base.html:48
 msgid "Sign up"
-msgstr ""
+msgstr "Créer un compte"
 
 #: cate/templates/cate/404.html:4 cate/templates/cate/404.html:7
 msgid "Page not found"

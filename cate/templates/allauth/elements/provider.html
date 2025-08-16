@@ -1,7 +1,16 @@
 {% load static %}
+{% load allauth account %}
 <li class="socialaccount-login">
-    <form method="post" action="{{ attrs.href }}">
-        {% csrf_token %}
-        <button type="submit"><img src="{% static "account/"|add:attrs.name|lower|add:".svg" %}" alt="{{ attrs.name }}"></button>
-    </a>
+    {% element form form=form method="post" action=attrs.href tags="login" %}
+        {% slot body %}
+            {% csrf_token %}
+        {% endslot %}
+        {% slot actions %}
+            {% element button type="submit" %}
+                {% static "account/"|add:attrs.name|lower|add:".svg" as image_url %}
+                {% element img src=image_url alt=attrs.name %}
+                {% endelement %}
+            {% endelement %}
+        {% endslot %}
+    {% endelement %}
 </li>
