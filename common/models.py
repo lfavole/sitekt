@@ -826,15 +826,15 @@ class Date(models.Model):
 
     @property
     def is_past(self):
-        return dt.datetime.now() > self.end
+        return now() > self.end
 
     @property
     def is_current(self):
-        return self.start <= dt.datetime.now() <= self.end
+        return self.start <= now() <= self.end
 
     @property
     def is_future(self):
-        return dt.datetime.now() < self.start
+        return now() < self.start
 
     def __str__(self):  # pylint: disable=E0307
         return self.name
