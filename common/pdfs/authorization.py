@@ -2,7 +2,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Any, Literal
 
-from django.http import HttpRequest, QueryDict
+from django.http import Http404, HttpRequest, QueryDict
 from django.shortcuts import get_object_or_404
 from fpdf.enums import Align, XPos, YPos
 
@@ -29,7 +29,9 @@ class AuthorizationData:
                 data["app"] = data[""]
 
         if data.get("pk"):
-            if request.user.has_perm("common.view_child"):
+            if not request.user.is_authenticated:
+                raise Http404
+            elif request.user.has_perm("common.view_child"):
                 child = get_object_or_404(Child, pk=data["pk"])
             else:
                 child = get_object_or_404(Child, user=request.user, pk=data["pk"])
