@@ -18,6 +18,7 @@ from debug_toolbar.settings import PANELS_DEFAULTS
 from debug_toolbar.toolbar import DebugToolbar
 import dj_database_url
 from django import VERSION as django_version
+from django.contrib.admin import sites
 from django.contrib.auth import password_validation as pw
 from django.contrib.sites.requests import RequestSite
 from django.http import HttpRequest
@@ -106,6 +107,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "simple_redirects.middleware.RedirectFallbackMiddleware",
     "cate.middleware.MinifyHtmlMiddleware",
+    "cate.middleware.NeverCacheMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -280,6 +282,15 @@ def requestsite_init(self, request):
     self.name = SITE_NAME
 
 RequestSite.__init__ = requestsite_init
+
+class NewAdminSite(sites.AdminSite):
+    def __init__(self, *args, **kwargs):
+        from allauth.account.decorators import secure_admin_login
+
+        super().__init__(*args, **kwargs)
+        self.login = secure_admin_login(self.login)
+
+sites.AdminSite = NewAdminSite
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

@@ -5,6 +5,7 @@ try:
 except ImportError:
     minify_html = None
 from django.http import HttpRequest, HttpResponse
+from django.utils.cache import add_never_cache_headers
 
 
 class MinifyHtmlMiddleware:
@@ -39,3 +40,16 @@ class MinifyHtmlMiddleware:
             and response.get("Content-Encoding", "") == ""
             and response.get("Content-Type", "").split(";", 1)[0] == "text/html"
         )
+
+
+class NeverCacheMiddleware:
+    sync_capable = True
+    async_capable = True
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]):
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        response = self.get_response(request)
+        add_never_cache_headers(response)
+        return response
