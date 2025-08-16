@@ -1,0 +1,454 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-16 15:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:38
+#: cate/static/admin/js/SelectFilter2.js:38
+#, javascript-format
+msgid "Available %s"
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:44
+#: cate/static/admin/js/SelectFilter2.js:44
+#, javascript-format
+msgid "This is the list of available %s. You may choose some by "
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:60
+#: cate/static/admin/js/SelectFilter2.js:60
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:65
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:110
+#: cate/static/admin/js/SelectFilter2.js:65
+#: cate/static/admin/js/SelectFilter2.js:110
+msgid "Filter"
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:69
+#: cate/static/admin/js/SelectFilter2.js:69
+msgid "Choose all"
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:69
+#: cate/static/admin/js/SelectFilter2.js:69
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:75
+#: cate/static/admin/js/SelectFilter2.js:75
+msgid "Choose"
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:77
+#: cate/static/admin/js/SelectFilter2.js:77
+msgid "Remove"
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:83
+#: cate/static/admin/js/SelectFilter2.js:83
+#, javascript-format
+msgid "Chosen %s"
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:89
+#: cate/static/admin/js/SelectFilter2.js:89
+#, javascript-format
+msgid "This is the list of chosen %s. You may remove some by "
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:105
+#: cate/static/admin/js/SelectFilter2.js:105
+#, javascript-format
+msgid "Type into this box to filter down the list of selected %s."
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:120
+#: cate/static/admin/js/SelectFilter2.js:120
+msgid "Remove all"
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:120
+#: cate/static/admin/js/SelectFilter2.js:120
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: cate/static/admin/js/SelectFilter2.bdb8d0cc579e.js:211
+#: cate/static/admin/js/SelectFilter2.js:211
+#, javascript-format
+msgid "%s selected option not visible"
+msgid_plural "%s selected options not visible"
+msgstr[0] ""
+msgstr[1] ""
+
+#: cate/static/admin/js/actions.eac7e3441574.js:67
+#: cate/static/admin/js/actions.js:67
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: cate/static/admin/js/actions.eac7e3441574.js:161
+#: cate/static/admin/js/actions.js:161
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: cate/static/admin/js/actions.eac7e3441574.js:174
+#: cate/static/admin/js/actions.js:174
+msgid ""
+"You have selected an action, but you haven’t saved your changes to "
+"individual fields yet. Please click OK to save. You’ll need to re-run the "
+"action."
+msgstr ""
+
+#: cate/static/admin/js/actions.eac7e3441574.js:175
+#: cate/static/admin/js/actions.js:175
+msgid ""
+"You have selected an action, and you haven’t made any changes on individual "
+"fields. You’re probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:13
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:110
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:13
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:110
+msgid "Now"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:14
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:14
+msgid "Midnight"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:15
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:15
+msgid "6 a.m."
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:16
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:16
+msgid "Noon"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:17
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:17
+msgid "6 p.m."
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:78
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:78
+#, javascript-format
+msgid "Note: You are %s hour ahead of server time."
+msgid_plural "Note: You are %s hours ahead of server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:86
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:86
+#, javascript-format
+msgid "Note: You are %s hour behind server time."
+msgid_plural "Note: You are %s hours behind server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:128
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:128
+msgid "Choose a Time"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:158
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:158
+msgid "Choose a time"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:175
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:333
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:175
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:333
+msgid "Cancel"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:238
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:318
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:238
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:318
+msgid "Today"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:255
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:255
+msgid "Choose a Date"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:312
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:312
+msgid "Yesterday"
+msgstr ""
+
+#: cate/static/admin/js/admin/DateTimeShortcuts.9f6e209cebca.js:324
+#: cate/static/admin/js/admin/DateTimeShortcuts.js:324
+msgid "Tomorrow"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:11
+#: cate/static/admin/js/calendar.js:11
+msgid "January"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:12
+#: cate/static/admin/js/calendar.js:12
+msgid "February"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:13
+#: cate/static/admin/js/calendar.js:13
+msgid "March"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:14
+#: cate/static/admin/js/calendar.js:14
+msgid "April"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:15
+#: cate/static/admin/js/calendar.js:15
+msgid "May"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:16
+#: cate/static/admin/js/calendar.js:16
+msgid "June"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:17
+#: cate/static/admin/js/calendar.js:17
+msgid "July"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:18
+#: cate/static/admin/js/calendar.js:18
+msgid "August"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:19
+#: cate/static/admin/js/calendar.js:19
+msgid "September"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:20
+#: cate/static/admin/js/calendar.js:20
+msgid "October"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:21
+#: cate/static/admin/js/calendar.js:21
+msgid "November"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:22
+#: cate/static/admin/js/calendar.js:22
+msgid "December"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:25
+#: cate/static/admin/js/calendar.js:25
+msgctxt "abbrev. month January"
+msgid "Jan"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:26
+#: cate/static/admin/js/calendar.js:26
+msgctxt "abbrev. month February"
+msgid "Feb"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:27
+#: cate/static/admin/js/calendar.js:27
+msgctxt "abbrev. month March"
+msgid "Mar"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:28
+#: cate/static/admin/js/calendar.js:28
+msgctxt "abbrev. month April"
+msgid "Apr"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:29
+#: cate/static/admin/js/calendar.js:29
+msgctxt "abbrev. month May"
+msgid "May"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:30
+#: cate/static/admin/js/calendar.js:30
+msgctxt "abbrev. month June"
+msgid "Jun"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:31
+#: cate/static/admin/js/calendar.js:31
+msgctxt "abbrev. month July"
+msgid "Jul"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:32
+#: cate/static/admin/js/calendar.js:32
+msgctxt "abbrev. month August"
+msgid "Aug"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:33
+#: cate/static/admin/js/calendar.js:33
+msgctxt "abbrev. month September"
+msgid "Sep"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:34
+#: cate/static/admin/js/calendar.js:34
+msgctxt "abbrev. month October"
+msgid "Oct"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:35
+#: cate/static/admin/js/calendar.js:35
+msgctxt "abbrev. month November"
+msgid "Nov"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:36
+#: cate/static/admin/js/calendar.js:36
+msgctxt "abbrev. month December"
+msgid "Dec"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:39
+#: cate/static/admin/js/calendar.js:39
+msgctxt "one letter Sunday"
+msgid "S"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:40
+#: cate/static/admin/js/calendar.js:40
+msgctxt "one letter Monday"
+msgid "M"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:41
+#: cate/static/admin/js/calendar.js:41
+msgctxt "one letter Tuesday"
+msgid "T"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:42
+#: cate/static/admin/js/calendar.js:42
+msgctxt "one letter Wednesday"
+msgid "W"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:43
+#: cate/static/admin/js/calendar.js:43
+msgctxt "one letter Thursday"
+msgid "T"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:44
+#: cate/static/admin/js/calendar.js:44
+msgctxt "one letter Friday"
+msgid "F"
+msgstr ""
+
+#: cate/static/admin/js/calendar.f8a5d055eb33.js:45
+#: cate/static/admin/js/calendar.js:45
+msgctxt "one letter Saturday"
+msgid "S"
+msgstr ""
+
+#: cate/static/admin/js/collapse.f84e7410290f.js:16
+#: cate/static/admin/js/collapse.f84e7410290f.js:34
+#: cate/static/admin/js/collapse.js:16 cate/static/admin/js/collapse.js:34
+msgid "Show"
+msgstr ""
+
+#: cate/static/admin/js/collapse.f84e7410290f.js:30
+#: cate/static/admin/js/collapse.js:30
+msgid "Hide"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "opera"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "firefox"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "win"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "android"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "mac os x"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "linux"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "sunos"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "freebsd"
+msgstr ""
+
+#: cate/static/tinymce/plugins/lists/plugin.min.43ff6a7cc605.js:9
+#: cate/static/tinymce/plugins/lists/plugin.min.js:9
+msgid "cros"
+msgstr ""
+
+#: cate/static/tinymce/themes/silver/theme.min.b84a8ffecd2b.js:9
+#: cate/static/tinymce/themes/silver/theme.min.js:9
+msgid "Cannot set source of a broadcasted event"
+msgstr ""
+
+#: cate/static/tinymce/themes/silver/theme.min.b84a8ffecd2b.js:9
+#: cate/static/tinymce/themes/silver/theme.min.js:9
+msgid "Cannot get source of a broadcasted event"
+msgstr ""

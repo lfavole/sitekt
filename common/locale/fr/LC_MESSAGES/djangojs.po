@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-31 09:12+0200\n"
+"POT-Creation-Date: 2025-08-16 15:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,7 +66,7 @@ msgstr "Ouvrir le calendrier Yahoo"
 
 #: common/static/common/add-to-calendar-button.js:87
 #: common/static/common/add-to-calendar-button.js:121
-#: common/static/common/subscription.js:60
+#: common/static/common/subscription.js:85
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -125,40 +125,43 @@ msgstr "Cacher les dates passées"
 msgid "Show past dates"
 msgstr "Afficher les dates passées"
 
-#: common/static/common/subscription.js:32
-msgid ""
-"To be able to do the quick subscription of children, you must verify an "
-"email address that you gave us previously."
-msgstr ""
-"Pour pouvoir effectuer l'inscription rapide de vos enfants, vous devez "
-"vérifier une adresse e-mail que vous nous avez donnée précédemment."
+#: common/static/common/subscription.js:45
+msgid "There was an error while fetching the email addresses."
+msgstr "Une erreur est survenue lors de la récupération des adresses e-mail."
 
-#: common/static/common/subscription.js:35
+#: common/static/common/subscription.js:63
+msgid ""
+"To be able to do the quick subscription of children, you must give us an "
+"email address that you gave us in previous years."
+msgstr ""
+"Pour pouvoir effectuer l'inscription rapide de vos enfants, vous devez nous "
+"donner une adresse e-mail que vous nous avez donnée les années précédentes."
+
+#: common/static/common/subscription.js:65
 msgid "Currently you gave us those email addresses:"
 msgstr "Actuellement vous nous avez donné ces adresses e-mail :"
 
-#: common/static/common/subscription.js:44
-msgid "Verified"
-msgstr "Vérifiée"
+#: common/static/common/subscription.js:72
+msgid "Try adding other addresses."
+msgstr "Essayez d'ajouter d'autres adresses."
 
-#: common/static/common/subscription.js:44
-msgid "Unverified"
-msgstr "Non vérifiée"
-
-#: common/static/common/subscription.js:52
-msgid ""
-"If an address isn't verified, check your inbox and click on the link that "
-"you received."
-msgstr "Si une adresse n'est pas vérifiée, vérifiez votre boîte de réception et cliquez sur le lien que vous avez reçu."
-
-#: common/static/common/subscription.js:53
-msgid "Otherwise try adding and verifying other addresses."
-msgstr "Sinon, essayez d'ajouter et de vérifier d'autres adresses."
-
-#: common/static/common/subscription.js:56
+#: common/static/common/subscription.js:82
 msgid "Why can't you find your children?"
 msgstr "Pourquoi ne trouvez-vous pas vos enfants ?"
 
-#: common/static/common/subscription.js:59
+#: common/static/common/subscription.js:87
 msgid "Add an email address"
 msgstr "Ajouter une adresse e-mail"
+
+#: common/static/common/subscription.js:110
+#: common/static/common/subscription.js:113
+msgid "There was an error while adding your email address."
+msgstr "Une erreur est survenue lors de l'ajout de votre adresse e-mail."
+
+#: common/static/common/subscription.js:113
+msgid "Error"
+msgstr "Erreur"
+
+#: common/static/common/subscription.js:118
+msgid "Email address added"
+msgstr "Adresse e-mail ajoutée"

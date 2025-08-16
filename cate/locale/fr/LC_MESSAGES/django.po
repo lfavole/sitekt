@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-16 12:02+0200\n"
+"POT-Creation-Date: 2025-08-16 15:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 "Votre mot de passe ne doit pas avoir été trouvé dans une faille de sécurité "
 "majeure."
 
-#: cate/settings.py:352
+#: cate/settings.py:360
 msgid ""
 "You must first create the article, then insert the image. Don't worry, the "
 "image will be uploaded after reloading."
@@ -51,20 +51,20 @@ msgstr "Gérer le compte"
 msgid "Please use the above links to set up your account."
 msgstr "Veuillez utiliser les liens ci-dessus pour configurer votre compte."
 
-#: cate/templates/account/login.html:5 cate/templates/account/login.html:15
-#: cate/templates/account/login.html:28
+#: cate/templates/account/login.html:5 cate/templates/account/login.html:14
+#: cate/templates/account/login.html:27
 msgid "Sign In"
 msgstr "Connexion"
 
-#: cate/templates/account/login.html:39
+#: cate/templates/account/login.html:38
 msgid "Sign in with a passkey"
 msgstr "Se connecter avec une clé d'accès"
 
-#: cate/templates/account/login.html:44
+#: cate/templates/account/login.html:43
 msgid "Send me a sign-in code"
 msgstr "Envoyez-moi un code de connexion"
 
-#: cate/templates/account/login.html:62
+#: cate/templates/account/login.html:61
 #, python-format
 msgid "Don't have an account? %(link)sSign up%(end_link)s"
 msgstr "Vous n'avez pas de compte ? %(link)sCréer un compte%(end_link)s"
@@ -73,15 +73,16 @@ msgstr "Vous n'avez pas de compte ? %(link)sCréer un compte%(end_link)s"
 msgid "Signup"
 msgstr "S'inscrire"
 
-#: cate/templates/account/signup.html:9 cate/templates/account/signup.html:28
+#: cate/templates/account/signup.html:8 cate/templates/account/signup.html:27
 msgid "Sign Up"
 msgstr "Création de compte"
 
-#: cate/templates/account/signup.html:37
+#: cate/templates/account/signup.html:36
 msgid "Sign up using a passkey"
 msgstr "S'inscrire avec une clé d'accès"
 
-#: cate/templates/account/signup.html:43
+#: cate/templates/account/signup.html:42
+#, python-format
 msgid "Already have an account? %(link)sSign in%(end_link)s"
 msgstr "Vous avez déjà un compte ? %(link)sConnexion%(end_link)s"
 

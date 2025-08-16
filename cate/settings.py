@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+from allauth.account.managers import EmailAddressManager
 from allauth.templatetags import allauth as allauth_templatetags
 from debug_toolbar.settings import PANELS_DEFAULTS
 from debug_toolbar.toolbar import DebugToolbar
@@ -224,7 +225,7 @@ pw.password_validators_help_text_html = lambda: "Votre mot de passe doit conteni
 ACCOUNT_ADAPTER = "users.adapter.Adapter"  # Change the login form
 ACCOUNT_LOGIN_METHODS = {"email", "username"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
-ACCOUNT_EMAIL_NOTIFICATIONS = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_USER_DISPLAY = lambda user: user.email
@@ -291,6 +292,13 @@ class NewAdminSite(sites.AdminSite):
         self.login = secure_admin_login(self.login)
 
 sites.AdminSite = NewAdminSite
+
+old_add_email = EmailAddressManager.add_email
+
+def new_add_email(*args, confirm=False, **kwargs):
+    return old_add_email(*args, confirm=False, **kwargs)
+
+EmailAddressManager.add_email = new_add_email
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

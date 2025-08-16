@@ -8,13 +8,9 @@
 {{ block.super }}
 <script src="{% url "javascript-catalog" %}"></script>
 <script>
-var emails = [
-	{% for email in emails %}
-		{email: "{{ email.email|escapejs }}", isVerified: {{ email.verified|yesno:"true,false" }}},
-	{% endfor %}
-];
 {% url "account_email" as email_url %}
 var emailURL = "{{ email_url|escapejs }}";
+var csrftoken = "{{ csrf_token|escapejs }}";
 </script>
 <script src="{% static "common/subscription.js" %}"></script>
 {% endblock js %}
@@ -22,29 +18,35 @@ var emailURL = "{{ email_url|escapejs }}";
 {% block content %}
 <h1>Inscription</h1>
 <div class="columns">
-<div>
+<div class="form-center">
 <h2>Enfants à inscrire</h2>
 {% if not children and not registered_children %}
-<p>
-	Aucun enfant à réinscrire n'est disponible.
-	<br>
-	Vérifiez votre adresse mail et cliquez sur le lien de confirmation que vous avez reçu par mail.
-	<br>
-	Veuillez vous rendre sur <a href="{% url "account_email" %}">cette page</a> pour ajouter et vérifier une ou plusieurs adresses mail que vous nous aviez communiquées précédemment.
-</p>
+<p>Est-ce la première année que votre enfant vient au caté ou à l'aumônerie ?</p>
 {% endif %}
-<a class="label-help help-subscription" href="#">{% trans "I can't find my child" %}</a>
-<ul>
+<ul class="children-to-register">
 	{% for child in children %}
 		<li><a href="{% url "inscription_ancien" child.id %}">Réinscrire {{ child }} pour l'année scolaire {{ year.formatted_year }}</a></li>
 	{% endfor %}
 	<li><a href="{% url "inscription_nouveau" %}">Inscrire un nouvel enfant</a></li>
 </ul>
+{% if not children and not registered_children %}
+<p>Sinon :</p>
+{% endif %}
+<p class="help-subscription">
+	<a class="label-help shine" href="#">{% trans "I can't find my child" %}</a>
+</p>
 </div>
-{% if registered_children %}
-	<div class="border"></div>
-	<div>
-	<h2>Enfants inscrits</h2>
+<div class="form-center">
+<h2>Enfants inscrits</h2>
+{% if not registered_children %}
+	<p class="empty-box"></p>
+	<p class="wide-screen">
+		Inscrivez des enfants dans le volet de gauche et ils apparaîtront ici.
+	</p>
+	<p class="narrow-screen">
+		Inscrivez des enfants dans le volet du dessus et ils apparaîtront ici.
+	</p>
+{% else %}
 	<ul class="registered-children">
 		{% for child in registered_children %}
 			<li>
@@ -76,7 +78,7 @@ var emailURL = "{{ email_url|escapejs }}";
 			</li>
 		{% endfor %}
 	</ul>
-	</div>
 {% endif %}
+</div>
 </div>
 {% endblock %}

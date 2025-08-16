@@ -1,6 +1,7 @@
 var gettext = window.gettext || function(e) {return e};
-var emails = window.emails || [];
-var emailURL = window.emailURL || [];
+var interpolate = window.interpolate || function(e) {return e};
+var emailURL = window.emailURL || "";
+var csrftoken = window.csrftoken || "";
 
 $(function() {
     $("a[data-needs-parent-type]").on("click", function(e) {
@@ -19,7 +20,37 @@ $(function() {
         });
     });
 
-    $("a.help-subscription").on("click", function(e) {
+    var emails = [];
+
+    function displayEmails(ul) {
+        while (ul.firstChild)
+            ul.removeChild(ul.firstChild);
+        if (!emails.length)
+            return;
+        emails.forEach(email => {
+            var li = document.createElement("li");
+            li.textContent = email.email;
+            ul.appendChild(li);
+        });
+    }
+
+    async function fetchEmails(ul) {
+        var response = await fetch(emailURL, {
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrftoken,
+            },
+        });
+        if (!response.ok)
+            throw new Error(gettext("There was an error while fetching the email addresses."));
+        var data = await response.json();
+        emails = data.data || [];
+
+        if(ul)
+            displayEmails(ul);
+    }
+
+    $(".help-subscription a").on("click", async function(e) {
         e.preventDefault();
 
         var content = document.createElement("div");
@@ -29,41 +60,68 @@ $(function() {
             content.appendChild(p);
         }
 
-        add_p(gettext("To be able to do the quick subscription of children, you must verify an email address that you gave us previously."));
+        add_p(gettext("To be able to do the quick subscription of children, you must give us an email address that you gave us in previous years."));
 
-        if(emails.length) {
-            add_p(gettext("Currently you gave us those email addresses:"));
+        add_p(gettext("Currently you gave us those email addresses:"));
 
-            var ul = document.createElement("ul");
-            ul.style.textAlign = "left";
+        var ul = document.createElement("ul");
+        ul.style.textAlign = "left";
+        displayEmails(ul);
+        content.appendChild(ul);
 
-            emails.forEach(email => {
-                var li = document.createElement("li");
-                li.textContent = email.email + " ";
+        add_p(gettext("Try adding other addresses."));
 
-                var label = document.createElement("span");
-                label.classList.add("label-" + (email.isVerified ? "ok": "error"));
-                label.textContent = email.isVerified ? gettext("Verified") : gettext("Unverified");
-                li.appendChild(label);
+        var input = document.createElement("input");
+        input.className = "swal-content__input";
+        input.type = "email";
+        content.appendChild(input);
 
-                ul.appendChild(li);
-            });
-            content.appendChild(ul);
-        }
+        fetchEmails(ul);
 
-        add_p(gettext("If an address isn't verified, check your inbox and click on the link that you received."));
-        add_p(gettext("Otherwise try adding and verifying other addresses."));
-
-        swal({
+        var ok = await swal({
             title: gettext("Why can't you find your children?"),
             content: content,
-            buttons: {
-                add_email: gettext("Add an email address"),
-                cancel: gettext("Cancel"),
-            },
-        }).then((value) => {
-            if (value === "add_email")
-                window.open(emailURL);
+            buttons: [
+                gettext("Cancel"),
+                {
+                    text: gettext("Add an email address"),
+                    closeModal: false,
+                },
+            ],
+        });
+        if (!ok) {
+            swal.stopLoading();
+            return;
+        }
+        var email = input.value.trim();
+        try {
+            var response = await fetch(emailURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrftoken,
+                },
+                body: $.param({
+                    email: email,
+                    action_add: "",
+                }),
+            });
+            if (!response.ok)
+                throw new Error(gettext("There was an error while adding your email address."));
+        } catch(e) {
+            console.error("Error adding email:", e);
+            swal(gettext("Error"), gettext("There was an error while adding your email address."), "error");
+            return;
+        }
+        swal.stopLoading();
+        swal({
+            title: gettext("Email address added"),
+            text: interpolate("The email address %s has been added.", [email]),
+            icon: "success",
+            buttons: false,
+            timer: 1000,
+        }).then(() => {
+            location.reload();
         });
     });
 });

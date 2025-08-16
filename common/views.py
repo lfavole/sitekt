@@ -57,7 +57,7 @@ def link_children(request):
     Link unlinked children that don't have a user to a user if a verified email matches.
     """
     children = LastChildVersion.objects.filter(user=None)
-    email_addresses = EmailAddress.objects.filter(user=request.user, verified=True)
+    email_addresses = EmailAddress.objects.filter(user=request.user)
     for child in children:
         for email in email_addresses:
             if any(
