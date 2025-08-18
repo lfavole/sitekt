@@ -9,6 +9,8 @@ from django.utils.translation import gettext
 from common.models import Page
 from common.views import PageView
 
+from .redirect_field import redirect_field
+
 register = template.Library()
 
 
@@ -21,7 +23,7 @@ class NavItem:
         page = self.page
         if page is None:
             ret = "<ul>\n"
-            ret += '<label class="fermer" for="menu-checkbox"></label>\n'
+            ret += '<label class="nav__close" for="menu-checkbox"></label>\n'
             for subitem in self.subitems:
                 ret += subitem.render(req_match)
             ret += "</ul>\n"
@@ -101,4 +103,5 @@ def nav_link(context, value, label, additional=""):
         label = mark_safe('<span class="fleche fl-gauche"></span> ' + label)
     else:
         label = mark_safe(label)
+    value += redirect_field(context)
     return mark_safe(f'<li><a href="{escape(value)}"{is_active}>{label}</a></li>')
