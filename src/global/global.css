@@ -1338,10 +1338,10 @@ span[class^="input-"] input[type=number] + select {
 	vertical-align: middle;
 }
 
-.children-to-register li, .registered-children li {
+.registering-onboarding li, .children-to-register li, .registered-children li {
 	margin: 0.5em 0;
 }
-.help-subscription {
+p.help-subscription {
 	margin-top: 2em;
 }
 .label-ok {
@@ -1536,11 +1536,4 @@ hr {
 	50%, 100% {
 		left: 100%;
 	}
-}
-.empty-box {
-	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="661.235" height="430.843" fill-rule="evenodd" stroke-linejoin="round" stroke-width="28.222" preserveAspectRatio="xMidYMid" version="1.2" viewBox="0 0 17495.189 11399.378"><g style="display:inline"><path fill="%23e8a202" d="m2365.328 2692.156 5 14-2022 65 6050-2230 2764-152-6772 2295-3-1-1 2zM2537.328 9005.156l35-3645 3508 1368 15-37 1612-1933-223 6503z"/><path fill="%23e8a202" d="m2426.328 2810.156 5190 1892-1581 1896-5178-2020ZM9826.329 7342.156l4563-2248-182 3354-6617 2821 222-6479 1949 2536 41-31z"/><path fill="%23e8a202" d="m22152 8204-6606 3254-1940-2524 6694-3059Z" style="display:inline" transform="translate(-5726.672 -4230.844)"/><path fill="%23ffbf00" d="m20290 5730-4692-1161 2407-223 4847 1313-2562 67z" style="display:inline" transform="translate(-5726.672 -4230.844)"/><path fill="%23fff5ce" d="m2549.328 2742.156 6949-2355-29 3473-1709 781zM14453.329 1582.156l-4878 2230 28-3430z"/><g fill="none" stroke="%23000" stroke-width="106" style="display:inline"><path d="m2361.328 2725.156 5393 1966M14603.328 1561.156l-6848 3130M2375.328 2735.156l7168-2429M14629.328 1565.156l-5085-1258M6368.328 482.156l3176-175M6405.328 472.156l-6387 2354M2412.328 2750.156l-2394 77M16498.328 3985.156l-6703 3302"/><path d="m22257 8253-1973-2481M23207 5696l-2923 76M23208 5696l-5219-1414" style="display:inline" transform="translate(-5726.672 -4230.844)"/><path d="m9436.328 318.156 2856-265M7768.328 4648.156l2028 2639M7527.328 11343.156l228-6652M7527.328 11343.156l6758-2881M14440.328 4991.156l-190 3511M7561.328 11351.156l-5116-2333M2512.328 5270.156l-36 3792"/><path d="M8120 6983 6465 8848" style="display:inline" transform="translate(-5726.672 -4230.844)"/><path d="m6092.328 6672.156-5313-2072M6041.328 6657.156l1662-1992M9514.328 3920.156l30-3613"/></g></g></svg>');
-	background-position: center;
-	background-size: contain;
-	background-repeat: no-repeat;
-	height: 6em;
 }

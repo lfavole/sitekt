@@ -1,4 +1,5 @@
 var gettext = window.gettext || function(e) {return e};
+var ngettext = window.ngettext || function(s, p, c) {return c == 1 ? s : p};
 var interpolate = window.interpolate || function(e) {return e};
 var emailURL = window.emailURL || "";
 var csrftoken = window.csrftoken || "";
@@ -22,11 +23,16 @@ $(function() {
 
     var emails = [];
 
-    function displayEmails(ul) {
+    function displayEmails(p, ul) {
         while (ul.firstChild)
             ul.removeChild(ul.firstChild);
-        if (!emails.length)
+        if (!emails.length) {
+            p.textContent = gettext("Currently you didn't give us any email addresses.");
             return;
+        }
+
+        p.textContent = ngettext("Currently you gave us this email address:", "Currently you gave us these email addresses:", emails.length);
+
         emails.forEach(email => {
             var li = document.createElement("li");
             li.textContent = email.email;
@@ -34,7 +40,7 @@ $(function() {
         });
     }
 
-    async function fetchEmails(ul) {
+    async function fetchEmails(p, ul) {
         var response = await fetch(emailURL, {
             headers: {
                 "Content-Type": "application/json",
@@ -46,8 +52,8 @@ $(function() {
         var data = await response.json();
         emails = data.data || [];
 
-        if(ul)
-            displayEmails(ul);
+        if(p && ul)
+            displayEmails(p, ul);
     }
 
     $(".help-subscription a").on("click", async function(e) {
@@ -60,23 +66,28 @@ $(function() {
             content.appendChild(p);
         }
 
-        add_p(gettext("To be able to do the quick subscription of children, you must give us an email address that you gave us in previous years."));
+        add_p(gettext("To be able to do the quick subscription of children, you must give us the email address (from the mother or the father) that you gave us the last year."));
 
-        add_p(gettext("Currently you gave us those email addresses:"));
+        var p = document.createElement("p");
+        content.appendChild(p);
 
         var ul = document.createElement("ul");
         ul.style.textAlign = "left";
-        displayEmails(ul);
         content.appendChild(ul);
 
-        add_p(gettext("Try adding other addresses."));
+        displayEmails(p, ul);
+
+        add_p(gettext("Try with another address:"));
 
         var input = document.createElement("input");
         input.className = "swal-content__input";
         input.type = "email";
+        input.placeholder = gettext("Email address");
         content.appendChild(input);
 
-        fetchEmails(ul);
+        add_p(gettext("If this does not work, please click on 'Register a new child' and perform the full registration of your child."));
+
+        fetchEmails(p, ul);
 
         var ok = await swal({
             title: gettext("Why can't you find your children?"),

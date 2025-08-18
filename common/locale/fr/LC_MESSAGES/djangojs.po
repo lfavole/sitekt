@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-16 15:58+0200\n"
+"POT-Creation-Date: 2025-08-18 14:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,7 +66,7 @@ msgstr "Ouvrir le calendrier Yahoo"
 
 #: common/static/common/add-to-calendar-button.js:87
 #: common/static/common/add-to-calendar-button.js:121
-#: common/static/common/subscription.js:85
+#: common/static/common/subscription.js:98
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -125,43 +125,69 @@ msgstr "Cacher les dates passées"
 msgid "Show past dates"
 msgstr "Afficher les dates passées"
 
-#: common/static/common/subscription.js:45
+#: common/static/common/subscription.js:30
+msgid "Currently you didn't give us any email addresses."
+msgstr "Actuellement vous ne nous avez donné aucune adresse e-mail."
+
+#: common/static/common/subscription.js:34
+msgid "Currently you gave us this email address:"
+msgid_plural "Currently you gave us these email addresses:"
+msgstr[0] "Actuellement vous nous avez donné cette adresse e-mail :"
+msgstr[1] "Actuellement vous nous avez donné ces adresses e-mail :"
+
+#: common/static/common/subscription.js:51
 msgid "There was an error while fetching the email addresses."
 msgstr "Une erreur est survenue lors de la récupération des adresses e-mail."
 
-#: common/static/common/subscription.js:63
+#: common/static/common/subscription.js:69
 msgid ""
-"To be able to do the quick subscription of children, you must give us an "
-"email address that you gave us in previous years."
+"To be able to do the quick subscription of children, you must give us the "
+"email address (from the mother or the father) that you gave us the last year."
 msgstr ""
 "Pour pouvoir effectuer l'inscription rapide de vos enfants, vous devez nous "
-"donner une adresse e-mail que vous nous avez donnée les années précédentes."
+"donner l'adresse e-mail (celle de la mère ou du père) utilisée l'année "
+"passée."
 
-#: common/static/common/subscription.js:65
-msgid "Currently you gave us those email addresses:"
-msgstr "Actuellement vous nous avez donné ces adresses e-mail :"
+#: common/static/common/subscription.js:80
+msgid "Try with another address:"
+msgstr "Essayez avec une autre adresse :"
 
-#: common/static/common/subscription.js:72
-msgid "Try adding other addresses."
-msgstr "Essayez d'ajouter d'autres adresses."
+#: common/static/common/subscription.js:85
+msgid "Email address"
+msgstr "Adresse e-mail"
 
-#: common/static/common/subscription.js:82
+#: common/static/common/subscription.js:88
+msgid "Try adding another address:"
+msgstr "Essayez d'ajouter une autre adresse :"
+
+#: common/static/common/subscription.js:92
+msgid ""
+"If this does not work, please click on 'Register a new child' and perform "
+"the full registration of your child."
+msgstr ""
+"Si cela ne fonctionne pas, veuillez cliquer sur \"Inscrire un nouvel "
+"enfant\" et effectuer l'inscription complète de votre enfant."
+
+#: common/static/common/subscription.js:95
 msgid "Why can't you find your children?"
 msgstr "Pourquoi ne trouvez-vous pas vos enfants ?"
 
-#: common/static/common/subscription.js:87
+#: common/static/common/subscription.js:100
 msgid "Add an email address"
 msgstr "Ajouter une adresse e-mail"
 
-#: common/static/common/subscription.js:110
-#: common/static/common/subscription.js:113
+#: common/static/common/subscription.js:123
+#: common/static/common/subscription.js:126
 msgid "There was an error while adding your email address."
 msgstr "Une erreur est survenue lors de l'ajout de votre adresse e-mail."
 
-#: common/static/common/subscription.js:113
+#: common/static/common/subscription.js:126
 msgid "Error"
 msgstr "Erreur"
 
-#: common/static/common/subscription.js:118
+#: common/static/common/subscription.js:131
 msgid "Email address added"
 msgstr "Adresse e-mail ajoutée"
+
+#~ msgid "Currently you gave us these email addresses:"
+#~ msgstr "Actuellement vous nous avez donné ces adresses e-mail :"
