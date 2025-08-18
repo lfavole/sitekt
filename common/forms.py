@@ -48,8 +48,8 @@ class SubscriptionForm(forms.Form):
     autorisation = DisplayedHTMLField(
         "Un document intitulé <b>« Autorisation et engagement »</b> devra être signé par vos soins.<br>"
         "Après avoir terminé l'inscription, vous pourrez le télécharger, "
-        "l'imprimer, le compléter, le signer et nous le rapporter à la prochaine rencontre du catéchisme, "
-        "sinon une version papier vous sera donnée."
+        "l'imprimer, le compléter, le signer et nous le rapporter à la prochaine rencontre de catéchisme "
+        "ou d'aumônerie, sinon une version papier vous sera donnée."
     )
 
     fieldsets_template = "common/form_as_fieldsets.html"
@@ -132,10 +132,10 @@ class SubscriptionForm(forms.Form):
                 " (plaquettes, presse municipale et locale, site Internet, ...)"
             ),
             "frais": mark_safe(
-                "En fonction de leurs possibilités, les familles sont invitées à participer "
-                "aux <b>frais du Catéchisme / de l'Aumônerie à partir de 35 euros par enfant</b> "
-                "(livres, photocopies, matériel pédagogique, chauffage...).<br>"
-                "Participation aux frais, en espèces ou par chèque, à l'ordre de « Aumônerie des Jeunes d'Embrun »"
+                "En fonction de vos possibilités, vous êtes invités à participer "
+                "aux <b>frais du catéchisme / de l'aumônerie à partir de 35 euros par enfant</b> "
+                "(livres, photocopies, matériel pédagogique, chauffage...).<br><br>"
+                "Participation aux frais, en espèces ou par chèque, à l'ordre de « Jeunesse Altitude Embrun »"
             ),
         }
 
