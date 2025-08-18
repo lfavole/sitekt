@@ -24,9 +24,9 @@ class DatesList(PDF):
         if categories_query:
             categories = categories.filter(slug__in=categories_query)
         title = (
-            f"Toutes les dates importantes {Year.get_current().formatted_year}"
+            f"Calendrier {Year.get_current().formatted_year}"
             if not categories_query
-            else f"Dates importantes {Year.get_current().formatted_year} : " + ", ".join(category.title for category in categories)
+            else f"Calendrier {Year.get_current().formatted_year} : " + ", ".join(category.title for category in categories)
         )
 
         def get(element: Occurrence, key: str) -> str:

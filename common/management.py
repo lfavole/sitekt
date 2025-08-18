@@ -85,21 +85,10 @@ def create_pages(
             content="<h1>Bienvenue sur le site du caté !</h1>",
         ),
         Page(title="Inscription", content="inscription"),
-        Page(title="Dates importantes", content="dates"),
+        Page(title="Calendrier", content="dates"),
         Page(title="Documents téléchargeables", content="documents"),
-        Page(title="Articles / Photos", content="articles"),
+        Page(title="Retour en images", content="articles"),
     ]
-
-    for view, title in {
-        "documents": "Documents téléchargeables",
-        "articles": "Articles / Photos",
-    }.items():
-        base_page = Page(title=title)
-        pages.extend([
-            base_page,
-            Page(title="Caté", slug=f"{view}_cate", content=f"espacecate_{view}", parent_page=base_page),
-            Page(title="Aumônerie", slug=f"{view}_aumonerie", content=f"aumonerie_{view}", parent_page=base_page),
-        ])
 
     for i, page in enumerate(pages):
         if not page.slug:
