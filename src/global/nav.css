@@ -1,0 +1,249 @@
+nav {
+    font-size: 1.25em;
+}
+.ouvrir-menu {
+	display: none;
+}
+.nav__button {
+	font-size: 2em;
+	padding: 0 0.25em;
+    cursor: pointer;
+    display: none;
+}
+.nav__close_pane {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+}
+nav .fermer {
+	display:none;
+}
+nav a, nav .link {
+	color:#0d47a1 !important;
+	text-decoration:none !important;
+	cursor:pointer;
+}
+/* real links (not links to submenus) */
+nav a[href]:not([href="#"]), nav .link {
+	font-weight: bold;
+}
+nav a.act {
+	color:#2196f3 !important;
+	text-decoration:underline 2px;
+}
+@media screen and (min-width: 501px) {
+    nav {
+        border: 0.25rem solid var(--border);
+        border-radius: 2rem;
+        background-color: var(--bg-dark);
+        padding: 0.3rem 1rem;
+        margin: 0.5rem auto;
+        width: fit-content;
+        max-width: min(1200px, calc(100% - 1rem));
+        text-align: center;
+    }
+    /* reset styles */
+    nav ul {
+        display: block;
+        padding: 0;
+        margin: 0;
+    }
+    nav li {
+        display: inline-block;
+        position: relative;
+    }
+    /* navigation bar (the first level of links on desktop) */
+    nav > ul > li {
+        /* otherwise the mouse goes out of the <li> and the submenu can't be shown */
+        padding-bottom: 0.3rem;
+        margin-bottom: -0.3rem;
+    }
+    nav > ul > li::after {
+        content: "·";
+        margin: 0 0.4em;
+    }
+    nav > ul > li:last-child::after {
+        content:unset !important;
+    }
+    nav li:has(ul) > a::after {
+        content: "";
+        display: inline-block;
+        width: 0.5em;
+        height: 0.5em;
+        border-right: 0.1em solid currentColor;
+        border-bottom: 0.1em solid currentColor;
+        transform: translateY(-0.125em) rotate(-45deg);
+        margin-left: 0.35em;
+    }
+    nav > ul > li:has(ul) > a::after {
+        transform: translateY(-0.25em) rotate(45deg);
+    }
+    nav ul ul {
+        text-align: left;
+        opacity: 0;
+        pointer-events: none;
+        background-color: var(--bg-light);
+
+        border: 0.25em solid var(--border);
+        border-radius: 0 0 0.5em 0.5em;
+        border-top: none;
+
+        min-width: 4em;
+        position: absolute;
+        /* padding + border */
+        left: -0.75em;
+        top: 100%;
+        z-index: 1;
+    }
+    nav ul ul::before {
+        /* dotted border at the top */
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border-top: 0.1em dotted var(--border);
+        background-color: var(--bg-light);
+        z-index: 2;
+    }
+    nav ul ul ul {
+        left: 100%;
+        top: 0;
+        border-top: 0.25em solid var(--border);
+        border-left: none;
+        border-radius: 0 0.5em 0.5em 0;
+    }
+    /* dotted border at the left */
+    nav ul ul ul::before {
+        width: unset;
+        height: 100%;
+        border-top: none;
+        border-left: 0.1em dotted var(--border);
+    }
+    nav li:hover > ul, nav li a:focus + ul, nav ul:focus-within {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    nav ul ul li {
+        display: block;
+        padding: 0.25em;
+    }
+}
+@media screen and (max-width: 500px) {
+    .nav__button {
+        display: block;
+    }
+    nav ul {
+        margin: 0.5em 0;
+        padding: 0 0 0 1.25em;
+    }
+	nav > ul {
+		/* text-align:center; */
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+		position: fixed;
+		left: 0;
+		top: 0;
+        bottom: 0;
+		z-index: 2;
+		width: 0;
+		background-color: var(--bg-light);
+        border-radius: 0 0.5em 0.5em 0;
+		transition: opacity 0.4s, width 0.4s;
+        opacity: 0;
+		pointer-events: none;
+	}
+	.ouvrir-menu {
+		display:block;
+		color:blue;
+		cursor:pointer;
+		text-align: center;
+	}
+    .nav__close {
+        display: block;
+        cursor: pointer;
+        width: 1em;
+        height: 1em;
+		transform: scale(0);
+		transition: transform 0.4s;
+
+        float: right;
+        margin-right: 0.5em;
+    }
+    .nav__close::before, .nav__close::after {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 0.1em;
+        height: 0.6em;
+        border-radius: 0.1em;
+        background-color: black;
+        transform-origin: center;
+    }
+    .nav__close::before {
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+    .nav__close::after {
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+    nav li {
+        margin: 0.25em 0;
+    }
+	#menu-checkbox:checked ~ nav .nav__close_pane {
+        opacity: 1;
+        pointer-events: auto;
+    }
+	#menu-checkbox:checked ~ nav > ul {
+		opacity: 1;
+		pointer-events: auto;
+		width: 66.6vw;
+	}
+	#menu-checkbox:checked ~ nav .nav__close {
+		transform: scale(1);
+	}
+	#menu-checkbox:checked ~ nav ul > ul {
+		padding:8px 0px;
+	}
+	/* nav > ul > li {
+		display:block;
+		width:100%;
+		font-size:20px;
+		line-height:1.8em;
+	}
+	nav li {
+		display:flex;
+		padding-bottom:0px;
+	}
+	nav li::after {
+		content:unset !important;
+	}
+	nav ul ul {
+		opacity:1;
+		pointer-events:auto;
+		border:0px;
+		position:unset;
+		background-color:unset;
+		margin:0px auto;
+		text-align:left;
+		font-size:80%;
+		line-height:1.4em;
+		margin-top:-0.5em;
+	} */
+}
+
+@media not print {
+	body.mode-nuit header, body.mode-nuit nav {
+		filter:grayscale(30%);
+	}
+}

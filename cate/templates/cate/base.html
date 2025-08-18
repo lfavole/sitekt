@@ -15,8 +15,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="{% static "global/global.css" %}">
+<link rel="stylesheet" href="{% static "global/header.css" %}">
+<link rel="stylesheet" href="{% static "global/nav.css" %}">
 <link rel="stylesheet" href="{% static "global/messages.css" %}">
 {% block app_css %}{% endblock %}
 {% block css %}{% endblock %}
@@ -25,14 +28,16 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert@2/dist/sweetalert.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@2/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" defer></script>
 {% else %}
 <script src="{% static "offline/jquery.min.js" %}"></script>
 <script src="{% static "offline/sweetalert.min.js" %}"></script>
 <script src="{% static "offline/moment.min.js" %}"></script>
+<script src="{% static "offline/cdn.min.js" %}"></script>
 {% endif %}
 <script src="{% static "global/global.js" %}"></script>
 {% block app_js %}{% endblock %}
 {% block js %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock body_class %}">{% block body %}{% endblock %}</body>
+<body class="{% block body_class %}light{% endblock body_class %}">{% block body %}{% endblock %}</body>
 </html>

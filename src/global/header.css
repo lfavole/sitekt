@@ -1,0 +1,81 @@
+header {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	background-color: var(--bg-dark);
+	padding-bottom: 0.5em;
+	background-image: linear-gradient(to top, var(--bg-light) 0, var(--bg-dark) 0.5em 100%);
+}
+.header__left, .header__center, .header__right {
+	display: flex;
+	align-items: center;
+}
+.header__left {
+	justify-content: flex-start;
+}
+.header__center {
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.header__right {
+	justify-content: flex-end;
+}
+@media screen and (max-width: 500px) {
+	header {
+		/*
+		left | right
+		------------
+		   center
+		*/
+		grid-template-columns: 1fr auto;
+		grid-template-rows: auto auto;
+	}
+	.header__center {
+		/* at the end, takes the full width */
+		order: 3;
+		grid-column: 1 / -1;
+	}
+}
+.header__logo {
+	height: 6em;
+	margin: 0.5em;
+	border-radius: 1em;
+	box-shadow: var(--shadow);
+}
+/* User information */
+@media screen and (max-width: 1023px) {
+	.header__user_info {
+		margin:0.5rem;
+	}
+}
+@media screen and (min-width: 1024px) {
+    .header__user_info {
+        width: 150px;
+        text-align: center;
+		padding: 0.5em 0;
+    }
+}
+.header__user_info {
+    flex-shrink: 0;
+}
+.header__user_info summary {
+    cursor: pointer;
+}
+/* Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com
+License - https://fontawesome.com/license/free
+Copyright 2024 Fonticons, Inc.
+
+Compressed with https://svgomg.net/
+*/
+.header__user_info summary::before {
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    margin-right: 0.3em;
+    /* user */
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256a128 128 0 1 0 0-256 128 128 0 1 0 0 256zm-46 48C80 304 0 384 0 482c0 17 13 30 30 30h388c17 0 30-13 30-30 0-98-80-178-178-178h-92z"/></svg>');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}

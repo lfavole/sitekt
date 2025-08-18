@@ -330,9 +330,6 @@ $(function() {
 		moment.locale(navigator.language);
 		moment.locale(navigator.languages || []);
 	} catch(e) {}
-	$(window).on("resize", function() {
-		if(innerWidth > 500) menu_fermer();
-	});
 
 	night_mode.auto();
 });

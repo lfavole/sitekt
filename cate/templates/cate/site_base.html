@@ -1,32 +1,49 @@
 {% extends "cate/base.html" %}
 {% load i18n %}
+{% load static %}
 {% load nav %}
 
 {% block body %}
+<input
+    type="checkbox"
+    id="menu-checkbox"
+    class="sr-only"
+    x-data="{ close() {if(window.matchMedia('(min-width: 501px)').matches) $el.checked = false} }"
+    x-init="close"
+    @resize.window="close"
+>
 <header>
-<div class="titre">{% block title-header %}{{ SITE_NAME }}{% endblock %}</div>
-<div class="user">
-{% if user.is_authenticated %}
-    <details>
-        <summary>{{ user.username }}</summary>
-        {% if user.is_staff %}
-        <a href="{% url "admin:index" %}" target="_blank">{% trans "Administration" %}</a><br>
-        {% endif %}
-        <a href="{% url "account_index" %}">{% trans "Account" %}</a><br>
-        <form method="post" action="{% url "account_logout" %}" class="logout-form">
-            {% csrf_token %}
-            <input type="submit" class="link" value="{% trans "Log out" %}">
-        </form>
-    </details>
-{% else %}
-    <a href="{% url "account_login" %}">{% trans "Log in" %}</a>
-{% endif %}
-</div>
+    <div class="header__left">
+        <label class="nav__button" for="menu-checkbox">≡</label>
+    </div>
+    <div class="header__center">
+        <img class="header__logo" src="{% static "espacecate/favicon.png" %}">
+        <img class="header__logo" style="background: white" src="{% static "aumonerie/favicon.png" %}">
+        <div class="header__title">{% block title-header %}{{ SITE_NAME }}{% endblock %}</div>
+    </div>
+    <div class="header__right">
+        <div class="header__user_info">
+            {% if user.is_authenticated %}
+                <details>
+                    <summary>{{ user.username }}</summary>
+                    {% if user.is_staff %}
+                    <a href="{% url "admin:index" %}" target="_blank">{% trans "Administration" %}</a><br>
+                    {% endif %}
+                    <a href="{% url "account_index" %}">{% trans "Account" %}</a><br>
+                    <form method="post" action="{% url "account_logout" %}" class="logout-form">
+                        {% csrf_token %}
+                        <input type="submit" class="link" value="{% trans "Log out" %}">
+                    </form>
+                </details>
+            {% else %}
+                <a href="{% url "account_login" %}">{% trans "Log in" %}</a>
+            {% endif %}
+        </div>
+    </div>
 </header>
 {% block navbar %}
 <nav>
-    <label class="ouvrir-menu" for="menu-checkbox">Menu</label>
-    <input type="checkbox" id="menu-checkbox" class="sr-only">
+    <label class="nav__close_pane" for="menu-checkbox"></label>
     {% nav %}
 </nav>
 {% endblock navbar %}

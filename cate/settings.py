@@ -274,7 +274,7 @@ def new_render(self, context, *args, **kwargs):
 
 allauth_templatetags.ElementNode.render = new_render
 
-SITE_NAME = "Site du caté"
+SITE_NAME = "Site du caté et de l'aumônerie"
 
 requestsize_init = RequestSite.__init__
 
@@ -376,9 +376,11 @@ TINYMCE_DEFAULT_CONFIG = {
     "language": "fr",
     "content_css": [
         "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+        "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap",
         static_lazy("global/global.css"),
     ],
     "content_style": "body{padding:8px}",
+    "body_class": "light",
     "promotion": False,
     "plugins": "autolink code fullscreen help image link lists media preview quickbars save searchreplace table",
     "toolbar": (
