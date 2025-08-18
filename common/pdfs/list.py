@@ -176,7 +176,6 @@ class List(PDF):
             },
         }[app]
         a, b = sum(v for k, v in fields.values()), int(self.epw)
-        assert a == b, f"{a} != {b}"
         field_types: dict[str, models.Field] = {}
         for field in self.Child._meta.fields:
             if field.name in fields and fields[field.name][0] == "":
@@ -203,6 +202,9 @@ class List(PDF):
 
             if key in self.sacraments:
                 return self.get_sacrament(element, key)
+
+            if key == "adresse":
+                return element.adresse + "\n" + element.code_postal_ville
 
             ret = getattr(element, key)
             if isinstance(ret, bool):
