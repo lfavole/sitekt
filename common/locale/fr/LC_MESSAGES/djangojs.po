@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-18 14:24+0200\n"
+"POT-Creation-Date: 2025-08-19 16:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,7 +66,7 @@ msgstr "Ouvrir le calendrier Yahoo"
 
 #: common/static/common/add-to-calendar-button.js:87
 #: common/static/common/add-to-calendar-button.js:121
-#: common/static/common/subscription.js:98
+#: common/static/common/subscription.js:96
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -117,11 +117,26 @@ msgstr "Télécharger"
 msgid "Add to calendar"
 msgstr "Ajouter à votre agenda"
 
-#: common/static/common/dates.js:59
+#: common/static/common/dates.js:9
+msgid "Please select the categories corresponding to your children."
+msgstr ""
+"Veuillez sélectionner les catégories concernant vos enfants."
+
+#: common/static/common/dates.js:10
+msgid "You can also add the dates to your personal calendar or download the list."
+msgstr ""
+"Vous pouvez également ajouter les dates à votre agenda personnel ou télécharger "
+"la liste."
+
+#: common/static/common/dates.js:19
+msgid "How to use the calendar?"
+msgstr "Comment utiliser le calendrier ?"
+
+#: common/static/common/dates.js:86
 msgid "Hide past dates"
 msgstr "Cacher les dates passées"
 
-#: common/static/common/dates.js:59
+#: common/static/common/dates.js:86
 msgid "Show past dates"
 msgstr "Afficher les dates passées"
 
@@ -157,10 +172,6 @@ msgid "Email address"
 msgstr "Adresse e-mail"
 
 #: common/static/common/subscription.js:88
-msgid "Try adding another address:"
-msgstr "Essayez d'ajouter une autre adresse :"
-
-#: common/static/common/subscription.js:92
 msgid ""
 "If this does not work, please click on 'Register a new child' and perform "
 "the full registration of your child."
@@ -168,26 +179,29 @@ msgstr ""
 "Si cela ne fonctionne pas, veuillez cliquer sur \"Inscrire un nouvel "
 "enfant\" et effectuer l'inscription complète de votre enfant."
 
-#: common/static/common/subscription.js:95
+#: common/static/common/subscription.js:93
 msgid "Why can't you find your children?"
 msgstr "Pourquoi ne trouvez-vous pas vos enfants ?"
 
-#: common/static/common/subscription.js:100
+#: common/static/common/subscription.js:98
 msgid "Add an email address"
 msgstr "Ajouter une adresse e-mail"
 
-#: common/static/common/subscription.js:123
-#: common/static/common/subscription.js:126
+#: common/static/common/subscription.js:121
+#: common/static/common/subscription.js:124
 msgid "There was an error while adding your email address."
 msgstr "Une erreur est survenue lors de l'ajout de votre adresse e-mail."
 
-#: common/static/common/subscription.js:126
+#: common/static/common/subscription.js:124
 msgid "Error"
 msgstr "Erreur"
 
-#: common/static/common/subscription.js:131
+#: common/static/common/subscription.js:129
 msgid "Email address added"
 msgstr "Adresse e-mail ajoutée"
+
+#~ msgid "Try adding another address:"
+#~ msgstr "Essayez d'ajouter une autre adresse :"
 
 #~ msgid "Currently you gave us these email addresses:"
 #~ msgstr "Actuellement vous nous avez donné ces adresses e-mail :"

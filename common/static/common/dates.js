@@ -3,9 +3,36 @@ var categoryNames = window.categoryNames || {};
 var gettext = window.gettext || function(e) {return e};
 
 $(function() {
+    $("main .label-help").click(function(e) {
+        e.preventDefault();
+        var lines = [
+            gettext("Please select the categories corresponding to your children."),
+            gettext("You can also add the dates to your personal calendar or download the list."),
+        ];
+        var content = document.createElement("div");
+        lines.forEach(line => {
+            var p = document.createElement("p");
+            p.textContent = line;
+            content.appendChild(p);
+        });
+        swal({
+            title: gettext("How to use the calendar?"),
+            content: content,
+            icon: "info",
+        });
+    });
+
     var selectedCategories = [...categories];
     var allSelected = true;
     var displayPast = false;
+    try {
+        var settings = JSON.parse(localStorage.getItem("calendarSettings"));
+        if(Array.isArray(settings.c)) {
+            allSelected = false;
+            selectedCategories = settings.c;
+        }
+        displayPast = !!settings.p;
+    } catch(e) {}
 
     var allCategories = $();
     if(categories) {
@@ -69,6 +96,11 @@ $(function() {
         var pdfURL = new URL($(".pdf-link").attr("href"), location.href);
         pdfURL.searchParams.set("categories", categoriesParameter);
         $(".pdf-link").attr("href", pdfURL + "");
+
+        localStorage.setItem(
+            "calendarSettings",
+            JSON.stringify({c: allSelected ? "all" : selectedCategories, p: displayPast}),
+        );
     }
 
     var pastSeparator = $("<tr>").addClass("separation show").append(

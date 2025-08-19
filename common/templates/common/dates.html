@@ -33,10 +33,12 @@ var categorySlugs = {
 {% endblock js %}
 
 {% block content %}
-<h1>Calendrier</h1>
+<h1>
+    Calendrier
+    <a class="label-help" href="#"></a>
+</h1>
 <p class="filters"></p>
 <p>
-    Dates pour les catégories sélectionnées :
     <add-to-calendar-button url="{% url "dates_ics" %}"></add-to-calendar-button>
     <a class="pdf-link" href="{% url "liste_dates" %}" target="_blank">Télécharger en PDF</a>
 </p>
