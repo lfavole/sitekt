@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-11 17:41+0100\n"
+"POT-Creation-Date: 2025-08-19 15:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: users/adapter.py:42
+#: users/adapter.py:56
 msgid ""
 "Starting this year, you will need to create an account to register your "
 "child."
-msgstr "À partir de cette année, vous devrez créer un compte pour inscrire votre enfant."
+msgstr ""
+"À partir de cette année, vous devrez créer un compte pour inscrire votre "
+"enfant."
 
-#: users/adapter.py:44
+#: users/adapter.py:58
 msgid "You need to create an account to register your child."
 msgstr "Vous devez créer un compte pour inscrire votre enfant."
 
-#: users/adapter.py:47
+#: users/adapter.py:61
 msgid "This will help us to simplify the registering process."
 msgstr "Cela va nous aider à simplifier le processus d'inscription."
+
+#: users/adapter.py:63
+msgid "If you have any problem with the registration, please %scontact Carine%s."
+msgstr "En cas de problème pour l'inscription, merci de %scontacter Carine%s."
 
 #: users/models.py:12
 msgid "user"

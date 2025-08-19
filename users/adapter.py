@@ -12,7 +12,7 @@ from django.contrib.messages import info
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import resolve_url
 from django.template.loader import render_to_string as real_render_to_string
-from django.urls import Resolver404, resolve
+from django.urls import Resolver404, resolve, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -59,6 +59,14 @@ def patch(old):
                         )
                         + "<br>"
                         + escape(_("This will help us to simplify the registering process."))
+                        + "<br>"
+                        + (
+                            escape(_("If you have any problem with the registration, please %scontact Carine%s."))
+                            % (
+                                '<a href="' + escape(reverse("page", args=("contacts",))) + '">',
+                                "</a>",
+                            )
+                        )
                     ),
                 )
 

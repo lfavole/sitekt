@@ -16,7 +16,12 @@ var csrftoken = "{{ csrf_token|escapejs }}";
 {% endblock js %}
 
 {% block content %}
-<h1>Inscription</h1>
+<h1>
+	Inscription
+	<small>
+		(en cas de problème, merci de <a href="{% url "page" "contacts" %}">contacter Carine</a>)
+	</small>
+</h1>
 <div class="columns">
 <div class="form-center">
 <h2>Enfants à inscrire</h2>

@@ -30,7 +30,13 @@ $(function() {
 {% endblock js %}
 
 {% block content %}
-<h1><a href="{% url "inscription" %}"><span class="fleche fl-gauche"></span></a>{% block h1 %}Inscription{% endblock h1 %}</h1>
+<h1>
+	<a href="{% url "inscription" %}"><span class="fleche fl-gauche"></span></a>
+	{% block h1 %}Inscription{% endblock h1 %}
+	<small>
+		(en cas de problème, veuillez <a href="{% url "page" "contacts" %}">contacter Carine</a>)
+	</small>
+</h1>
 {% block before_form %}{% endblock before_form %}
 <form name="subscription" method="post">
 	{% csrf_token %}

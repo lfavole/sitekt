@@ -334,6 +334,9 @@ h1, h2, h3, h4, h5, h6 {
 	page-break-after: avoid;
 	border-bottom: 0.125em solid var(--primary);
 }
+:is(h1, h2, h3, h4, h5, h6) small {
+	font-size: 0.6em;
+}
 
 .info {
 	display:block;
