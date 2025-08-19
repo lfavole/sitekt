@@ -1,5 +1,11 @@
 {
     "buildCommand": "bash build.sh",
+    "crons": [
+        {
+          "path": "/api/backup",
+          "schedule": "0 1 * * *"
+        }
+    ],
     "outputDirectory": "static",
     "rewrites": [
         {
