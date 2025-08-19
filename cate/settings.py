@@ -223,7 +223,7 @@ pw.password_validators_help_text_html = lambda: "Votre mot de passe doit conteni
 # Allauth settings
 # https://docs.allauth.org/en/stable/account/configuration.html
 ACCOUNT_ADAPTER = "users.adapter.Adapter"  # Change the login form
-ACCOUNT_LOGIN_METHODS = {"email", "username"}
+ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_UNIQUE_EMAIL = True
