@@ -2,6 +2,7 @@ import os.path
 from urllib.parse import urlencode
 
 from common.widgets import CustomImageClearableFileInput
+from django.core.files.base import ContentFile
 from django.db import models
 from easy_thumbnails.engine import NoSourceGenerator
 from easy_thumbnails.exceptions import InvalidImageFormatError
@@ -21,6 +22,7 @@ class FileField(ThumbnailerField):
     def pre_save(self, *args, **kwargs):
         file = super(models.FileField, self).pre_save(*args, **kwargs)
         if file._committed:
+            # Don't bother compressing the file if it's already saved
             return file
 
         thumbnailer = Thumbnailer(file)
@@ -31,18 +33,15 @@ class FileField(ThumbnailerField):
         try:
             thumbnail = thumbnailer.old_generate_thumbnail({"size": self.resize_source, "autocrop": True})
         except (InvalidImageFormatError, NoSourceGenerator):
-            if file and not file._committed:
-                file.save(file.name, file.file, save=False)
-            return file
-
-        if thumbnail:
-            thumbnail.name = os.path.join(os.path.dirname(file.name), os.path.basename(thumbnail.name))
-            file.name = thumbnail.name = self.storage.save(thumbnail.name, thumbnail.file, max_length=self.max_length)
+            pass
+        else:
+            file.name = os.path.join(os.path.dirname(file.name), os.path.basename(thumbnail.name))
+            file.file = thumbnail.file
 
         if file and not file._committed:
             file.save(file.name, file.file, save=False)
 
-        return thumbnail
+        return file
 
     @staticmethod
     def thumbnail_namer(source_filename, thumbnail_extension, **kwargs):
