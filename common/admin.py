@@ -118,6 +118,7 @@ class PageAdmin(SortableAdminMixin, admin.ModelAdmin):
     """
 
     form = PageAdminForm
+    inlines = [PageImagesInline]
 
 
 class ArticleImagesInline(CommonImagesInline):
@@ -135,6 +136,7 @@ class ArticleAdminForm(PageAdminForm):
     """
 
     model = Article
+    inlines = [ArticleImagesInline]
 
 
 @admin.register(Article)

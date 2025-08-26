@@ -330,12 +330,11 @@ class PageImage(ImageBase):
     An image on a page.
     """
 
-    page = models.ForeignKey("Page", on_delete=models.CASCADE, verbose_name=_("Page"))
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, verbose_name=_("Page"))
 
     class Meta:
         verbose_name = _("page image")
         verbose_name_plural = _("page images")
-        abstract = True
 
 
 class Article(PageBase):
@@ -372,7 +371,7 @@ class ArticleImage(ImageBase):
     Common article image class for all apps.
     """
 
-    page = models.ForeignKey("Article", on_delete=models.CASCADE, verbose_name=_("Article"))
+    page = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name=_("Article"))
 
     class Meta:
         verbose_name = _("article image")

@@ -29,7 +29,7 @@ class FileField(ThumbnailerField):
         thumbnailer.thumbnail_subdir = ""  # type: ignore
         thumbnailer.thumbnail_prefix = ""  # type: ignore
         try:
-            thumbnail = thumbnailer.generate_thumbnail({"size": self.resize_source, "autocrop": True})
+            thumbnail = thumbnailer.old_generate_thumbnail({"size": self.resize_source, "autocrop": True})
         except (InvalidImageFormatError, NoSourceGenerator):
             if file and not file._committed:
                 file.save(file.name, file.file, save=False)
@@ -85,6 +85,7 @@ if os.environ.get("VERCEL"):
         return CustomThumbnailFile(self.source_storage.url(self.name), thumbnail_options, *args, **kwargs)
 
     Thumbnailer.generate_thumbnail = generate_thumbnail
+    Thumbnailer.old_generate_thumbnail = old_generate_thumbnail
 
     old_save_thumbnail = Thumbnailer.save_thumbnail
 
@@ -95,3 +96,5 @@ if os.environ.get("VERCEL"):
         return old_save_thumbnail(self, thumbnail, *args, **kwargs)
 
     Thumbnailer.save_thumbnail = save_thumbnail
+else:
+    Thumbnailer.old_generate_thumbnail = Thumbnailer.generate_thumbnail
