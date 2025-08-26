@@ -380,6 +380,7 @@ TINYMCE_DEFAULT_CONFIG = {
         static_lazy("global/global.css"),
     ],
     "content_style": "body{padding:8px}",
+    "protect": [r"<style[^>]*>.*?</style>"],
     "body_class": "light",
     "promotion": False,
     "plugins": "autolink code fullscreen help image link lists media preview quickbars save searchreplace table",
