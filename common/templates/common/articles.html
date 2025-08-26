@@ -13,13 +13,13 @@ If there is a hidden article, it means the user is an admin.
 {% endcomment %}
 {% if articles %}
 	{% define ""|school_year as current_school_year %}
-	<div class="grid">
+	<div class="grid articles">
 	{% for article in articles %}
 	{% ifchanged %}
 	{% if article.date|school_year != current_school_year %}
 	</div>
 	<h2>Année {{ article.date|school_year }}</h2>
-	<div class="grid">
+	<div class="grid articles">
 	{% endif %}
 	{% endifchanged %}
 	<a href="{% url "article" article.slug %}">
