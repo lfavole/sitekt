@@ -10,15 +10,15 @@ main p, main table {
     display: inline-block;
     padding: 0.25em 0.5em;
     margin: 0 0.2em;
-    background-color: white;
-    color: #000;
-    border: 2px solid black;
+    background-color: var(--bg-dark);
+    color: var(--primary);
+    border: 0.125em solid var(--primary);
     text-decoration: none;
     border-radius: 0.3em;
 }
 .filters a.checked {
-    background-color: black;
-    color: white;
+    background-color: var(--primary);
+    color: var(--bg-dark);
 }
 /* Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com
 License - https://fontawesome.com/license/free
@@ -27,53 +27,54 @@ Copyright 2024 Fonticons, Inc.
 Compressed with https://svgomg.net/
 */
 .filters a.checked::before {
-    /* check */
     content: "";
     display: inline-block;
     width: 1em;
     height: 1em;
-    background-size: contain;
     vertical-align: middle;
     margin-right: 0.3em;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439 105c12 13 12 33 0 46L183 407a32 32 0 0 1-46 0L9 279a32 32 0 0 1 46-46l105 106 233-234c13-12 33-12 46 0z" fill="white"/></svg>');
+	background-color: currentColor;
+    /* check */
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439 105c12 13 12 33 0 46L183 407a32 32 0 0 1-46 0L9 279a32 32 0 0 1 46-46l105 106 233-234c13-12 33-12 46 0z" fill="white"/></svg>');
+    mask-position: center;
+    mask-size: contain;
+    mask-repeat: no-repeat;
 }
 main table {
     width: 100%;
 }
 table:not(.colored) tr:nth-child(2n+1), tr.colored {
-    background-color:#eee;
-}
-body.mode-nuit table:not(.colored) tr:nth-child(2n+1), body.mode-nuit tr.colored {
-    background-color:#666;
+    background-color: var(--bg-dark);
 }
 tr:first-child {
-    background-color:#ffab91 !important;
-    font-weight:bold;
+    background-color: var(--primary);
+    font-weight: bold;
+    color: var(--bg-dark);
 }
 .current {
-    animation: current-date 1s ease-in-out infinite;
+    animation: current-date 2s ease-in-out infinite;
+    color: black;
 }
 @keyframes current-date {
     0%, 100% {
         background-color: #fff9c4;
     }
     50% {
-        background-color:#ffeb3b;
+        background-color: #ffeb3b;
     }
 }
 .separation td {
-    padding:0;
-    background-color:#ffe082;
+    padding: 0;
+    background-color: #ffe082;
+    color: black;
 }
 .separation a {
-    color:unset;
-    text-decoration:none;
-    display:block;
-    width:100%;
-    height:100%;
-    padding:0 1em;
+    color: unset;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0 1em;
 }
 
 .swal-icon--info {

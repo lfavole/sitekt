@@ -15,9 +15,9 @@
 
         {% if user.is_authenticated %}
         <li>
-            <form method="post" action="{% url "account_logout" %}" class="logout-form">
+            <form method="post" action="{% url "account_logout" %}" class="form__inline">
                 {% csrf_token %}
-                <input type="submit" class="link" value="{% trans "Log out" %}">
+                <input type="submit" class="input__link" value="{% trans "Log out" %}">
             </form>
         </li>
 

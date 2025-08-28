@@ -21,23 +21,30 @@
         <div class="header__title">{% block title-header %}{{ SITE_NAME }}{% endblock %}</div>
     </div>
     <div class="header__right">
-        <div class="header__user_info">
-            {% if user.is_authenticated %}
-                <details>
-                    <summary>{{ user.username }}</summary>
-                    {% if user.is_staff %}
-                    <a href="{% url "admin:index" %}" target="_blank">{% trans "Administration" %}</a><br>
-                    {% endif %}
-                    <a href="{% url "account_index" %}">{% trans "Account" %}</a><br>
-                    <form method="post" action="{% url "account_logout" %}" class="logout-form">
-                        {% csrf_token %}
-                        <input type="submit" class="link" value="{% trans "Log out" %}">
-                    </form>
-                </details>
-            {% else %}
-                <a href="{% url "account_login" %}">{% trans "Log in" %}</a>
-            {% endif %}
+        {% if user.is_authenticated %}
+        <div
+            class="user-info"
+            x-data="{ open: false }"
+            :class="open ? 'user-info__open' : ''"
+            @click.document="open = false"
+        > <!-- @click.outside doesn't work because @click on button interferes with it -->
+            <button class="user-info__button" @click.stop="open = !open">{{ user.username }}</button>
+            <div class="user-info__menu" @click.stop>
+                {% if user.is_staff %}
+                <a href="{% url "admin:index" %}" target="_blank">{% trans "Administration" %}</a><br>
+                {% endif %}
+                <a href="{% url "account_index" %}">{% trans "Account" %}</a><br>
+                <form method="post" action="{% url "account_logout" %}" class="form__inline">
+                    {% csrf_token %}
+                    <input type="submit" class="input__link" value="{% trans "Log out" %}">
+                </form>
+            </div>
         </div>
+        {% else %}
+        <div class="user-info">
+            <a href="{% url "account_login" %}" class="user-info__button input input__button">{% trans "Log in" %}</a>
+        </div>
+        {% endif %}
     </div>
 </header>
 {% block navbar %}
