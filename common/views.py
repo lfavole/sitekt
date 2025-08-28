@@ -134,11 +134,11 @@ class Occurrence:
         self.event = event
 
     @property
-    def start(self) -> datetime.datetime:
+    def start(self) -> datetime.date | datetime.datetime:
         return self.event.start
 
     @property
-    def end(self) -> datetime.datetime | None:
+    def end(self) -> datetime.date | datetime.datetime:
         return self.event.end
 
 

@@ -802,38 +802,44 @@ class Date(models.Model):
             raise ValidationError({"start_time": msg, "end_time": msg, "time_text": msg})
 
     @property
-    def start(self):
-        start_date = self.start_date
-        # fall back to start time = midnight
-        start_time = self.start_time or dt.time()
-        return dt.datetime.combine(start_date, start_time).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
+    def start(self) -> dt.date | dt.datetime:
+        return (
+            dt.datetime.combine(self.start_date, self.start_time).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
+            if self.start_time
+            else self.start_date
+        )
 
     @property
-    def end(self):
+    def end(self) -> dt.date | dt.datetime:
         end_date = self.end_date or (
             # entire day (no end time) => end = 1 day after
             self.start_date + dt.timedelta(days=1)
             if self.start_time is None
             else self.start_date
         )
-        ret = dt.datetime.combine(end_date, self.end_time or self.start.time()).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
-        if self.start_time and self.end_time is None:
-            # start time but no end time => end = 1 hour after
-            # we must use this trick because we can't do time + timedelta
-            ret += dt.timedelta(hours=1)
-        return ret
+        return (
+            dt.datetime.combine(end_date, self.end_time).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
+            if self.end_time
+            else end_date
+        )
 
     @property
     def is_past(self):
-        return now() > self.end
+        if isinstance(self.end, dt.datetime):
+            return now() > self.end
+        else:
+            return now().date() > self.end
 
     @property
     def is_current(self):
-        return self.start <= now() <= self.end
+        return not self.is_past and not self.is_future
 
     @property
     def is_future(self):
-        return now() < self.start
+        if isinstance(self.start, dt.datetime):
+            return now() < self.start
+        else:
+            return now().date() < self.start
 
     def __str__(self):  # pylint: disable=E0307
         return self.name
