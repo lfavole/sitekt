@@ -40,6 +40,8 @@ class Command(BaseCommand):
                     "--ignore",
                     "adminsortable2",
                     "--ignore",
+                    "allauth",
+                    "--ignore",
                     "debug_toolbar",
                     "--ignore",
                     "django",
