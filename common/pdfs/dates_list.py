@@ -31,7 +31,11 @@ class DatesList(PDF):
 
         def get(element: Occurrence, key: str) -> str:
             if key == "date":
-                return format_date(element.start.date(), None if element.start.date() == element.end.date() else element.end.date())
+                start_date = element.start.date() if isinstance(element.start, datetime.datetime) else element.start
+                end_date = element.end.date() if isinstance(element.end, datetime.datetime) else element.end
+                if start_date == end_date:
+                    return format_date(element.start, None)
+                return format_date(element.start, element.end)
 
             if key == "time":
                 if element.event.time_text:
