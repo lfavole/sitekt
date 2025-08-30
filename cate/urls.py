@@ -18,7 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps import views as sitemap_views
-from django.urls import include, path
+from django.urls import converters, include, path
 from django.views.static import serve
 
 from . import sitemap, views
@@ -40,15 +40,34 @@ sitemaps = {
 }
 
 
+class EmptyPathConverter:
+    """
+    A path that can be empty.
+    """
+
+    regex = r".*"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        return value
+
+
+converters.register_converter(EmptyPathConverter, "emptypath")
+
+
 urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("accounts/", views.account_index, name="account_index"),
     path("admin/docs/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
+    path("aumonerie/<emptypath:path>", views.redirect_individual_sites),
     add_website("calendrier_avent_2022"),
     add_website("calendrier_avent_2023"),
     add_website("calendrier_avent_2024"),
     path("debug/", include("debug_toolbar.urls")),
+    path("espacecate/<emptypath:path>", views.redirect_individual_sites),
     path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name="export"),
     path("google<str:id>.html", views.google),
     path("import/", views.import_, name="import"),

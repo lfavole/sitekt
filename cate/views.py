@@ -26,6 +26,7 @@ from django.http import (
     HttpResponse,
     HttpResponseForbidden,
     HttpResponseNotAllowed,
+    HttpResponsePermanentRedirect,
     HttpResponseServerError,
     JsonResponse,
 )
@@ -234,6 +235,10 @@ def handler_500(request: HttpRequest, _template_name=None):
 
 def account_index(request):
     return render(request, "account/index.html")
+
+
+def redirect_individual_sites(request: HttpRequest, path: str):
+    return HttpResponsePermanentRedirect("/" + path)
 
 
 @csrf_exempt
