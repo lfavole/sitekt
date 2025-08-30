@@ -177,6 +177,10 @@ def dates_ics(request):
         # Default to 1 hour duration, will not trigger on all-day events (1 hour < 1 day)
         event.end = occurrence.end or occurrence.start + datetime.timedelta(hours=1)
 
+        # Add place info
+        if occurrence.event.place:
+            event.add("location", occurrence.event.place)
+
         # Add reminders
         # Reminder 1: 1 day before at 5 PM
         alarm1 = Alarm()
