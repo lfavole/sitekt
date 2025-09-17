@@ -84,7 +84,7 @@ class SubscriptionForm(forms.Form):
                 continue
             f.save_form_data(child, self.cleaned_data[f.name])
 
-        child.group = child.get_assigned_group()
+        child.groupe = child.get_assigned_group()
         child.user = request.user
 
         child.save()
