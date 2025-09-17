@@ -180,7 +180,7 @@ class CommonChildAdmin(admin.ModelAdmin):
     @admin.action(permissions=["change"], description=_("Mark as paid"))
     @message_user(pgettext_lazy("admin action message", "marked as paid"))
     def mark_paid(self, request, queryset):
-        queryset.update(paye="oui")
+        queryset.update(paye=True)
 
     @admin.action(permissions=["change"], description=_("Mark as signed"))
     @message_user(pgettext_lazy("admin action message", "marked as signed"))
