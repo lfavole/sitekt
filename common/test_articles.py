@@ -21,10 +21,10 @@ class ArticlesTests(TestCase):
         """
         No articles => "Aucun article" in the list page
         """
-        response = self.client.get(reverse("espacecate:articles"))
+        response = self.client.get(reverse("articles"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Aucun article")
-        self.assertQuerysetEqual(response.context["articles"], [])
+        self.assertQuerySetEqual(response.context["articles"], [])
 
     def test_one_article(self):
         """
@@ -32,10 +32,10 @@ class ArticlesTests(TestCase):
         """
         article = Article.objects.create(title="Test article", content="The content of the article...", date=now)
 
-        response = self.client.get(reverse("espacecate:articles"))
+        response = self.client.get(reverse("articles"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, article.title)
-        self.assertQuerysetEqual(response.context["articles"], [article])
+        self.assertQuerySetEqual(response.context["articles"], [article])
 
         response = self.client.get(resolve_url(article))
         self.assertEqual(response.status_code, 200)
@@ -48,10 +48,10 @@ class ArticlesTests(TestCase):
             title="Test article", content="The content of the article...", date=now, hidden=True
         )
 
-        response = self.client.get(reverse("espacecate:articles"))
+        response = self.client.get(reverse("articles"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Aucun article")
-        self.assertQuerysetEqual(response.context["articles"], [])
+        self.assertQuerySetEqual(response.context["articles"], [])
 
         response = self.client.get(resolve_url(article))
         self.assertEqual(response.status_code, 404)
@@ -64,18 +64,17 @@ class ArticlesTests(TestCase):
             title="Test article", content="The content of the article...", date=datetime.datetime.now() + one_day
         )
 
-        response = self.client.get(reverse("espacecate:articles"))
+        response = self.client.get(reverse("articles"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Aucun article")
-        self.assertQuerysetEqual(response.context["articles"], [])
+        self.assertQuerySetEqual(response.context["articles"], [])
 
         response = self.client.get(resolve_url(article))
         self.assertEqual(response.status_code, 404)
 
     def prepare_user(self):
         user = get_user_model().objects.create_user("lfavole")
-        # view_articles = Permission.objects.get(name="Can view article")
-        view_articles = Permission.objects.get_by_natural_key("view_article", "espacecate", "article")
+        view_articles = Permission.objects.get_by_natural_key("view_article", "common", "article")
         user.user_permissions.add(view_articles)
         self.client.force_login(user)
 
@@ -87,7 +86,7 @@ class ArticlesTests(TestCase):
         self.prepare_user()
         article = Article.objects.create(title="Test article", content="The content of the article...", hidden=True)
 
-        response = self.client.get(reverse("espacecate:articles"))
+        response = self.client.get(reverse("articles"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Article caché")
 
@@ -102,7 +101,7 @@ class ArticlesTests(TestCase):
         self.prepare_user()
         article = Article.objects.create(title="Test article", content="")
 
-        response = self.client.get(reverse("espacecate:articles"))
+        response = self.client.get(reverse("articles"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Article vide")
 
@@ -119,7 +118,7 @@ class ArticlesTests(TestCase):
             title="Test article", content="The content of the article...", date=datetime.datetime.now() + one_day
         )
 
-        response = self.client.get(reverse("espacecate:articles"))
+        response = self.client.get(reverse("articles"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Article futur")
 

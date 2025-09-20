@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-29 15:41+0200\n"
+"POT-Creation-Date: 2025-09-18 13:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,188 +18,188 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: .\debug\client.py:90 .\debug\client.py:218
+#: debug/client.py:90 debug/client.py:215
 msgid "Valid signature"
 msgstr "Signature valide"
 
-#: .\debug\client.py:91 .\debug\client.py:217
+#: debug/client.py:91 debug/client.py:214
 msgid "Invalid signature"
 msgstr "Signature invalide"
 
-#: .\debug\client.py:92
+#: debug/client.py:92
 msgid "Unknown validity"
 msgstr "Validité inconnue"
 
-#: .\debug\client.py:93
+#: debug/client.py:93
 msgid "Expired signature"
 msgstr "Signature expirée"
 
-#: .\debug\client.py:94 .\debug\client.py:206
+#: debug/client.py:94 debug/client.py:203
 msgid "Expired key"
 msgstr "Clé expirée"
 
-#: .\debug\client.py:95
+#: debug/client.py:95
 msgid "Revoked key"
 msgstr "Clé révoquée"
 
-#: .\debug\client.py:96 .\debug\client.py:209
+#: debug/client.py:96 debug/client.py:206
 msgid "Can't check for validity"
 msgstr "Impossible de vérifier la validité"
 
-#: .\debug\client.py:97 .\debug\client.py:210
+#: debug/client.py:97 debug/client.py:207
 msgid "No signature"
 msgstr "Pas de signature"
 
-#: .\debug\client.py:100 .\debug\client.py:223
+#: debug/client.py:100 debug/client.py:220
 msgid "Status"
 msgstr "État"
 
-#: .\debug\client.py:101
+#: debug/client.py:101
 msgid "Key"
 msgstr "Clé"
 
-#: .\debug\client.py:102
+#: debug/client.py:102
 msgid "Key fingerprint"
 msgstr "Empreinte de la clé"
 
-#: .\debug\client.py:103
+#: debug/client.py:103
 msgid "Trust level"
 msgstr "Niveau de sécurité"
 
-#: .\debug\client.py:207
+#: debug/client.py:204
 msgid "The key is not a signing key"
 msgstr "La clé ne sert pas à signer"
 
-#: .\debug\client.py:208
+#: debug/client.py:205
 msgid "Error while checking for validity"
 msgstr "Erreur lors de la vérification de la validité"
 
-#: .\debug\client.py:211
+#: debug/client.py:208
 msgid "Unknown signature type"
 msgstr "Type de signature inconnu"
 
-#: .\debug\client.py:212
+#: debug/client.py:209
 msgid "No user associated"
 msgstr "Pas d'utilisateur associé"
 
-#: .\debug\client.py:213
+#: debug/client.py:210
 msgid "Unverified email address"
 msgstr "Adresse mail non vérifiée"
 
-#: .\debug\client.py:214
+#: debug/client.py:211
 msgid "Bad email address"
 msgstr "Adresse mail invalide"
 
-#: .\debug\client.py:215
+#: debug/client.py:212
 msgid "Unknown key"
 msgstr "Clé inconnue"
 
-#: .\debug\client.py:216
+#: debug/client.py:213
 msgid "Malformed signature"
 msgstr "Signature malformée"
 
-#: .\debug\client.py:220
+#: debug/client.py:217
 msgid "yes"
 msgstr "oui"
 
-#: .\debug\client.py:220
+#: debug/client.py:217
 msgid "no"
 msgstr "non"
 
-#: .\debug\client.py:220
+#: debug/client.py:217
 msgid "unknown"
 msgstr "inconnu"
 
-#: .\debug\client.py:222
+#: debug/client.py:219
 msgid "Verified"
 msgstr "Vérifié"
 
-#: .\debug\panels.py:25
+#: debug/panels.py:25
 msgid "Error"
 msgstr "Erreur"
 
-#: .\debug\panels.py:32
+#: debug/panels.py:32
 msgid "No error"
 msgstr "Aucune erreur"
 
-#: .\debug\panels.py:103
+#: debug/panels.py:103
 msgid "Revision"
 msgstr "Révision"
 
-#: .\debug\panels.py:124
+#: debug/panels.py:124
 msgid "No repository was detected."
 msgstr "Aucun dépôt n'a été détecté."
 
-#: .\debug\panels.py:133
+#: debug/panels.py:133
 msgid "Short hash"
 msgstr "Hash court"
 
-#: .\debug\panels.py:134
+#: debug/panels.py:134
 msgid "Hash"
 msgstr "Hash"
 
-#: .\debug\panels.py:135
+#: debug/panels.py:135
 msgid "Author"
 msgstr "Auteur"
 
-#: .\debug\panels.py:136
+#: debug/panels.py:136
 msgid "Committer"
 msgstr "Auteur du commit"
 
-#: .\debug\panels.py:137
+#: debug/panels.py:137
 msgid "Updated at"
 msgstr "Modifié le"
 
-#: .\debug\panels.py:138
+#: debug/panels.py:138
 msgid "Subject"
 msgstr "Objet"
 
-#: .\debug\panels.py:139
+#: debug/panels.py:139
 msgid "Body"
 msgstr "Message"
 
-#: .\debug\panels.py:140
+#: debug/panels.py:140
 msgid "Branch name"
 msgstr "Nom de la branche"
 
-#: .\debug\panels.py:141
+#: debug/panels.py:141
 msgid "Signature status"
 msgstr "État de la signature"
 
-#: .\debug\panels.py:142
+#: debug/panels.py:142
 msgid "Author profile"
 msgstr "Profil de l'auteur"
 
-#: .\debug\panels.py:143
+#: debug/panels.py:143
 msgid "Committer profile"
 msgstr "Profil de l'auteur du commit"
 
-#: .\debug\panels.py:144
+#: debug/panels.py:144
 msgid "URL"
 msgstr "URL"
 
-#: .\debug\panels.py:149
+#: debug/panels.py:149
 msgid "Git information"
 msgstr "Informations de Git"
 
-#: .\debug\panels.py:150
+#: debug/panels.py:150
 msgid "GitHub information"
 msgstr "Informations de GitHub"
 
 #. Translators: add a space before colon if needed
-#: .\debug\panels.py:166
+#: debug/panels.py:166
 msgid ":"
 msgstr " :"
 
-#: .\debug\templates\debug_toolbar\base.html:21
+#: debug/templates/debug_toolbar/base.html:21
 msgid "Hide toolbar"
 msgstr ""
 
-#: .\debug\templates\debug_toolbar\base.html:21
+#: debug/templates/debug_toolbar/base.html:21
 msgid "Hide"
 msgstr ""
 
-#: .\debug\templates\debug_toolbar\base.html:25
+#: debug/templates/debug_toolbar/base.html:25
 msgid "Show toolbar"
 msgstr ""
 

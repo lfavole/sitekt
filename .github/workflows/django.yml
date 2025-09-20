@@ -8,66 +8,104 @@ on:
 
 jobs:
   test:
-    name: Django testing
+    name: "Test: ${{ matrix.os }} - ${{ matrix.python-version }}"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ["3.10", "3.11"]
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     runs-on: ${{ matrix.os }}
+    env:
+      UV_CACHE_DIR: .uv-cache
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Install uv on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: powershell -ExecutionPolicy ByPass -c "irm https://github.com/astral-sh/uv/releases/latest/download/uv-installer.ps1 | iex"
 
-    - name: Create .env
-      run: echo "TEST=1" > .env
+      - name: Install uv on macOS/Linux
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: curl -LsSf https://github.com/astral-sh/uv/releases/latest/download/uv-installer.sh | sh
 
-    - name: Install gettext
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: sudo apt-get install -y gettext
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python scripts/__init__.py setup
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: ${{ runner.os }}-uv-test-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: ${{ runner.os }}-uv-test-${{ matrix.python-version }}-
 
-    - name: Run tests
-      run: python website/manage.py test
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Install gettext on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          LATEST_URL=$(curl -s "https://api.github.com/repos/mlocati/gettext-iconv-windows/releases/latest" |
+            grep -o 'https://github.com/mlocati/gettext-iconv-windows/releases/download/[^"]*-shared-64\.zip')
+          curl -L "$LATEST_URL" -o "$RUNNER_TEMP/gettext.zip"
+          unzip "$RUNNER_TEMP/gettext.zip" -d "$RUNNER_TEMP/gettext"
+          echo "$RUNNER_TEMP/gettext/bin" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Install gettext on Linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get install -y gettext
+
+      - name: Collect static files
+        run: uv run manage.py collectstatic --noinput --clear -v 1
+
+      - name: Create the cache table
+        run: uv run manage.py createcachetable
+
+      - name: Migrate
+        run: uv run manage.py migrate
+
+      - name: Compile translations
+        run: uv run manage.py compilemessages
+
+      - name: Run tests
+        run: uv run coverage run manage.py test
+
+      - name: Display code coverage
+        run: uv run coverage report
 
   linting:
-    name: Linting with ${{ matrix.name }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - {name: black, command: black . --check}
-          - {name: flake8, command: flake8 .}
-          - {name: isort, command: isort . --check}
-          - {name: pylint, command: 'pylint */**.py --evaluation "0 if fatal else max(0, 10 - error - warning)"'}
-
+    name: Linting with ruff
     runs-on: ubuntu-latest
+    env:
+      UV_CACHE_DIR: .uv-cache
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
+      - name: Install uv
+        run: curl -LsSf https://github.com/astral-sh/uv/releases/latest/download/uv-installer.sh | sh
 
-    - name: Create .env
-      run: echo "TEST=1" > .env
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: pyproject.toml
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python scripts/__init__.py setup --linting
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-lint-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: uv-lint-
 
-    - name: Run ${{ matrix.name }}
-      run: python -m ${{ matrix.command }}
+      - name: Install dependencies
+        run: uv sync --extra linting
+
+      - name: Run ruff check
+        run: uv run ruff check --output-format github .
+
+      - name: Run ruff format --check
+        run: uv run ruff format --check .

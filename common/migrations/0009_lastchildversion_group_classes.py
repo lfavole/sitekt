@@ -22,9 +22,4 @@ class Migration(migrations.Migration):
             },
             bases=("common.child",),
         ),
-        migrations.AddField(
-            model_name="group",
-            name="classes",
-            field=models.TextField(blank=True, help_text="Classes that can be in this group", verbose_name="classes"),
-        ),
     ]

@@ -3,43 +3,42 @@ name = "sitekt"
 version = "0.1.0"
 description = "Site du caté"
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = []
-
-[tool.black]
-line-length = 120
-extend-exclude = "migrations/"
-
-[tool.isort]
-profile = "black"
-skip = "migrations"
-
-[tool.pylint.main]
-jobs = 0
-load-plugins = "pylint_quotes"
-disable = [
-    "bad-indentation",
-    "bare-except",
-    "fixme",
-    "global-statement",
-    "import-outside-toplevel",
-    "invalid-str-returned",
-    "line-too-long",
-    "missing-module-docstring",
-    "missing-timeout",
-    "no-member",
-    "protected-access",
-    "unspecified-encoding",
+requires-python = ">=3.12"
+dependencies = [
+    "beautifulsoup4 ~= 4.12",
+    "dj-database-url ~= 2.2",
+    "Django ~= 5.1",
+    "django-admin-sortable2 ~= 2.1",
+    "django-allauth[socialaccount] ~= 65.3",
+    "django-dbbackup ~= 4.2",
+    "django-cleanup ~= 8.0",
+    "django-debug-toolbar ~= 4.2",
+    "django_simple_redirects ~= 2.2",
+    "docutils ~= 0.21",
+    "easy-thumbnails ~= 2.10",
+    "fpdf2 ~= 2.8",
+    "icalendar ~= 6.3",
+    "minify-html ~= 0.11",
+    "python-dateutil ~= 2.9",
+    "python-dotenv ~= 1.0",
+    "requests ~= 2.32",
+    "sentry-sdk ~= 2.19",
+    "tblib ~= 3.1",
+    "Unidecode ~= 1.3",
+    "user-agents ~= 2.2",
 ]
-expected-line-ending-format = "LF"
-include-naming-hint = "y"
 
-[tool.pylint.basic]
-allowed-redefined-builtins = "id"
-good-names = ["f", "i", "id", "md", "pk"]
-no-docstring-rgx = "(^_|Config$|Admin$|Inline$|^(main|contribute_to_argparse|Meta|get_absolute_url)$)"
+[project.optional-dependencies]
+dev = ["coverage ~= 7.10"]
+linting = ["ruff ~= 0.13"]
 
-[tool.pylint.pylint_quotes]
-string-quote = "double"
-triple-quote = "double"
-docstring-quote = "double"
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+fail_under = 50
+precision = 2
+skip_covered = true
+
+[tool.ruff]
+line-length = 120
