@@ -43,11 +43,20 @@ def create_groups(
     """
     Automatically creates the default groups.
     """
-    from .models import Group
+    if app_config.name != "common":
+        return
+
+    Group = app_config.get_model("Group")  # type: ignore
+
+    groups_in_db = list(Group.objects.all())
+    if groups_in_db:
+        if verbosity >= 2:
+            print("Some groups are already in the database, skipping")
+        return
 
     groups = [
-        Group(name="Éveil à la foi", app="espacecate", classes="ps\nms\ngs\ncp"),
-        Group(name="Caté", app="espacecate", classes="ce1\nce2\ncm1\ncm2"),
+        Group(name="Éveil à la foi", app="espacecate", classes="PS\nMS\nGS\nCP"),
+        Group(name="Caté", app="espacecate", classes="CE1\nCE2\nCM1\nCM2"),
         Group(name="Aumônerie collège", app="aumonerie", classes="6eme\n5eme\n4eme\n3eme"),
         Group(name="Aumônerie lycée", app="aumonerie", classes="2nde\n1ere\nterminale"),
     ]

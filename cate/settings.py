@@ -175,7 +175,11 @@ TRACK_PAGEVIEWS = True
 
 STORAGES = {
     "default": {
-        "BACKEND": "storage.storages.CustomFileSystemStorage" if DEBUG else "storage.storages.CustomBlobStorage",
+        "BACKEND": (
+            "storage.storages.CustomBlobStorage"
+            if os.environ.get("VERCEL")
+            else "storage.storages.CustomFileSystemStorage"
+        ),
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
@@ -186,8 +190,7 @@ STORAGES = {
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    # POSTGRES_URL is put by Vercel
-    "default": dj_database_url.config(default=os.environ.get("POSTGRES_URL")),
+    "default": dj_database_url.config(default="sqlite:///db.sqlite3"),
 }
 
 ADMINS = [(item.split(":", 1) if ":" in item else item) for item in os.environ.get("ADMINS", "").split(",")]

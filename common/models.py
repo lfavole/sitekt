@@ -69,41 +69,41 @@ class Year(models.Model):
         return (self.start_year,)
 
     def save(self, *args, **kwargs):
-        # Note: we avoid saving the objects to avoid recursion error
-        obj = type(self).objects.all()
+        # Note: we avoid saving the objects to prevent a recursion error
+
         if self.is_active:
             # this year becomes an active year => deactivate the other years
-            for year in obj.filter(is_active=True):
-                if year == self:
-                    continue
-                if not year.is_active:
-                    continue  # avoid hitting the database
-                year.is_active = False
-                year.save()
+            type(self).objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
 
-        elif not obj.filter(is_active=True).exists():
-            # no active years => activate the first year or this year
-            first = obj.first()
-            if first and not first.is_active:  # activate the first year
-                first.is_active = True
-                first.save()
-            else:  # one year => this year is active
+        elif not type(self).objects.filter(is_active=True).exclude(pk=self.pk).exists():
+            # this year isn't active and there are no other active years
+            # => activate the first year or this year
+            try:
+                new_active_year = type(self).objects.filter(is_active=False).exclude(pk=self.pk)[0]
+            except IndexError:
+                # activate this year
                 self.is_active = True
+            else:
+                # activate the first year
+                new_active_year.is_active = True
+                new_active_year.save()
 
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        obj = type(self).objects.all()
-        if not obj.filter(is_active=True).exists():
-            years = obj.filter(is_active=False)
-            if years.exists():
-                el = years[0]
-                if not el.is_active:  # activate the first year
-                    # we avoid saving the objects to avoid recursion error
-                    el.is_active = True
-                    el.save()
-            # we are deleting the only active year
-            # there will be bugs...
+        if not type(self).objects.filter(is_active=True).exclude(pk=self.pk).exists():
+            # there's no more active year
+            # let's mark the remaining year as active (if it exists)
+            try:
+                new_active_year = type(self).objects.filter(is_active=False).exclude(pk=self.pk)[0]
+            except IndexError:
+                pass
+                # we are deleting the only active year
+                # there will be bugs...
+                # I won't bother recreating another year, get_current(save=True) already does it
+            else:
+                new_active_year.is_active = True
+                new_active_year.save()
 
         return super().delete(*args, **kwargs)
 
@@ -113,41 +113,47 @@ class Year(models.Model):
         Return the current year.
         """
         year = cache.get("current_year")
+
         if not year:
             try:
                 year = cls.objects.get(is_active=True)
             except (cls.DoesNotExist, DatabaseError):
-                ret = Year(start_year=dt.date.today().year, is_active=True)
-                if save:
-                    ret.save()
-                else:
-                    warnings.warn("No active Year object. Creating a fake object")
-                return ret
-            cache.set("current_year", year)
-        return year
+                try:
+                    year = cls.get_for_date(save=save)
+                except DatabaseError:
+                    year = cls.get_for_date()
 
-    @classmethod
-    def get(cls, start_year: int, save=False):
-        """
-        Return the year with the given start year.
-        """
-        year = cache.get(f"year_{start_year}")
-        if not year:
-            try:
-                year = cls.objects.get(start_year=start_year)
-            except (cls.DoesNotExist, DatabaseError):
-                ret = Year(start_year=dt.date.today().year,)
-                if save:
-                    ret.save()
-                else:
-                    warnings.warn(f"No Year object starting in {start_year}. Creating a fake object")
-                return ret
-            cache.set(f"year_{start_year}", year)
+            cache.set("current_year", year)
+
         return year
 
     @classmethod
     def get_current_pk(cls):
         return cls.get_current(True).pk
+
+    @classmethod
+    def get_for_date(cls, date: dt.date | None = None, save=False):
+        if not date:
+            date = dt.date.today()
+
+        if date.month < 8:
+            # month < August => first year is the previous year
+            start_year = date.year - 1
+        else:
+            # month >= August => first year is this year
+            start_year = date.year
+
+        if save:
+            return Year.objects.get_or_create(start_year=start_year)[0]
+
+        try:
+            return Year.objects.get(start_year=start_year)
+        except Year.DoesNotExist:
+            return Year(start_year=start_year)
+
+    @classmethod
+    def get_for_date_pk(cls):
+        return cls.get_for_date(True).pk
 
     @property
     def trs(self):
@@ -167,11 +173,11 @@ class Year(models.Model):
 
     def __sub__(self, other):
         if isinstance(other, int):
-            return Year.get(self.start_year - other)
+            return Year.objects.get(start_year=self.start_year - other)
         return self.start_year - other.start_year
 
     def __add__(self, other):
-        return Year.get(self.start_year + other)
+        return Year.objects.get(start_year=self.start_year + other)
 
 
 class HasSlugManager(models.Manager):
@@ -243,7 +249,7 @@ class PageBase(HasSlug):
         """
         edited = False
 
-        soup = BeautifulSoup(self.content)
+        soup = BeautifulSoup(self.content, features="html.parser")
         for i, img in enumerate(soup.find_all("img")):
             if not (src := img.attrs.get("src")):
                 continue
@@ -360,6 +366,9 @@ class Article(PageBase):
         first_color = int.from_bytes(hash[:4]) % 256
         second_color = int.from_bytes(hash[4:8]) % 256
         return f"linear-gradient({angle}deg, #{first_color:06x}, #{second_color:06x})"
+
+    def get_absolute_url(self):
+        return reverse("article", kwargs={"slug": self.slug})
 
     class Meta:
         verbose_name = _("article")
@@ -488,8 +497,11 @@ def items_for(app, manager_class=models.Manager):
     return ItemsFor()
 
 
-def get_default_group():
-    return Group.objects.get_or_create(name="Autre")[0].pk
+def get_default_group(pk=True):
+    ret, _ = Group.objects.get_or_create(name="Autre")
+    if pk:
+        return ret.pk
+    return ret
 
 
 class Child(models.Model):
@@ -602,7 +614,7 @@ class Child(models.Model):
         for group in groups:
             if any(self.classe == classe.strip() for classe in group.classes.splitlines()):
                 return group
-        return get_default_group()
+        return get_default_group(pk=False)
 
     def has_two_parents(self) -> bool:
         """Return True if the child has two parents, False otherwise."""
@@ -787,59 +799,77 @@ class Date(models.Model):
         ordering = ["start_date", "start_time"]
 
     def clean(self):
-        if self.end_date and self.start_date > self.end_date:
-            raise ValidationError({"end_date": _("The end date must be after the start date.")})
+        if sum(v is not None for v in (self.start_time, self.end_time)) == 1:
+            msg = _("The start and end times must both be specified.")
+            raise ValidationError({"start_time" if self.start_time is None else "end_time": msg})
 
-        if self.end_time and not self.start_time:
-            msg = _("The start time must be specified when the end time is specified.")
-            raise ValidationError({"start_time": msg})
+        if self.end_date is None and self.end_time is not None:
+            msg = _("The end date must be specified when the end time is specified.")
+            raise ValidationError({"end_date": msg})
 
-        if self.end_time and self.start_time > self.end_time:
-            raise ValidationError({"end_time": _("The end time must be after the start time.")})
+        if self.start > self.end:
+            if self.start_date > self.end_date:
+                raise ValidationError({"end_date": _("The end date must be after the start date.")})
 
-        if self.start_time and self.end_time and self.time_text:
-            msg = _("The start time / end time or the time as text must be specified, not both.")
+            if self.start_time > self.end_time:
+                raise ValidationError({"end_time": _("The end time must be after the start time.")})
+
+            raise AssertionError
+
+        if self.start == self.end:
+            self.end_date = None
+            self.end_time = None
+
+        if self.start_time is not None and self.end_time is not None and self.time_text:
+            msg = _("The start and end times or the time as text must be specified, not both.")
             raise ValidationError({"start_time": msg, "end_time": msg, "time_text": msg})
 
     @property
     def start(self) -> dt.date | dt.datetime:
         return (
             dt.datetime.combine(self.start_date, self.start_time).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
-            if self.start_time
+            if self.start_time is not None
             else self.start_date
         )
 
     @property
     def end(self) -> dt.date | dt.datetime:
-        end_date = self.end_date or (
-            # entire day (no end time) => end = 1 day after
-            self.start_date + dt.timedelta(days=1)
-            if self.start_time is None
-            else self.start_date
-        )
-        return (
-            dt.datetime.combine(end_date, self.end_time).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
-            if self.end_time
-            else end_date
-        )
+        if self.end_time:
+            # end_date is also specified
+            # return the full specified end
+            return dt.datetime.combine(self.end_date, self.end_time).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
+
+        # no end date or time
+
+        if isinstance(self.start, dt.datetime):
+            # start_time is specified
+            # return a datetime
+            return self.start + dt.timedelta(hours=1)
+
+        # start_time is not specified
+        # return a date
+        return self.start + dt.timedelta(days=1)
 
     @property
     def is_past(self):
         if isinstance(self.end, dt.datetime):
             return now() > self.end
-        else:
-            return now().date() > self.end
+
+        return now().date() > self.end
 
     @property
     def is_current(self):
-        return not self.is_past and not self.is_future
+        if isinstance(self.end, dt.datetime):
+            return self.start <= now() <= self.end
+
+        return self.start <= now().date <= self.end
 
     @property
     def is_future(self):
         if isinstance(self.start, dt.datetime):
             return now() < self.start
-        else:
-            return now().date() < self.start
+
+        return now().date() < self.start
 
     def __str__(self):  # pylint: disable=E0307
         return self.name

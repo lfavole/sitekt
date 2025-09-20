@@ -5,7 +5,7 @@ from django.db import models
 from django.test import TestCase as DjangoTestCase
 
 
-class DefaultArgs:
+class DefaultArgs(dict):
     """
     Dict that can be edited when called.
     Example :
@@ -15,16 +15,24 @@ class DefaultArgs:
 
     REMOVED = object()
 
-    def __init__(self, args_dict: dict):
-        self.dict = args_dict
+    def _fix_post(self, value):
+        if value is None:
+            return ""
+        return str(value)
 
-    def __call__(self, **names):
-        args = self.dict.copy()
+    def __call__(self, *, post=False, **names):
+        args = type(self)(self)  # copy
+
         for name, value in names.items():
             if value == self.REMOVED:
                 args.pop(name)
             else:
                 args[name] = value
+
+        if post:
+            for key, value in args.items():
+                args[key] = self._fix_post(value)
+
         return args
 
 

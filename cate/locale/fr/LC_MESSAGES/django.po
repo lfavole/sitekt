@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-16 15:55+0200\n"
+"POT-Creation-Date: 2025-09-18 13:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,12 +91,12 @@ msgid "Return to the website"
 msgstr "Retour au site"
 
 #: cate/templates/allauth/layouts/base.html:20
-#: cate/templates/cate/site_base.html:18
+#: cate/templates/cate/site_base.html:39
 msgid "Log out"
 msgstr "Se déconnecter"
 
 #: cate/templates/allauth/layouts/base.html:25
-#: cate/templates/cate/site_base.html:13
+#: cate/templates/cate/site_base.html:34
 msgid "Administration"
 msgstr "Administration"
 
@@ -121,7 +121,7 @@ msgid "Sessions"
 msgstr "Sessions"
 
 #: cate/templates/allauth/layouts/base.html:45
-#: cate/templates/cate/site_base.html:22
+#: cate/templates/cate/site_base.html:45
 msgid "Log in"
 msgstr "Se connecter"
 
@@ -168,7 +168,7 @@ msgstr "suivante"
 msgid "last"
 msgstr "fin"
 
-#: cate/templates/cate/site_base.html:15
+#: cate/templates/cate/site_base.html:36
 msgid "Account"
 msgstr "Compte"
 
@@ -189,12 +189,12 @@ msgstr ", "
 msgid "and"
 msgstr "et"
 
-#: cate/views.py:188
+#: cate/views.py:189
 msgid "You have the permission to view the error details!"
 msgstr "Vous avez la permission de voir les détails de l'erreur !"
 
 #. Translators: %(djdt)s is the DjDT logo
-#: cate/views.py:191
+#: cate/views.py:192
 #, python-format
 msgid ""
 "Open the debug toolbar (%(djdt)s at top-right) and click on the Error tab."

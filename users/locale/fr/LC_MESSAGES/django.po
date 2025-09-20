@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-19 15:51+0200\n"
+"POT-Creation-Date: 2025-09-18 13:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,8 +34,10 @@ msgstr "Vous devez créer un compte pour inscrire votre enfant."
 msgid "This will help us to simplify the registering process."
 msgstr "Cela va nous aider à simplifier le processus d'inscription."
 
-#: users/adapter.py:63
-msgid "If you have any problem with the registration, please %scontact Carine%s."
+#: users/adapter.py:64
+#, python-format
+msgid ""
+"If you have any problem with the registration, please %scontact Carine%s."
 msgstr "En cas de problème pour l'inscription, merci de %scontacter Carine%s."
 
 #: users/models.py:12
