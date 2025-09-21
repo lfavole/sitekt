@@ -167,12 +167,32 @@ class CommonChildAdmin(admin.ModelAdmin):
     other_model: Type[Child]
     change_list_template = "admin/change_list_child.html"
 
-    list_display = ("nom", "prenom")  # this is not useful !
+    list_display = ("nom", "prenom", "classe", "paye", "signe", "photos_admin", "infos_admin", "groupe")
     list_display_links = ("nom", "prenom")
+    readonly_fields = ("date_inscription",)
+    search_fields = ("nom", "prenom")
+    list_filter = (
+        "groupe",
+        "communion_cette_annee",
+        "paye",
+        "signe",
+        "classe",
+        "bapteme",
+        "premiere_communion",
+        "photos",
+    )
 
     @property
     def fieldsets(self):
         return self.model.fieldsets
+
+    @admin.display(description="Photos", boolean=True)
+    def photos_admin(self, obj: Child):
+        return obj.photos
+
+    @admin.display(description="Infos", boolean=True)
+    def infos_admin(self, obj: Child):
+        return bool(obj.autres_infos)
 
     readonly_fields = ("date_inscription",)
     actions = ["mark_paid", "mark_signed", "change_group"]

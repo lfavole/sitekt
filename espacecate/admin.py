@@ -21,19 +21,6 @@ class ChildAdmin(CommonChildAdmin):
     """
 
     other_model = OldChild
-    list_display = ("nom", "prenom", "classe", "paye", "signe", "groupe")
-    readonly_fields = ("date_inscription",)
-    search_fields = ("nom", "prenom")
-    list_filter = (
-        "groupe",
-        "communion_cette_annee",
-        "paye",
-        "signe",
-        "classe",
-        "bapteme",
-        "premiere_communion",
-        "photos",
-    )
 
 
 @admin.register(OldChild)
