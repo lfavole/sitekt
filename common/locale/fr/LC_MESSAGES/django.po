@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-21 17:31+0200\n"
+"POT-Creation-Date: 2025-09-21 18:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -85,7 +85,7 @@ msgstr "années scolaires"
 msgid "End year"
 msgstr "Année de fin"
 
-#: common/models.py:62 common/models.py:611
+#: common/models.py:62 common/models.py:609
 msgid "School year"
 msgstr "Année scolaire"
 
@@ -119,7 +119,7 @@ msgstr "image"
 msgid "Image '%s' in %s"
 msgstr "Image '%s' dans %s"
 
-#: common/models.py:311 common/models.py:796 common/models.py:1016
+#: common/models.py:311 common/models.py:794 common/models.py:1014
 msgid "order"
 msgstr "ordre"
 
@@ -135,224 +135,228 @@ msgstr "Page précédente"
 msgid "page"
 msgstr "page"
 
-#: common/models.py:324
+#: common/models.py:327
+msgid "You can't add both the content and the URL."
+msgstr "Vous ne pouvez pas ajouter à la fois le contenu et l'URL."
+
+#: common/models.py:330
 msgid "The homepage can't be a subpage."
 msgstr "La page d'accueil ne peut pas être une sous-page."
 
-#: common/models.py:332
+#: common/models.py:338
 msgid "You can't have pages that point to each other."
 msgstr "Impossible d'avoir des pages qui se pointent l'une vers l'autre."
 
-#: common/models.py:362
+#: common/models.py:360
 msgid "Page"
 msgstr "Page"
 
-#: common/models.py:365
+#: common/models.py:363
 msgid "page image"
 msgstr "image dans une page"
 
-#: common/models.py:366
+#: common/models.py:364
 msgid "page images"
 msgstr "images dans une page"
 
-#: common/models.py:374 common/models.py:821 common/models.py:924
+#: common/models.py:372 common/models.py:819 common/models.py:922
 #: common/pdfs/dates_list.py:58 common/templates/common/dates.html:47
 msgid "date"
 msgstr "date"
 
-#: common/models.py:375
+#: common/models.py:373
 msgid "hidden article"
 msgstr "article caché"
 
-#: common/models.py:397
+#: common/models.py:395
 msgid "article"
 msgstr "article"
 
-#: common/models.py:406
+#: common/models.py:404
 msgid "Article"
 msgstr "Article"
 
-#: common/models.py:409
+#: common/models.py:407
 msgid "article image"
 msgstr "image dans un article"
 
-#: common/models.py:410
+#: common/models.py:408
 msgid "article images"
 msgstr "images dans un article"
 
-#: common/models.py:425 common/models.py:812 common/models.py:925
+#: common/models.py:423 common/models.py:810 common/models.py:923
 #: common/pdfs/dates_list.py:60 common/templates/common/dates.html:49
 msgid "name"
 msgstr "nom"
 
-#: common/models.py:426
+#: common/models.py:424
 msgid "app"
 msgstr "application"
 
-#: common/models.py:428
+#: common/models.py:426
 msgid "classes"
 msgstr "classes"
 
-#: common/models.py:428
+#: common/models.py:426
 msgid "Classes that can be in this group"
 msgstr "Les classes qui peuvent être dans ce groupe"
 
-#: common/models.py:438 common/models.py:927
+#: common/models.py:436 common/models.py:925
 msgid "group"
 msgstr "groupe"
 
-#: common/models.py:612
+#: common/models.py:610
 msgid "User"
 msgstr "Utilisateur"
 
-#: common/models.py:617
+#: common/models.py:615
 msgid "child"
 msgstr "enfant"
 
-#: common/models.py:773
+#: common/models.py:771
 msgid "old child"
 msgstr "ancien enfant"
 
-#: common/models.py:774
+#: common/models.py:772
 msgid "old children"
 msgstr "anciens enfants"
 
-#: common/models.py:786
+#: common/models.py:784
 msgid "last child version"
 msgstr "dernière version de l'enfants"
 
-#: common/models.py:787
+#: common/models.py:785
 msgid "last child versions"
 msgstr "dernières versions de l'enfants"
 
-#: common/models.py:799
+#: common/models.py:797
 msgid "date category"
 msgstr "catégorie de date"
 
-#: common/models.py:800
+#: common/models.py:798
 msgid "date categories"
 msgstr "catégories de date"
 
-#: common/models.py:805
+#: common/models.py:803
 msgid "start date"
 msgstr "date de début"
 
-#: common/models.py:806
+#: common/models.py:804
 msgid "end date"
 msgstr "date de fin"
 
-#: common/models.py:807
+#: common/models.py:805
 msgid "start time"
 msgstr "heure de début"
 
-#: common/models.py:808
+#: common/models.py:806
 msgid "end time"
 msgstr "heure de fin"
 
-#: common/models.py:810
+#: common/models.py:808
 msgid "Time (as text)"
 msgstr "Heure (en tant que texte)"
 
-#: common/models.py:813
+#: common/models.py:811
 msgid "short name"
 msgstr "nom abrégé"
 
-#: common/models.py:814 common/pdfs/dates_list.py:61
+#: common/models.py:812 common/pdfs/dates_list.py:61
 #: common/templates/common/dates.html:50
 msgid "place"
 msgstr "lieu"
 
-#: common/models.py:815
+#: common/models.py:813
 msgid "cancelled"
 msgstr "annulé"
 
-#: common/models.py:817 common/models.py:1031
+#: common/models.py:815 common/models.py:1029
 msgid "Categories"
 msgstr "Catégories"
 
-#: common/models.py:826
+#: common/models.py:824
 msgid "The start and end times must both be specified."
 msgstr "Les heures de début et de fin doivent toutes les deux être spécifiées."
 
-#: common/models.py:831
+#: common/models.py:829
 msgid "The end date must be after the start date."
 msgstr "La date de fin doit être avant la date de début."
 
-#: common/models.py:835
+#: common/models.py:833
 msgid "The end time must be after the start time."
 msgstr "L'heure de fin doit être avant l'heure de début."
 
-#: common/models.py:844
+#: common/models.py:842
 msgid ""
 "The start and end times or the time as text must be specified, not both."
 msgstr ""
 "Les heures de début et de fin ou l'heure en tant que texte doivent être "
 "spécifiées, pas les deux."
 
-#: common/models.py:922
+#: common/models.py:920
 msgid "kind"
 msgstr "type"
 
-#: common/models.py:925
+#: common/models.py:923
 msgid "Replaces the meeting kind"
 msgstr "Remplace le type de rencontre"
 
-#: common/models.py:968
+#: common/models.py:966
 msgid "meeting"
 msgstr "rencontre"
 
-#: common/models.py:980
+#: common/models.py:978
 msgid "Child"
 msgstr "Enfant"
 
-#: common/models.py:987
+#: common/models.py:985
 msgid "Meeting"
 msgstr "Rencontre"
 
 #. Translators: use inclusive writing
-#: common/models.py:991 common/models.py:999
+#: common/models.py:989 common/models.py:997
 msgid "present"
 msgstr "présent·e"
 
-#: common/models.py:992
+#: common/models.py:990
 msgid "has warned"
 msgstr "a prévenu"
 
-#: common/models.py:995
+#: common/models.py:993
 #, python-format
 msgid "%s was %s%s"
 msgstr "%s était %s%s"
 
 #. Translators: use inclusive writing
-#: common/models.py:1002
+#: common/models.py:1000
 msgid "absent"
 msgstr "absent·e"
 
-#: common/models.py:1004
+#: common/models.py:1002
 msgid "and has warned"
 msgstr "et a prévenu"
 
-#: common/models.py:1008
+#: common/models.py:1006
 msgid "attendance"
 msgstr "présence"
 
-#: common/models.py:1019
+#: common/models.py:1017
 msgid "document category"
 msgstr "catégorie de document"
 
-#: common/models.py:1020
+#: common/models.py:1018
 msgid "document categories"
 msgstr "catégories de document"
 
-#: common/models.py:1029
+#: common/models.py:1027
 msgid "document title"
 msgstr "titre du document"
 
-#: common/models.py:1030
+#: common/models.py:1028
 msgid "file"
 msgstr "fichier"
 
-#: common/models.py:1034
+#: common/models.py:1032
 msgid "document"
 msgstr "document"
 

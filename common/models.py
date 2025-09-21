@@ -312,7 +312,7 @@ class Page(PageBase):
     url = models.CharField(_("URL"), max_length=255, blank=True)
     parent_page = models.ForeignKey(
         "self", blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("Previous page"),
-        related_name="parent_pages",
+        related_name="child_pages",
     )
 
     class Meta:
@@ -320,6 +320,12 @@ class Page(PageBase):
         ordering = ["order"]
 
     def clean(self):
+        if self.content in ("<p></p>", "<p>&nbsp;</p>"):
+            self.content = ""
+
+        if self.content and self.url:
+            raise ValidationError({"url": _("You can't add both the content and the URL.")})
+
         if self.slug == Page.HOME_TEMPLATE.slug and self.parent_page:
             raise ValidationError({"parent_page": _("The homepage can't be a subpage.")})
 

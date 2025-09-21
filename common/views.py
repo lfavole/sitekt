@@ -235,19 +235,23 @@ class BaseView(generic.View):
     template_filename: str
     model: Type[Model]
 
-    def get_queryset(self):  # pylint: disable=C0116
+    def get_queryset(self, nav=False):  # pylint: disable=C0116
         admin = has_permission_for_view(self, "view")
         ret = self.model.objects.all()
         if not admin:
+            content_or_url = Q()
             if hasattr(self.model, "content"):
-                if hasattr(self.model, "parent_pages"):
-                    ret = ret.filter(~(Q(content__exact="") & Q(parent_pages__isnull=True)))
-                else:
-                    ret = ret.filter(~Q(content__exact=""))
+                # always display the homepage because it has a template when empty
+                content_or_url |= ~Q(content="")
+            if nav and hasattr(self.model, "url"):
+                content_or_url |= ~Q(url="")
+            has_child_pages = Q(child_pages__isnull=False) if hasattr(self.model, "child_pages") and nav else Q()
+            ret = ret.filter(content_or_url | has_child_pages | Q(slug=Page.HOME_TEMPLATE.slug))
             if hasattr(self.model, "hidden"):
                 ret = ret.filter(hidden=False)
             if hasattr(self.model, "date"):
                 ret = ret.filter(date__lte=now())
+        ret = ret.distinct()  # https://stackoverflow.com/a/38452675
         return ret
 
     @property

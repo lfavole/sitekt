@@ -6,7 +6,7 @@ from common.views import ArticleView, PageView
 
 
 def get_queryset(view_class):
-    return view_class(request=Namespace(method="GET", user=AnonymousUser())).get_queryset()
+    return view_class(request=Namespace(method="GET", user=AnonymousUser())).get_queryset(nav=True)
 
 
 class ArticlesSitemap(Sitemap):

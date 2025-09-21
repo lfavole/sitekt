@@ -81,7 +81,7 @@ class NavItem:
 
 @register.simple_tag(takes_context=True)
 def nav(context):
-    pages_list = list(PageView(request=context.request).get_queryset())
+    pages_list = list(PageView(request=context.request).get_queryset(nav=True).prefetch_related("parent_page"))
 
     def get_page(current_page):
         pages_query = [page for page in pages_list if page.parent_page == current_page]
