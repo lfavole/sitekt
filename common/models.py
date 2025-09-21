@@ -803,15 +803,12 @@ class Date(models.Model):
             msg = _("The start and end times must both be specified.")
             raise ValidationError({"start_time" if self.start_time is None else "end_time": msg})
 
-        if self.end_date is None and self.end_time is not None:
-            msg = _("The end date must be specified when the end time is specified.")
-            raise ValidationError({"end_date": msg})
-
         if self.start > self.end:
-            if self.start_date > self.end_date:
+            if self.end_date and self.start_date > self.end_date:
                 raise ValidationError({"end_date": _("The end date must be after the start date.")})
 
-            if self.start_time > self.end_time:
+            # at this point start_date == end_date
+            if self.start_time and self.end_time and self.start_time > self.end_time:
                 raise ValidationError({"end_time": _("The end time must be after the start time.")})
 
             raise AssertionError
@@ -835,9 +832,11 @@ class Date(models.Model):
     @property
     def end(self) -> dt.date | dt.datetime:
         if self.end_time:
-            # end_date is also specified
             # return the full specified end
-            return dt.datetime.combine(self.end_date, self.end_time).replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
+            return (
+                dt.datetime.combine(self.end_date or self.start_date, self.end_time)
+                .replace(tzinfo=ZoneInfo(settings.TIME_ZONE))
+            )
 
         # no end date or time
 
@@ -862,7 +861,7 @@ class Date(models.Model):
         if isinstance(self.end, dt.datetime):
             return self.start <= now() <= self.end
 
-        return self.start <= now().date <= self.end
+        return self.start <= now().date() <= self.end
 
     @property
     def is_future(self):
