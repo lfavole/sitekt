@@ -309,6 +309,7 @@ class Page(PageBase):
     """
 
     order = models.PositiveIntegerField(_("order"), default=0, null=False)
+    url = models.CharField(_("URL"), max_length=255, blank=True)
     parent_page = models.ForeignKey(
         "self", blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("Previous page"),
         related_name="parent_pages",
@@ -318,17 +319,31 @@ class Page(PageBase):
         verbose_name = _("page")
         ordering = ["order"]
 
+    def clean(self):
+        if self.slug == Page.HOME_TEMPLATE.slug and self.parent_page:
+            raise ValidationError({"parent_page": _("The homepage can't be a subpage.")})
+
+        if self.parent_page:
+            page = self
+            seen_pages = {page}
+            while page.parent_page:
+                page = page.parent_page
+                if page in seen_pages:
+                    raise ValidationError({"parent_page": _("You can't have pages that point to each other.")})
+                seen_pages.add(page)
+
     def get_absolute_url(self):
-        if self.content == "":
+        if self.url:
+            return self.url
+
+        if not self.content:
             return "#"
 
-        if len(self.content) < 100 and self.content[0] != "<":
-            try:
-                return reverse(self.content)
-            except NoReverseMatch:
-                pass
-
         return reverse("page", kwargs={"slug": self.slug})
+
+
+Page.HOME_TEMPLATE = Page(title="Accueil")
+Page.HOME_TEMPLATE.slug = Page.HOME_TEMPLATE._generate_slug(False)
 
 
 class PageImage(ImageBase):

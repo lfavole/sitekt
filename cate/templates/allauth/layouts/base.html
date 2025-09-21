@@ -11,7 +11,7 @@
     <ul>
         <label class="nav__close" for="menu-checkbox"></label>
         {% trans "Return to the website" as return %}
-        {% nav_link "accueil" return "arrow" %}
+        {% nav_link HOME_TEMPLATE.slug return "arrow" %}
 
         {% if user.is_authenticated %}
         <li>

@@ -23,13 +23,22 @@ class PagesTests(TestCase):
         """
         self.assertGreater(Page.objects.count(), 0, "There should be default pages")
 
-    def test_no_homepage(self):
+    def test_homepage_redirect(self):
         """
-        No pages => no homepage
+        Request to "/" -> redirect
+        """
+        response = self.client.get(reverse("accueil"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.headers["Location"], resolve_url("page", slug=Page.HOME_TEMPLATE.slug))
+
+    def test_default_homepage(self):
+        """
+        No pages => default homepage
         """
         Page.objects.all().delete()
-        response = self.client.get(reverse("accueil"))
-        self.assertEqual(response.status_code, 404)
+        response = self.client.get(resolve_url("page", slug=Page.HOME_TEMPLATE.slug))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ce site vient juste d'être créé.")
 
     def test_one_article(self):
         """

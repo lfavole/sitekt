@@ -3,5 +3,9 @@
 {% block title %}{% block page-title %}{{ page.title }}{% endblock %} – {{ SITE_NAME }}{% endblock %}
 
 {% block content %}
-{{ page.content|safe }}
+    {% if page.slug == HOME_TEMPLATE.slug and not page.content %}
+        {% include "common/empty_homepage.html" %}
+    {% else %}
+        {{ page.content|safe }}
+    {% endif %}
 {% endblock %}

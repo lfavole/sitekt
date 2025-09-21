@@ -164,3 +164,13 @@ def migrate_paye_backwards(app):
             child.save()
 
     return migrate
+
+
+def migrate_pages_forwards(apps, schema_editor):
+    Page = apps.get_model("common", "Page")
+    Page.objects.exclude(content__startswith="<").update(url=models.F("content"), content="")
+
+
+def migrate_pages_backwards(apps, schema_editor):
+    Page = apps.get_model("common", "Page")
+    Page.objects.exclude(url="").update(content=models.F("url"), url="")

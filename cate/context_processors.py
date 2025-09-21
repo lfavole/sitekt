@@ -1,8 +1,9 @@
 import os
 from django.conf import settings
-
 from django.http import HttpRequest
 from django.utils.timezone import now
+
+from common.models import Page
 
 
 def now_variable(_request: HttpRequest):
@@ -20,3 +21,7 @@ def app_name(request: HttpRequest):
 
 def site_name(_request: HttpRequest):
     return {"SITE_NAME": settings.SITE_NAME}
+
+
+def homepage(_request: HttpRequest):
+    return {"HOME_TEMPLATE": Page.HOME_TEMPLATE}

@@ -1,9 +1,10 @@
 import datetime
 import mimetypes
 from pathlib import Path
-from typing import Any, Literal, Type
+from typing import Any, Literal, Optional, Type
 from urllib.parse import quote, urlencode
 from django.conf import settings
+from django.db import models
 
 from allauth.account.models import EmailAddress
 from django.contrib.auth import get_permission_codename
@@ -254,6 +255,10 @@ class BaseView(generic.View):
         return {"app": self.request.resolver_match.app_name}
 
 
+def redirect_to_home(request):
+    return redirect("page", slug=Page.HOME_TEMPLATE.slug)
+
+
 class PageView(BaseView, generic.DetailView):
     """
     View for a page.
@@ -262,6 +267,17 @@ class PageView(BaseView, generic.DetailView):
     model = Page
     context_object_name = "page"
     template_name = "common/page.html"
+
+    def get_object(self, *args, **kwargs):
+        try:
+            ret = super().get_object(*args, **kwargs)
+        except Http404:
+            # If there's no homepage, return the homepage template
+            slug = self.kwargs.get(self.slug_url_kwarg)
+            if slug != Page.HOME_TEMPLATE.slug:
+                raise
+            return Page.HOME_TEMPLATE
+        return ret
 
 
 class ArticleListView(BaseView, generic.ListView):

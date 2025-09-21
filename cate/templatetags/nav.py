@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from html import escape
 
 from django import template
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
@@ -53,15 +54,16 @@ class NavItem:
 
             return True
 
-        ret += "\t<li><a" + (' class="act"' if is_active(match, req_match) else "") + ' href="' + href + '">'
+        ret += "\t<li><a" + (' class="act"' if is_active(match, req_match) else "") + ' href="' + escape(href) + '">'
         message = []
         if page.hidden:
             message.append("cachée")
-        if not page.content and not self.subitems:
-            message.append("vide")
+        if page.slug != Page.HOME_TEMPLATE.slug:
+            if not page.content and not page.url and not self.subitems:
+                message.append("vide")
 
         if message:
-            ret += f"<i>(<small>Page {', '.join(message)} :</small> "
+            ret += f"<i>(<small>Page {escape(', '.join(message))} :</small> "
         ret += escape(page.title)
         if message:
             ret += ")</i>"

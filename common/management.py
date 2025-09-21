@@ -89,14 +89,11 @@ def create_pages(
         return
 
     pages = [
-        Page(
-            title="Accueil",
-            content="<h1>Bienvenue sur le site du caté !</h1>",
-        ),
-        Page(title="Inscription", content="inscription"),
-        Page(title="Calendrier", content="dates"),
-        Page(title="Documents téléchargeables", content="documents"),
-        Page(title="Retour en images", content="articles"),
+        Page.HOME_TEMPLATE,
+        Page(title="Inscription", url="inscription"),
+        Page(title="Calendrier", url="dates"),
+        Page(title="Documents téléchargeables", url="documents"),
+        Page(title="Retour en images", url="articles"),
     ]
 
     for i, page in enumerate(pages):

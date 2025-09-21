@@ -55,10 +55,10 @@ urlpatterns += [
     path("inscription/new", views.subscription_new, name="inscription_nouveau"),
     path("inscription/<int:pk>", views.subscription_old, name="inscription_ancien"),
     path("inscription", views.subscription, name="inscription"),
-    path("index", views.PageView.as_view(), kwargs={"slug": "accueil"}),
+    path("index", views.redirect_to_home),
     path("jsi18n", cache_page(86400, key_prefix=time() if settings.DEBUG else 0)(JavaScriptCatalog.as_view(packages=["common"])), name="javascript-catalog"),
     path("liste-dates", views.dates_list, name="liste_dates"),
-    path("", views.PageView.as_view(), name="accueil", kwargs={"slug": "accueil"}),
+    path("", views.redirect_to_home, name="accueil"),
     path("<slug:slug>", views.PageView.as_view(), name="page"),
 ]
 
