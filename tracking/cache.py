@@ -1,4 +1,5 @@
-# Inspired by http://eflorenzano.com/blog/2008/11/28/drop-dead-simple-django-caching/
+# Inspired by:
+# https://web.archive.org/web/20130320190455/https://eflorenzano.com/blog/2008/11/28/drop-dead-simple-django-caching/
 from typing import Generic, TypeVar
 
 from django.core.cache import cache
