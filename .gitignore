@@ -10,7 +10,9 @@ src/vendor/tinymce/**
 media/**
 static/**
 data/**
+site
 venv*/**
+.cache
 .coverage
 .env
 uv.lock

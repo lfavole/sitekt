@@ -1,0 +1,83 @@
+# Project information
+site_name: Site du caté
+site_url: https://lfavole.github.io/sitekt/
+
+# Repository
+repo_name: lfavole/sitekt
+repo_url: https://github.com/lfavole/sitekt
+
+nav:
+  - index.md
+  - Mode d'emploi utilisateur:
+    - user/index.md
+    - user/accounts.md
+    - user/dates.md
+    - user/registration.md
+  - Mode d'emploi administrateur:
+    - admin/index.md
+    - admin/admin.md
+    - admin/accounts.md
+
+theme:
+  name: material
+  icon:
+    logo: material/cross-outline
+    repo: fontawesome/brands/github
+  language: fr
+
+  palette:
+    # Palette toggle for automatic mode
+    - primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - primary: blue
+      accent: blue
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - primary: blue
+      accent: blue
+      scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to system preference
+
+  features:
+    - content.tooltips
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.progress
+    - toc.follow
+
+plugins:
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+          remove_comments: true
+      cache_safe: true
+  - privacy
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - markdown_include.include:
+      base_path: docs
+  - md_in_html
+  - nl2br
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.superfences
+  - toc:
+      permalink: True

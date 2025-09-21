@@ -1,0 +1,60 @@
+name: Build documentation
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-docs:
+    name: Build the documentation
+    env:
+      UV_CACHE_DIR: .uv-cache
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install uv
+      run: curl -LsSf https://github.com/astral-sh/uv/releases/latest/download/uv-installer.sh | sh
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version-file: pyproject.toml
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.UV_CACHE_DIR }}
+        key: uv-docs-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: uv-docs-
+
+    - name: Install dependencies
+      run: uv sync --extra docs
+
+    - name: Build the documentation
+      run: uv run mkdocs build
+
+    - name: Upload GitHub Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: site/
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build-docs
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

@@ -30,6 +30,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["coverage ~= 7.10"]
+docs = ["markdown-include ~= 0.8", "mkdocs-material ~= 9.6", "mkdocs-minify-plugin ~= 0.8"]
 linting = ["ruff ~= 0.13"]
 
 [tool.coverage.run]
