@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 from django.apps import apps
+from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
@@ -20,12 +21,25 @@ from django.db.utils import NotSupportedError
 from django.urls import NoReverseMatch, reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from cate import settings
+from phonenumber_field.formfields import PhoneNumberField as PhoneNumberFormField
+from phonenumber_field.modelfields import PhoneNumberField
+from phonenumber_field.phonenumber import PhoneNumber, to_python
 from storage.fields import FileField, ImageField
 
 from cate.utils.text import slugify
 
 from .fields import DatalistField, PriceField
+
+
+def fix_format_value(func):
+    def decorator(self, *args, **kwargs):
+        func(self, *args, **kwargs)
+        self.widget.format_value = PhoneNumberFormField.widget().format_value
+
+    return decorator
+
+
+PhoneNumberFormField.__init__ = fix_format_value(PhoneNumberFormField.__init__)
 
 
 class YearManager(models.Manager):
@@ -559,7 +573,7 @@ class Child(models.Model):
     lieu_naissance = models.CharField("Lieu de naissance", max_length=100)
     adresse = models.TextField("Adresse")
     code_postal_ville = models.CharField("Code postal et ville", max_length=100)
-    tel_jeune = models.CharField("Téléphone du jeune", max_length=10, blank=True)
+    tel_jeune = PhoneNumberField("Téléphone du jeune", blank=True)
     email_jeune = models.EmailField("Email du jeune", max_length=100, blank=True)
 
     ecole = models.fields.CharField("École", max_length=100)
@@ -584,13 +598,13 @@ class Child(models.Model):
     nom_pere = models.CharField("Nom et prénom du père", blank=True, max_length=100)
     adresse_pere = models.TextField("Adresse du père", blank=True)
     code_postal_ville_pere = models.CharField("Code postal et ville du père", blank=True, max_length=100)
-    tel_pere = models.CharField("Téléphone du père", blank=True, max_length=10)
+    tel_pere = PhoneNumberField("Téléphone du père", blank=True)
     email_pere = models.EmailField("Email du père", blank=True, max_length=100)
 
     nom_mere = models.CharField("Nom et prénom de la mère", blank=True, max_length=100)
     adresse_mere = models.TextField("Adresse de la mère", blank=True)
     code_postal_ville_mere = models.CharField("Code postal et ville de la mère", blank=True, max_length=100)
-    tel_mere = models.CharField("Téléphone de la mère", blank=True, max_length=10)
+    tel_mere = PhoneNumberField("Téléphone de la mère", blank=True)
     email_mere = models.EmailField("Email de la mère", blank=True, max_length=100)
 
     freres_soeurs = models.TextField("Frères et soeurs", blank=True)
@@ -672,14 +686,6 @@ class Child(models.Model):
         check_not_future("date_naissance", "la date de naissance")
         for name, msg in self.sacraments_checks.items():
             check_sacrament(name, msg)
-
-        for field, msg in {"tel_mere": "de la mère", "tel_pere": "du père"}.items():
-            length = len(getattr(self, field))
-            if length not in (0, 10):
-                add_error(
-                    field,
-                    f"Le numéro de téléphone {msg} est incorrect (il a {length} chiffre{'s' if length >= 2 else ''}).",
-                )
 
         if errors:
             raise ValidationError(errors)

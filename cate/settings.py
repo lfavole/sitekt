@@ -327,6 +327,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = "fr-FR"
+PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
+PHONENUMBER_DEFAULT_REGION = "FR"
 
 TIME_ZONE = "Europe/Paris"
 

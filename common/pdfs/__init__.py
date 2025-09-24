@@ -14,6 +14,8 @@ from fpdf.fonts import FontFace
 from fpdf.line_break import Fragment
 from fpdf.syntax import PDFDate, PDFObject, PDFString
 from fpdf.table import Cell, Row
+from phonenumbers import NumberParseException
+from phonenumber_field.phonenumber import PhoneNumber
 
 from cate.utils.text import slugify
 
@@ -201,7 +203,7 @@ class PDF(FPDF):
 
         self.font_styles = [
             (r"((?<=[IVX]|\d)(?:e|er|ère|ème|nde)s?\b)", self._superscript),
-            (r"((?:\+\d+ |\d)\d(?: \d\d){4})", self._phone_link),
+            (r"(\+?\d[\d ]{5,}\d)", self._phone_link),
             (r"([\w.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)", self._email_link),
             # https://stackoverflow.com/a/3809435
             (
@@ -214,8 +216,13 @@ class PDF(FPDF):
         frag.graphics_state["char_vpos"] = CharVPos.SUP
 
     def _phone_link(self, frag: Fragment):
-        self._link(frag)
-        frag.link = "tel:" + "".join(c for c in frag.characters if c.isdigit() or c == "+")
+        try:
+            phone_number = PhoneNumber.from_string(frag.string)
+        except NumberParseException:
+            pass
+        else:
+            self._link(frag)
+            frag.link = "tel:" + phone_number.as_e164
 
     def _email_link(self, frag: Fragment):
         self._link(frag)

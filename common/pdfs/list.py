@@ -1,15 +1,15 @@
 import datetime as dt
 from typing import Literal, Type
 
-from django.apps import apps
+from django.conf import settings
 from django.db import models
 from django.http import HttpRequest
 from django.utils.crypto import get_random_string
 from django.utils.formats import localize_input
-from django.utils.numberformat import format as number_format
 from fpdf.drawing import color_from_hex_string
 from fpdf.enums import AccessPermission, Align, XPos, YPos
 from fpdf.fonts import FontFace
+from phonenumbers import region_codes_for_country_code
 
 from ..models import Child, Year
 from . import PDF, Table
@@ -59,9 +59,10 @@ class List(PDF):
                 continue
 
             if key == "telephone":
-                value = "0" + number_format(int(value), "", grouping=2, thousand_sep=" ", force_grouping=True)
-                if not int(value.replace(" ", "")):
-                    return ""
+                if getattr(settings, "PHONENUMBER_DEFAULT_REGION", None) in region_codes_for_country_code(value.country_code):
+                    value = value.as_national
+                else:
+                    value = str(value)
 
             parent_formatted = {
                 "mere": "mère",
