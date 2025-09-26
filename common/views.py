@@ -246,7 +246,8 @@ class BaseView(generic.View):
             if nav and hasattr(self.model, "url"):
                 content_or_url |= ~Q(url="")
             has_child_pages = Q(child_pages__isnull=False) if hasattr(self.model, "child_pages") and nav else Q()
-            ret = ret.filter(content_or_url | has_child_pages | Q(slug=Page.HOME_TEMPLATE.slug))
+            is_homepage = Q(slug=Page.HOME_TEMPLATE.slug) if hasattr(self.model, "slug") else Q()
+            ret = ret.filter(content_or_url | has_child_pages | is_homepage)
             if hasattr(self.model, "hidden"):
                 ret = ret.filter(hidden=False)
             if hasattr(self.model, "date"):
