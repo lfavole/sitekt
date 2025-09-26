@@ -18,6 +18,7 @@ from django.core.files.base import ContentFile
 from django.db import DatabaseError, models
 from django.db.models import Manager
 from django.db.utils import NotSupportedError
+from django.shortcuts import resolve_url
 from django.urls import NoReverseMatch, reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -354,7 +355,7 @@ class Page(PageBase):
 
     def get_absolute_url(self):
         if self.url:
-            return self.url
+            return resolve_url(self.url)
 
         if not self.content:
             return "#"
