@@ -17,6 +17,11 @@ echo "Installing gettext..."
 dnf install -y gettext
 
 echo "Compiling translations..."
-python3 manage.py compilemessages --ignore adminsortable2 --ignore allauth --ignore debug_toolbar --ignore django
+python3 manage.py compilemessages \
+    --ignore adminsortable2 \
+    --ignore allauth \
+    --ignore debug_toolbar \
+    --ignore django \
+    --ignore phonenumber_field
 
 wait
