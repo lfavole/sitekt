@@ -375,8 +375,13 @@ def serve(request, obj: Document | FieldFile | Path | str):
     """
     if isinstance(obj, Document):
         obj = obj.file
-    if isinstance(obj, FieldFile):
-        obj = obj.path
+    try:
+        if isinstance(obj, FieldFile):
+            obj = obj.path
+    except NotImplementedError:
+        # no absolute paths
+        return redirect(obj.url)
+
     fullpath = Path(obj)
 
     # Respect the If-Modified-Since header.
