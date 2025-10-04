@@ -56,9 +56,14 @@ DEBUG = bool(int(os.environ.get("DEBUG", "0")))
 
 if not DEBUG:
     CONN_MAX_AGE = 600
-    ALLOWED_HOSTS = [os.environ.get("HOST", "") or os.environ.get("VERCEL_URL", "")]
+    ALLOWED_HOSTS = ["127.0.0.1", "localhost", os.environ.get("HOST", "") or os.environ.get("VERCEL_URL", "")]
 else:
     ALLOWED_HOSTS = ["*"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://" + os.environ.get("HOST", "127.0.0.1"),
+    "https://" + os.environ.get("HOST", "127.0.0.1"),
+]
 
 if os.environ.get("PYTHONANYWHERE") or os.environ.get("VERCEL"):
     CSRF_COOKIE_SECURE = True
