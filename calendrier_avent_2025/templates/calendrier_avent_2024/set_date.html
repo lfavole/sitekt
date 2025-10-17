@@ -1,0 +1,19 @@
+{% extends "calendrier_avent_2025/page_base.html" %}
+{% load format_day %}
+
+{% block title %}Changer de date{% endblock %}
+
+{% block content %}
+<h1>
+    <a href="{% url "calendrier_avent_2025:home" %}"><span class="fleche fl-gauche"></span></a>
+    Changer de date
+</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p><input type="submit" value="OK"></p>
+    {% if changed_date %}
+    <p><input type="submit" name="action" value="Supprimer"></p>
+    {% endif %}
+</form>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "calendrier_avent_2025/page_base.html" %}
+
+{% block title %}Calendrier de l'Avent{% endblock %}
+
+{% block body_class %}index{% endblock body_class %}
+{% block content %}
+<h1>Calendrier de l'Avent</h1>
+<div class="jours">{% for day in days %}{% if day == 25 %}
+</div>
+<div class="jours">{% endif %}
+	<a href="{{ day }}"{% if day == today %} class="ajd"{% endif %}>{{ day }}</a>{% endfor %}
+</div>
+<div class="note-photos">NB : n’hésitez pas à cliquer sur les photos pour les agrandir.</div>
+{% endblock %}
