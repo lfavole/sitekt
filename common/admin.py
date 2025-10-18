@@ -291,6 +291,7 @@ class CommonAttendancesInline(admin.TabularInline):
         css = {
             "all": ("admin/hide_original.css", "admin/attendances.css"),
         }
+        js = ("admin/attendances.js",)
 
 
 class CommonMeetingAdmin(admin.ModelAdmin):
