@@ -81,7 +81,7 @@ if os.environ.get("VERCEL"):
     def generate_thumbnail(self, thumbnail_options, *args, **kwargs):
         if thumbnail_options.get("crop"):
             return old_generate_thumbnail(self, thumbnail_options)
-        return CustomThumbnailFile(self.source_storage.url(self.name), thumbnail_options, *args, **kwargs)
+        return CustomThumbnailFile(self.source_storage.url(self.name), thumbnail_options)
 
     Thumbnailer.generate_thumbnail = generate_thumbnail
     Thumbnailer.old_generate_thumbnail = old_generate_thumbnail
