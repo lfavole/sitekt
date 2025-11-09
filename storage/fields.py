@@ -64,7 +64,7 @@ if os.environ.get("VERCEL"):
 
     class CustomThumbnailFile(ThumbnailFile):
         def __init__(self, source_url, thumbnail_options):
-            base_url = os.environ.get("VERCEL_URL", "")
+            base_url = os.environ.get("HOST", "") or os.environ.get("VERCEL_URL", "")
             if base_url:
                 base_url = f"https://{base_url}"
             url = f"{base_url}/_vercel/image?" + urlencode({

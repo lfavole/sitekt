@@ -1,3 +1,4 @@
+from django.utils.safestring import mark_safe, SafeData
 from easy_thumbnails.widgets import ImageClearableFileInput
 
 
@@ -11,7 +12,12 @@ class CustomImageClearableFileInput(ImageClearableFileInput):
         if ret.startswith("<input"):  # no picture selected
             return ret
 
+        is_safe = isinstance(ret, SafeData)
+
         # remove display:block on label
         ret = ret.replace("<label", '<label style="display:inline"')
         # wrap all this in a paragraph
-        return f'<p class="file-upload">{ret}</p>'
+        ret = f'<p class="file-upload">{ret}</p>'
+        if is_safe:
+            ret = mark_safe(ret)
+        return ret
