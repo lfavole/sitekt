@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from cate.templatetags.format_day import format_day, format_day_html
 from common.models import ImageBase
 from espacecate.models import Child
+from storage.fields import ImageField
 
 
 class Day(models.Model):
@@ -13,6 +14,10 @@ class Day(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE, verbose_name="enfant", related_name="+")
     saint_name = models.fields.CharField("nom du saint", max_length=100)
     content = models.fields.TextField("contenu", blank=True)
+    attributes = models.fields.TextField("attributs", blank=True)
+    feast = models.fields.CharField("fête", max_length=100, blank=True)
+    drawing_picture = ImageField("photo du dessin", blank=True, null=True)
+    saint_picture = ImageField("photo du saint", blank=True, null=True)
 
     class Meta:
         verbose_name = "Jour"

@@ -10,7 +10,7 @@ from .models import Day
 
 DAYS = 25
 MONTH = 12
-YEAR = 2024
+YEAR = 2025
 start = date(YEAR, MONTH, 1)
 end = date(YEAR, MONTH, 25)
 

@@ -803,7 +803,7 @@ hr {
 	padding: 0 1em;
 	box-shadow: 0px 4px 4px #00000030, 0px 12px 12px #00000015;
 	border-radius: 1em;
-	border: 1px solid black;
+	border: 1px solid currentColor;
 }
 @media (max-width: 500px) {
 	.form-center {
@@ -833,11 +833,11 @@ hr {
 	left: -1em;
 	top: -1em;
 	width: calc(100% + 2em);
-	border-top: 1px solid #888;
+	border-top: 1px solid currentColor;
 }
 .form-center hr {
 	border: none;
-	border-top: 1px solid #888;
+	border-top: 1px solid currentColor;
 	margin: 1em -1em;
 }
 .form-center hr + h2::before {
@@ -853,6 +853,7 @@ hr {
 	border-radius: 1em;
     background-color: #ce93d8;
 	border: 2px solid #7b1fa2;
+	color: black;
 	margin-right: 0.3em;
 }
 .badge.success {

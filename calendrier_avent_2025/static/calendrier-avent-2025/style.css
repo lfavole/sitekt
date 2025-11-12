@@ -17,6 +17,7 @@ h1 {
 	text-align: center;
 	background-color: unset;
 	word-spacing: 0.1em;
+	border: unset;
 }
 h1 sup {
 	margin-left: 0.1em;
@@ -60,12 +61,6 @@ h1 .fl-gauche::before, h1 .fl-gauche::after {
 	transform-origin: calc(var(--taille) / 16) 50%;
 }
 
-a {
-	color: black;
-}
-main {
-	margin: 0px 8px;
-}
 .picture-popup {
     position: fixed;
     left: 0;
@@ -184,19 +179,55 @@ body.mode-nuit .jours a {
 }
 
 p {
-	font-size: 20px;
 	text-align: justify;
 }
 .too-early, .intro {
-	font-size: 42px;
+	font-size: 3em;
 	text-align: center;
 	line-height: 1.5em;
+	margin: 0.5em 0;
 }
 
 .intro img {
 	height: 100px;
 	border-radius: 50%;
 	vertical-align: middle;
+}
+
+.content, .attributes, .feast, .images {
+	border: 0.125em solid;
+	border-radius: 1em;
+	padding: 0.5em;
+	margin: 1em 0;
+	color: black;
+}
+:is(.content, .attributes, .feast, .images) p:first-child {
+	margin-top: 0;
+}
+:is(.content, .attributes, .feast, .images) p:last-child {
+	margin-bottom: 0;
+}
+.content, .images {
+    background-color: #c5e1a5;
+    border-color: #689f38;
+}
+.attributes {
+    background-color: #fff59d;
+    border-color: #fbc02d;
+}
+.feast {
+    background-color: #ffab91;
+    border-color: #e64a19;
+}
+.images {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+.images img {
+	height: 15em;
+	border-radius: 1em;
+	box-shadow: 0 0 0.5em currentColor;
 }
 
 /* Admin */

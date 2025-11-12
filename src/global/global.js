@@ -313,7 +313,7 @@ var night_mode = {
 		else
 			return night_mode.auto(j.add(1, "day"));
 
-		$("body").toggleClass("mode-nuit", nuit);
+		// $("body").toggleClass("mode-nuit", nuit);
 		console.log((nuit ? "Lever" : "Coucher") + " du soleil à :", dt);
 		night_mode.date = dt;
 		if(interval) {

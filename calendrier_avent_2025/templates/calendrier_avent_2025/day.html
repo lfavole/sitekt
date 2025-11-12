@@ -12,5 +12,15 @@
 {% if day.day != 25 %}
 <p class="intro"><img src="{% thumbnail day.child.photo 100x100 %}"> <b>{{ day.child.prenom }}</b> vous présente <b>{{ day.saint_name }}</b></p>
 {% endif %}
-{{ day.content|safe }}
+<div class="content">{{ day.content|safe }}</div>
+<div class="attributes">{{ day.attributes|safe }}</div>
+<div class="feast">Fête : {{ day.feast }}</div>
+<div class="images">
+    {% if day.drawing_picture %}
+        <img src="{{ day.drawing_picture.url }}">
+    {% endif %}
+    {% if day.saint_picture %}
+        <img src="{{ day.saint_picture.url }}">
+    {% endif %}
+</div>
 {% endblock %}
