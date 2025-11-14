@@ -194,20 +194,20 @@ p {
 	vertical-align: middle;
 }
 
-.content, .attributes, .feast, .images {
+.content, .attributes, .feast {
 	border: 0.125em solid;
 	border-radius: 1em;
 	padding: 0.5em;
 	margin: 1em 0;
 	color: black;
 }
-:is(.content, .attributes, .feast, .images) p:first-child {
+:is(.content, .attributes, .feast) p:first-child {
 	margin-top: 0;
 }
-:is(.content, .attributes, .feast, .images) p:last-child {
+:is(.content, .attributes, .feast) p:last-child {
 	margin-bottom: 0;
 }
-.content, .images {
+.content {
     background-color: #c5e1a5;
     border-color: #689f38;
 }
