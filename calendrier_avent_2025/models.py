@@ -21,6 +21,7 @@ class Day(models.Model):
 
     class Meta:
         verbose_name = "Jour"
+        ordering = ["day"]
 
     def __str__(self):
         return mark_safe(format_day(self.day) + " décembre : " + str(self.child))
