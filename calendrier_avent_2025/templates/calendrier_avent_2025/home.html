@@ -1,4 +1,14 @@
 {% extends "calendrier_avent_2025/page_base.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static "calendrier-avent-2025/stars.css" %}">
+{% endblock css %}
+{% block js %}
+{{ block.super }}
+<script src="{% static "calendrier-avent-2025/stars.js" %}"></script>
+{% endblock js %}
 
 {% block title %}Calendrier de l'Avent{% endblock %}
 
