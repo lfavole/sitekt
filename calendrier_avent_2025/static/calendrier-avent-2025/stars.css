@@ -1,13 +1,3 @@
-:root {
-  --glow-rgb: 239 42 201;
-}
-
-body {
-  background: linear-gradient(145deg, rgb(119, 46, 195), rgb(58, 18, 153));
-  height: 100vh;
-  overflow: hidden;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -16,7 +6,7 @@ body {
 
 .glow-point {
   position: absolute;
-  box-shadow: 0rem 0rem 1.2rem 0.6rem rgb(var(--glow-rgb));
+  box-shadow: 0rem 0rem 1.2rem 0.6rem #ffff00;
   pointer-events: none;
 }
 
@@ -25,7 +15,7 @@ body {
   z-index: 2;
   color: white;
   font-size: 1rem;
-  animation-duration: 1500ms;
+  animation-duration: 1.5s;
   animation-fill-mode: forwards;
   pointer-events: none;
 }
@@ -79,4 +69,89 @@ body {
     transform: translate(20px, 120px) rotateX(-180deg) rotateY(-90deg) scale(0.5);
     opacity: 0;
   }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate-star {
+  from {
+    transform: translate(-50%, -50%) rotate(var(--star-angle)) translateX(var(--star-distance)) /* rotate(calc(-1 * var(--star-angle))) */;
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(calc(var(--star-angle) + 360deg)) translateX(var(--star-distance)) rotate(-360deg);
+  }
+}
+
+.magic {
+  position: relative;
+}
+
+.magic > .magic-star {
+  --size: 0.25em;
+  font-size: var(--size);
+  --star-distance: 47.5px;
+
+  animation: rotate-star 8s linear infinite;
+  position: absolute;
+  left: var(--star-left);
+  top: var(--star-top);
+  left: 50%;
+  top: 50%;
+  --star-angle: calc(360deg / 8 * var(--star-n));
+  transform: translate(-50%, -50%) rotate(calc(var(--star-angle) + var(--rotation))) translateX(var(--star-distance)) /* rotate(calc(-1 * var(--star-angle))) */;
+}
+.magic > .magic-star:first-child {
+  --star-n: 0;
+}
+.magic > .magic-star:nth-child(2) {
+  --star-n: 1;
+}
+.magic > .magic-star:nth-child(3) {
+  --star-n: 2;
+}
+.magic > .magic-star:nth-child(4) {
+  --star-n: 3;
+}
+.magic > .magic-star:nth-child(5) {
+  --star-n: 4;
+}
+.magic > .magic-star:nth-child(6) {
+  --star-n: 5;
+}
+.magic > .magic-star:nth-child(7) {
+  --star-n: 6;
+}
+.magic > .magic-star:nth-child(8) {
+  --star-n: 7;
+}
+.magic > .magic-star::before {
+  content: "";
+  width: 1em;
+  height: 1em;
+	background-color: currentColor;
+  /* Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com
+  License - https://fontawesome.com/license/free
+  Copyright 2025 Fonticons, Inc.
+
+  Compressed with https://svgomg.net/
+  */
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"/></svg>');
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z"/></svg>');
+  mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  display: block;
+  animation: rotate 2s linear infinite;
+}
+.jours + .jours a.magic > .magic-star::before {
+  color: #0c33aa;
 }
