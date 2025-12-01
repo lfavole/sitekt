@@ -159,6 +159,7 @@ body.mode-nuit .jours a {
 .jours a.ajd {
 	background-color: #ff8a7e;
 	border-color: #b00f0f;
+	box-shadow: 0 0 0.25em white;
 }
 
 .note-photos {
