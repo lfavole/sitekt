@@ -70,6 +70,8 @@ if os.environ.get("PYTHONANYWHERE") or os.environ.get("VERCEL"):
     SESSION_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
 
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
 GITHUB_WEBHOOK_KEY = os.environ.get("GITHUB_WEBHOOK_KEY")
 
 # Application definition
@@ -123,7 +125,6 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "tracking.middleware.VisitorTrackingMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
