@@ -176,6 +176,7 @@ WSGI_APPLICATION = "cate.wsgi.application"
 TRACK_IGNORE_URLS = (
     r"^(favicon\.ico|robots\.txt)$",
     r"^admin/",
+    r"^dates-ics$",
 )
 
 TRACK_IGNORE_STATUS_CODES = (403, 404, 500)
