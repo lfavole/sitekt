@@ -1,33 +1,28 @@
-if [ -n "$VERCEL" ]; then
-    uv="python3 -m uv"
-    case "$DATABASE_URL" in
-        postgres*)
-            echo "Installing PostgreSQL..."
-            $uv add --no-sync psycopg[binary,pool]~=3.2
-            ;;
-        mysql*)
-            echo "Installing MySQL..."
-            apt update
-            apt install -y python3-dev default-libmysqlclient-dev build-essential pkg-config
-            $uv add --no-sync mysqlclient~=2.2
-            ;;
-    esac
-else
-    uv="uv"
-fi
+case "$DATABASE_URL" in
+    postgres*)
+        echo "Installing PostgreSQL..."
+        uv add --no-sync psycopg[binary,pool]~=3.2
+        ;;
+    mysql*)
+        echo "Installing MySQL..."
+        apt update
+        apt install -y python3-dev default-libmysqlclient-dev build-essential pkg-config
+        uv add --no-sync mysqlclient~=2.2
+        ;;
+esac
 
 # if it doesn't contain files, the deployment fails
 mkdir -p static
 echo '{"paths": {}, "version": "1.1", "hash": ""}' > static/staticfiles.json
 
 echo "Collecting static files..."
-$uv run manage.py collectstatic --noinput --clear -v 1 &
+uv run manage.py collectstatic --noinput --clear -v 1 &
 
 echo "Creating the cache table..."
-$uv run manage.py createcachetable &
+uv run manage.py createcachetable &
 
 echo "Migrating..."
-$uv run manage.py migrate &
+uv run manage.py migrate &
 
 if which dnf >/dev/null 2>&1; then
     echo "Using dnf to install gettext..."
@@ -45,7 +40,7 @@ fi
 
 if which gettext >/dev/null 2>&1; then
     echo "Compiling translations..."
-    $uv run manage.py compilemessages \
+    uv run manage.py compilemessages \
         --ignore adminsortable2 \
         --ignore allauth \
         --ignore debug_toolbar \
