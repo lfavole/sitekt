@@ -17,19 +17,22 @@ class MinifyHtmlMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         response = self.get_response(request)
-        if self.should_minify(request, response):
-            content = response.content.decode(response.charset)
-            try:
-                content = minify_html.minify(  # type: ignore
-                    content,
-                    minify_css=True,
-                    minify_js=True,
-                )
-            except:
-                return response
-            response.content = content
-            if "Content-Length" in response:
-                response["Content-Length"] = len(response.content)
+        if not self.should_minify(request, response):
+            return response
+        content = response.content.decode(response.charset)
+        if content[0] in '{["':
+            return response
+        try:
+            content = minify_html.minify(  # type: ignore
+                content,
+                minify_css=True,
+                minify_js=True,
+            )
+        except:
+            return response
+        response.content = content
+        if "Content-Length" in response:
+            response["Content-Length"] = len(response.content)
         return response
 
     def should_minify(self, request: HttpRequest, response: HttpResponse) -> bool:

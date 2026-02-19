@@ -202,6 +202,35 @@ def dates_ics(request):
 
         cal.add_component(event)
 
+    # Include active site messages as all-day events for today + next 6 days
+    try:
+        site_messages = SiteMessage.objects.filter(is_active=True)
+    except Exception:
+        site_messages = []
+
+    emoji_map = {
+        "DEBUG": "🐞",
+        "INFO": "ℹ️",
+        "SUCCESS": "✅",
+        "WARNING": "⚠️",
+        "ERROR": "❗",
+    }
+
+    today = datetime.date.today()
+    for msg in site_messages:
+        prefix = emoji_map.get(msg.level, "ℹ️") + " "
+        for delta in range(7):
+            day = today + datetime.timedelta(days=delta)
+            event = Event()
+            summary = prefix + msg.message
+            event.add("summary", summary)
+            event.add("DTSTAMP", now)
+            event.uid = f"site_message_{msg.pk}_{day.isoformat()}"
+            # all-day event: start date, end date = next day
+            event.start = day
+            event.end = day + datetime.timedelta(days=1)
+            cal.add_component(event)
+
     cal.add_missing_timezones()
 
     # Add filename

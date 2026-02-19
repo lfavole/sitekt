@@ -189,6 +189,13 @@ class DateForm(forms.ModelForm):
             "categories": CheckboxSelectMultiple,
         }
 
+    # extra admin-only fields to alert users
+    alert_users = forms.BooleanField(label="Alerter les utilisateurs", required=False)
+    alert_message = forms.CharField(label="Message", widget=forms.Textarea, required=False)
+
+    class Media:
+        js = ("admin/date_alert.js",)
+
     def clean_categories(self):
         categories = self.cleaned_data.get("categories")
         if not categories:

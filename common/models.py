@@ -22,6 +22,7 @@ from django.shortcuts import resolve_url
 from django.urls import NoReverseMatch, reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from django.contrib.messages import constants as message_constants
 from phonenumber_field.formfields import PhoneNumberField as PhoneNumberFormField
 from phonenumber_field.modelfields import PhoneNumberField
 from phonenumber_field.phonenumber import PhoneNumber, to_python
@@ -1040,3 +1041,24 @@ class Document(models.Model):
 
     def __str__(self):  # pylint: disable=E0307
         return self.title
+
+
+class SiteMessage(models.Model):
+    """
+    A site-wide message that can be shown to all public pages.
+    """
+
+    message = models.TextField("message")
+    is_active = models.BooleanField("active", default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # Use Django's message level names from django.contrib.messages.constants
+    LEVEL_CHOICES = tuple((k, k) for k in message_constants.DEFAULT_LEVELS.keys())
+    level = models.CharField("level", max_length=10, choices=LEVEL_CHOICES, default="INFO")
+
+    class Meta:
+        verbose_name = "site message"
+        verbose_name_plural = "site messages"
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return (self.message[:75] + "...") if len(self.message) > 75 else self.message

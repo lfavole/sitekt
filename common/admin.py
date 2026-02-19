@@ -1,10 +1,21 @@
-from functools import partial
+import datetime
 import sys
+from functools import partial
 from typing import Type
 
 from adminsortable2.admin import SortableAdminMixin
-from django.db.models.query import QuerySet
-from django.http.request import HttpRequest
+from django import forms
+from django.contrib import admin
+from django.contrib.admin.helpers import Fieldset
+from django.contrib.admin.utils import model_ngettext
+from django.db.models import QuerySet
+from django.http import HttpRequest
+from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
+from django_dynamic_admin_forms.admin import DynamicModelAdminMixin
+
+from tinymce.widgets import AdminTinyMCE
 from common.models import (
     Article,
     ArticleImage,
@@ -17,19 +28,11 @@ from common.models import (
     Page,
     PageImage,
 )
-from django import forms
-from django.contrib import admin
-from django.contrib.admin.helpers import Fieldset
-from django.contrib.admin.utils import model_ngettext
-from django.db.models import QuerySet
-from django.http import HttpRequest
-from django.shortcuts import redirect, render
-from django.utils.translation import gettext_lazy as _
-from django.utils.translation import pgettext_lazy
-from tinymce.widgets import AdminTinyMCE
 
 from .forms import DateForm
 from .models import Attendance, Child, Year
+from .models import SiteMessage
+from .utils import detect_date_modified, generate_default_site_message
 
 admin.site.site_title = "Administration site du caté"
 admin.site.site_header = "Administration du site du caté"
@@ -260,13 +263,110 @@ class OldChildMixin:
 
 
 @admin.register(Date)
-class DateAdmin(admin.ModelAdmin):
+class DateAdmin(DynamicModelAdminMixin, admin.ModelAdmin):
     """
     Admin interface for dates.
     """
 
     list_display = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
     form = DateForm
+    dynamic_fields = ("alert_users", "alert_message")
+
+    def get_dynamic_alert_users_field(self, data):
+        """Show the checkbox only when another field is modified/present.
+
+        We'll show it when at least one of the main fields has a value (name, start_date, start_time,
+        end_time, place, cancelled) — this makes it appear when the user modifies something.
+        """
+        # If editing an existing Date, compare with stored values to detect modifications
+        id_val = data.get("id") or data.get("pk")
+        modified = False
+        if id_val:
+            try:
+                orig = Date.objects.get(pk=id_val)
+            except Date.DoesNotExist:
+                pass
+            else:
+                modified = detect_date_modified(orig, data)
+
+        hidden = not modified
+        # default unchecked
+        return None, False, hidden
+
+    def get_dynamic_alert_message_field(self, data):
+        """Return (queryset_or_None, value, hidden) for `alert_message`.
+
+        `data` is a dict-like with other field values from the form.
+        """
+        # Centralized default message generation
+        default = generate_default_site_message(
+            data.get("name"),
+            data.get("start_date"),
+            data.get("start_time"),
+            data.get("end_time"),
+        )
+        alert_val = data.get("alert_users")
+        hidden = not alert_val
+        return None, default, hidden
+
+    def save_model(self, request, obj, form, change):
+        """If the admin asked to alert users, create a SiteMessage.
+
+        Uses a French-formatted date and attempts to choose correct article/gender.
+        Falls back to provided message when non-empty.
+        """
+        # Determine if this is a modification of an existing Date
+        original = None
+        modified = False
+        if change and obj.pk:
+            try:
+                original = Date.objects.get(pk=obj.pk)
+            except Exception:
+                original = None
+
+        def val_str(v):
+            if v is None:
+                return ""
+            if isinstance(v, (datetime.date, datetime.datetime)):
+                return v.isoformat()
+            if isinstance(v, datetime.time):
+                return v.strftime("%H:%M")
+            return str(v)
+
+        if original is not None:
+            for k in ("name", "start_date", "start_time", "end_time", "place", "cancelled"):
+                newv = form.cleaned_data.get(k)
+                oldv = getattr(original, k, None)
+                if val_str(newv) != val_str(oldv):
+                    modified = True
+                    break
+
+        # Save the Date instance first
+        super().save_model(request, obj, form, change)
+
+        try:
+            alert = form.cleaned_data.get("alert_users")
+            text = form.cleaned_data.get("alert_message")
+        except Exception:
+            alert = False
+            text = ""
+
+        if alert:
+            if not text:
+                text = generate_default_site_message(
+                    form.cleaned_data.get("name"),
+                    form.cleaned_data.get("start_date"),
+                    form.cleaned_data.get("start_time"),
+                    form.cleaned_data.get("end_time"),
+                )
+
+            # determine level: if editing and modified, force WARNING
+            if change and modified:
+                level = "WARNING"
+            else:
+                level = form.cleaned_data.get("alert_level") if hasattr(form, "cleaned_data") else "INFO"
+
+            SiteMessage.objects.create(message=text, is_active=True, level=level or "INFO")
 
 
 @admin.register(DateCategory)
@@ -331,3 +431,10 @@ class DocumentCategoryAdmin(admin.ModelAdmin):
     """
 
     list_display = ("title",)
+
+
+@admin.register(SiteMessage)
+class SiteMessageAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "level", "is_active", "created_at")
+    list_filter = ("is_active", "level")
+    ordering = ("-created_at",)

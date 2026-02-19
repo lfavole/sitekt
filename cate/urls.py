@@ -68,6 +68,7 @@ urlpatterns = [
     add_website("calendrier_avent_2024"),
     add_website("calendrier_avent_2025"),
     path("debug/", include("debug_toolbar.urls")),
+    path("dynamic-admin-form/", include("django_dynamic_admin_forms.urls")),
     path("espacecate/<emptypath:path>", views.redirect_individual_sites),
     path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name="export"),
     path("google<str:id>.html", views.google),
