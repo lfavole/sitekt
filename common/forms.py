@@ -177,6 +177,8 @@ class DateForm(forms.ModelForm):
             "name",
             "short_name",
             "place",
+            "latitude",
+            "longitude",
             "start_date",
             "end_date",
             "start_time",

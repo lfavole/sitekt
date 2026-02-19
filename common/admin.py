@@ -267,6 +267,16 @@ class DateAdmin(admin.ModelAdmin):
 
     list_display = ("name", "place", "start_date", "end_date", "start_time", "end_time", "time_text", "cancelled")
     form = DateForm
+    class Media:
+        css = {
+            "all": (
+                "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+            )
+        }
+        js = (
+            "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
+            "/static/common/admin_date_map.js",
+        )
 
 
 @admin.register(DateCategory)

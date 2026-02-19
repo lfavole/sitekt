@@ -817,6 +817,8 @@ class Date(models.Model):
     name = models.fields.CharField(_("name"), max_length=100)
     short_name = models.fields.CharField(_("short name"), max_length=50, blank=True)
     place = models.fields.CharField(_("place"), max_length=100, blank=True)
+    latitude = models.FloatField(_("latitude"), null=True, blank=True)
+    longitude = models.FloatField(_("longitude"), null=True, blank=True)
     cancelled = models.fields.BooleanField(_("cancelled"))
     categories = models.ManyToManyField(
         DateCategory, verbose_name=_("Categories"), blank=True, related_name="dates", related_query_name="date",
