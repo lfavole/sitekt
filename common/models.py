@@ -971,7 +971,7 @@ class Meeting(models.Model):
 
     class Meta:
         verbose_name = _("meeting")
-        ordering = ["date"]
+        ordering = ["-date"]
 
 
 class Attendance(models.Model):
