@@ -1,30 +1,35 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Dashboard - django-tracking2</title>
-    </head>
-    <body>
-        <h1>Dashboard - django-tracking2</h1>
-        <div id="tracking-filters">
-            <form method="GET">
-                {{ form.as_table }}
-                <input type="submit" name="submit" value="submit" />
-            </form>
-        </div>
-        <div id="tracking-info">
-            <p>
+{% extends "cate/site_base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Tracking dashboard" %}{% endblock title %}
+
+{% block body %}
+<main>
+    <h1>{% translate "Tracking dashboard" %}</h1>
+    <div id="tracking-filters">
+        <form method="GET">
+            {{ form.as_p }}
+            <input type="submit" value="OK">
+        </form>
+    </div>
+    <div id="tracking-info">
+        <p>
+            {% blocktranslate with start_time=track_start_time|date:"DATETIME_FORMAT" %}
                 Visitor tracking began on
-                {{ track_start_time|date:"Y-m-d H:i:s" }}
-            </p>
-            {% if warn_incomplete %}
-            <p class=warning>
+                {{ start_time }}
+            {% endblocktranslate %}
+        </p>
+        {% if warn_incomplete %}
+        <p class=warning>
+            {% blocktranslate %}
                 The start time precedes the oldest tracked visitor, thus
                 the stats are not complete for the specified range.
-            </p>
-            {% endif %}
-        </div>
-        <div id="tracking-stats">
-            {% include "tracking/snippets/stats.html" %}
-        </div>
-    </body>
-</html>
+            {% endblocktranslate %}
+        </p>
+        {% endif %}
+    </div>
+    <div id="tracking-stats">
+        {% include "tracking/snippets/stats.html" %}
+    </div>
+</main>
+{% endblock body %}

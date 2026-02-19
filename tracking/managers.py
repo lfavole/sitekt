@@ -11,15 +11,15 @@ from .settings import TRACK_ANONYMOUS_USERS, TRACK_PAGEVIEWS
 _T = TypeVar("_T", bound=models.Model)
 
 
-class VisitorManager(models.Manager, Generic[_T]):
+class VisitManager(models.Manager, Generic[_T]):
     def active(self, registered_only=True):
         """
         Returns all active users, e.g. not logged and non-expired session.
         """
-        visitors = self.filter(expiry_time__gt=timezone.now())
+        visits = self.filter(expiry_time__gt=timezone.now())
         if registered_only:
-            visitors = visitors.filter(user__isnull=False)
-        return visitors
+            visits = visits.filter(user__isnull=False)
+        return visits
 
     def registered(self):
         return self.get_queryset().filter(user__isnull=False)
@@ -38,7 +38,7 @@ class VisitorManager(models.Manager, Generic[_T]):
 
         for all users, registered users and guests.
         """
-        visitors = self.filter(start_time__gte=start_date, start_time__lt=end_date)
+        visits = self.filter(start_time__gte=start_date, start_time__lt=end_date)
 
         stats: dict[str, Any] = {
             "total": 0,
@@ -46,26 +46,26 @@ class VisitorManager(models.Manager, Generic[_T]):
             "return_ratio": 0,
         }
 
-        # All visitors
-        stats["total"] = total_count = visitors.count()
+        # All visits
+        stats["total"] = total_count = visits.count()
         unique_count = 0
 
-        # No visitors! Nothing more to do.
+        # No visits! Nothing more to do.
         if not total_count:
             return stats
 
         # Avg time on site
-        total_time_on_site = visitors.aggregate(avg_tos=Avg("time_on_site"))["avg_tos"]
+        total_time_on_site = visits.aggregate(avg_tos=Avg("time_on_site"))["avg_tos"]
         stats["time_on_site"] = dt.timedelta(seconds=int(total_time_on_site))
 
         # Registered user sessions
-        registered_visitors = visitors.filter(user__isnull=False)
-        registered_total_count = registered_visitors.count()
+        registered_visits = visits.filter(user__isnull=False)
+        registered_total_count = registered_visits.count()
 
         if registered_total_count:
-            registered_unique_count = registered_visitors.values("user").distinct().count()
+            registered_unique_count = registered_visits.values("user").distinct().count()
             # Avg time on site
-            time_on_site = registered_visitors.aggregate(avg_tos=Avg("time_on_site"))["avg_tos"]
+            time_on_site = registered_visits.aggregate(avg_tos=Avg("time_on_site"))["avg_tos"]
 
             # Update the total unique count..
             unique_count += registered_unique_count
@@ -80,9 +80,9 @@ class VisitorManager(models.Manager, Generic[_T]):
             }
 
         # Get stats for our guests..
-        guests = visitors.none()
+        guests = visits.none()
         if TRACK_ANONYMOUS_USERS and not registered_only:
-            guests = visitors.filter(user__isnull=True)
+            guests = visits.filter(user__isnull=True)
             guest_total_count = guests.count()
 
             if guest_total_count:
@@ -108,7 +108,7 @@ class VisitorManager(models.Manager, Generic[_T]):
                 "time_on_site": time_on_site,
             }
 
-        # Finish setting the total visitor counts
+        # Finish setting the total visit counts
         returns = total_count - unique_count
         stats["unique"] = unique_count
         stats["return_ratio"] = (returns / total_count) * 100
@@ -117,7 +117,7 @@ class VisitorManager(models.Manager, Generic[_T]):
         if TRACK_PAGEVIEWS:
             if "registered" in stats:
                 pages_per_visit = (
-                    registered_visitors.annotate(page_count=Count("pageviews"))
+                    registered_visits.annotate(page_count=Count("pageviews"))
                     .filter(page_count__gt=0)
                     .aggregate(pages_per_visit=Avg("page_count"))["pages_per_visit"]
                 )
@@ -131,7 +131,7 @@ class VisitorManager(models.Manager, Generic[_T]):
                 )
 
                 total_per_visit = (
-                    visitors.annotate(page_count=Count("pageviews"))
+                    visits.annotate(page_count=Count("pageviews"))
                     .filter(page_count__gt=0)
                     .aggregate(pages_per_visit=Avg("page_count"))["pages_per_visit"]
                 )
@@ -191,9 +191,9 @@ class PageviewManager(models.Manager, Generic[_T]):
         for all users, registered users and guests.
         """
         pageviews = self.filter(
-            visitor__start_time__lt=end_date,
-            visitor__start_time__gte=start_date,
-        ).select_related("visitor")
+            visit__start_time__lt=end_date,
+            visit__start_time__gte=start_date,
+        ).select_related("visit")
 
         stats: dict[str, Any] = {
             "total": 0,
@@ -207,11 +207,11 @@ class PageviewManager(models.Manager, Generic[_T]):
             return stats
 
         # Registered user sessions
-        registered_pageviews = pageviews.filter(visitor__user__isnull=False)
+        registered_pageviews = pageviews.filter(visit__user__isnull=False)
         registered_count = registered_pageviews.count()
 
         if registered_count:
-            registered_unique_count = registered_pageviews.values("visitor", "url").distinct().count()
+            registered_unique_count = registered_pageviews.values("visit", "url").distinct().count()
 
             # Update the total unique count...
             unique_count += registered_unique_count
@@ -222,11 +222,11 @@ class PageviewManager(models.Manager, Generic[_T]):
             }
 
         if TRACK_ANONYMOUS_USERS and not registered_only:
-            guest_pageviews = pageviews.filter(visitor__user__isnull=True)
+            guest_pageviews = pageviews.filter(visit__user__isnull=True)
             guest_count = guest_pageviews.count()
 
             if guest_count:
-                guest_unique_count = guest_pageviews.values("visitor", "url").distinct().count()
+                guest_unique_count = guest_pageviews.values("visit", "url").distinct().count()
 
                 # Update the total unique count...
                 unique_count += guest_unique_count
@@ -236,7 +236,7 @@ class PageviewManager(models.Manager, Generic[_T]):
                     "unique": guest_unique_count,
                 }
 
-        # Finish setting the total visitor counts
+        # Finish setting the total visit counts
         stats["unique"] = unique_count
 
         return stats

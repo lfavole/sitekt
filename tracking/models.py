@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
-from .managers import PageviewManager, VisitorManager
+from .managers import PageviewManager, VisitManager
 
 
 class Visit(models.Model):
@@ -28,7 +28,7 @@ class Visit(models.Model):
     expiry_time = models.DateTimeField(_("session expiry time"))
     time_on_site = models.IntegerField(_("time on site"))
 
-    objects = VisitorManager["Visit"]()
+    objects = VisitManager["Visit"]()
 
     class Meta(object):
         verbose_name = _("visit")

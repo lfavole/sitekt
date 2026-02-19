@@ -4,8 +4,6 @@ import warnings
 from typing import Callable
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.utils import timezone
 from django.utils.encoding import smart_str
@@ -29,7 +27,7 @@ track_ignore_urls = [re.compile(x) for x in TRACK_IGNORE_URLS]
 track_ignore_user_agents = [re.compile(x, re.IGNORECASE) for x in TRACK_IGNORE_USER_AGENTS]
 
 
-class VisitorTrackingMiddleware:
+class VisitTrackingMiddleware:
     def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]):
         self.get_response = get_response
 
@@ -38,10 +36,10 @@ class VisitorTrackingMiddleware:
         response = self.process_response(request, response)
         return response
 
-    def _should_track(self, user: User | None, request: HttpRequest, response: HttpResponse):
+    def _should_track(self, request: HttpRequest, response: HttpResponse):
         # Session framework not installed, nothing to see here...
         if not hasattr(request, "session"):
-            warnings.warn("VisitorTrackingMiddleware installed without SessionMiddleware", RuntimeWarning)
+            warnings.warn("VisitTrackingMiddleware installed without SessionMiddleware", RuntimeWarning)
             return False
 
         # Do not track AJAX requests
@@ -52,12 +50,15 @@ class VisitorTrackingMiddleware:
         if response.status_code in TRACK_IGNORE_STATUS_CODES:
             return False
 
-        # Do not tracking anonymous users if set
-        if user is None and not TRACK_ANONYMOUS_USERS:
+        # Do not track anonymous users if set
+        if getattr(request, "user", None) and request.user.is_anonymous and not TRACK_ANONYMOUS_USERS:
             return False
+        # If dealing with a non-authenticated user, we still should track the
+        # session since if authentication happens, the `session_key` carries
+        # over, thus having a more accurate start time of session
 
         # Do not track superusers if set
-        if user and user.is_superuser and not TRACK_SUPERUSERS:
+        if getattr(request, "user", None) and request.user.is_superuser and not TRACK_SUPERUSERS:
             return False
 
         # Do not track ignored urls
@@ -75,7 +76,7 @@ class VisitorTrackingMiddleware:
         # everything says we should track this hit
         return True
 
-    def _refresh_visit(self, user: User | None, request: HttpRequest, visit_time: dt.datetime):
+    def _refresh_visit(self, request: HttpRequest, visit_time: dt.datetime):
         # A Visit row is unique by session_key
         session_key = request.session.session_key
 
@@ -102,8 +103,8 @@ class VisitorTrackingMiddleware:
         # Update the user field if the visit user is not set.
         # This implies authentication has occured on this request and now the user is object exists.
         # Check using `user_id` to prevent a database hit.
-        if user and not visit.user_id:  # type: ignore
-            visit.user_id = user.id  # type: ignore
+        if getattr(request, "user", None) and not visit.user_id:  # type: ignore
+            visit.user_id = request.user.id  # type: ignore
 
         # update session expiration time
         visit.expiry_time = request.session.get_expiry_date()
@@ -118,42 +119,23 @@ class VisitorTrackingMiddleware:
             time_on_site = (visit_time - visit.start_time).total_seconds()
         visit.time_on_site = int(time_on_site)
 
-        with transaction.atomic():
-            visit.save()
+        visit.save()
 
         return visit
 
     def _add_pageview(self, visit, request, view_time):
-        referer = ""
-        query_string = ""
-
-        if TRACK_REFERER:
-            referer = request.META.get("HTTP_REFERER", "")
-
-        if TRACK_QUERY_STRING:
-            query_string = request.META.get("QUERY_STRING", "")
-
-        pageview = PageView(
+        PageView.objects.create(
             visit=visit,
             url=request.path,
             view_time=view_time,
             method=request.method,
-            referer=referer,
-            query_string=query_string,
+            referer=request.META.get("HTTP_REFERER", "") if TRACK_REFERER else "",
+            query_string=request.META.get("QUERY_STRING", "") if TRACK_QUERY_STRING else "",
         )
-        pageview.save()
 
     def process_response(self, request: HttpRequest, response: HttpResponse):
-        # If dealing with a non-authenticated user, we still should track the
-        # session since if authentication happens, the `session_key` carries
-        # over, thus having a more accurate start time of session
-        user: User | None = getattr(request, "user", None)
-        if user and user.is_anonymous:
-            # set AnonymousUsers to None for simplicity
-            user = None
-
         # make sure this is a response we want to track
-        if not self._should_track(user, request, response):
+        if not self._should_track(request, response):
             return response
 
         # Force a save to generate a session key if one does not exist
@@ -166,7 +148,7 @@ class VisitorTrackingMiddleware:
         now = timezone.now()
 
         # update/create the visit object for this request
-        visit = self._refresh_visit(user, request, now)
+        visit = self._refresh_visit(request, now)
 
         if TRACK_PAGEVIEWS:
             self._add_pageview(visit, request, now)

@@ -125,6 +125,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "tracking.middleware.VisitTrackingMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
