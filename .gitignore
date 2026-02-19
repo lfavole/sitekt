@@ -11,7 +11,7 @@ media/**
 static/**
 data/**
 site
-venv*/**
+*venv*/**
 .cache
 .coverage
 .env
