@@ -213,7 +213,7 @@ class PDF(FPDF):
         ]
 
     def _superscript(self, frag: Fragment):
-        frag.graphics_state["char_vpos"] = CharVPos.SUP
+        frag.graphics_state.char_vpos = CharVPos.SUP
 
     def _phone_link(self, frag: Fragment):
         try:
@@ -230,9 +230,9 @@ class PDF(FPDF):
 
     def _link(self, frag: Fragment):
         frag.link = frag.string
-        frag.graphics_state["underline"] = True
+        frag.graphics_state.underline = True
         if self.MARKDOWN_LINK_COLOR:
-            frag.graphics_state["text_color"] = self.MARKDOWN_LINK_COLOR
+            frag.graphics_state.text_color = self.MARKDOWN_LINK_COLOR
 
     def _preload_font_styles(self, txt, markdown):
         """
@@ -268,7 +268,7 @@ class PDF(FPDF):
 
     @current_font.setter
     def current_font(self, value):
-        self._GraphicsStateMixin__statestack[-1]["current_font"] = value  # type: ignore
+        self._GraphicsStateMixin__statestack[-1].current_font = value  # type: ignore
 
     @property
     def font_family(self):
@@ -280,7 +280,7 @@ class PDF(FPDF):
 
     @font_family.setter
     def font_family(self, value):
-        self._GraphicsStateMixin__statestack[-1]["font_family"] = value  # type: ignore
+        self._GraphicsStateMixin__statestack[-1].font_family = value  # type: ignore
 
     def set_font(self, family=None, style="", size=0) -> None:
         self._in_set_font = True
