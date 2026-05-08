@@ -129,7 +129,7 @@ class List(PDF):
                 classe = self.classes.index(child.classe)
                 if classe <= 3:  # PS, MS, GS, CP
                     return -1
-                return child.annees_kt or classe - 3
+                return classe - 3
 
             def _regroup_check(row_n):
                 years = get_years(childs[row_n])
