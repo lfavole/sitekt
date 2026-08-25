@@ -140,7 +140,7 @@ class Authorization(PDF):
     def render_section_title(self, title: str):
         self.set_font("", "B", 22)
         self.cell(0, self.line_h * 0.7, title, border=True, align=Align.C, new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.ln(4)
+        self.ln(2)
 
         self.set_font("", "", 12)
 
@@ -165,9 +165,9 @@ class Authorization(PDF):
 
         self.set_font("Montserrat", "", 10)
         self.cell(0, txt="Secteur paroissial de l'Embrunais et du Savinois", align=Align.L)
-        title = {"espacecate": "Catéchisme", "aumonerie": "Aumônerie des Jeunes"}[data.app]
+        title = {"espacecate": "Catéchisme", "aumonerie": "Aumônerie des Jeunes"}.get(data.app, "espacecate")
         self.cell(0, txt=f"{title} pour l'année scolaire {Year.get_current().formatted_year}", align=Align.R)
-        self.ln(self.line_h * 1.5)
+        self.ln(self.line_h)
 
         self.render_section_title("Autorisation")
 
@@ -222,7 +222,7 @@ class Authorization(PDF):
             txt=f"la publication des photos de mon enfant prises au cours des différentes manifestations liées aux activités {text} (plaquettes, presse municipale et locale, site Internet, ...)."
         )
         self.ln()
-        self.ln(4)
+        self.ln(2)
 
         self.render_section_title("Engagement")
 
@@ -240,7 +240,6 @@ class Authorization(PDF):
             self.write(txt=line)
 
         self.ln()
-        self.ln(4)
 
         self.write(txt="Date :")
         self.cell(self.get_string_width(" ") + 1)
@@ -267,6 +266,10 @@ class Authorization(PDF):
 
         self.cell(30)
         self.write(txt="Signature(s) :")
+
+        self.ln(self.line_h * 1.5)
+        self.set_font_size(8)
+        self.multi_cell(0, self.line_h * 0.5, "Ces données, destinées à l'association diocésaine Gap-Embrun et à la paroisse de l'Embrunais et du Savinois, seront traitées conformément au RGPD. La paroisse s'engage à garantir la sécurité et la confidentialité de ces données personnelles qui seront effacées dès au plus tard cinq ans après la fin du programme de l'activité, et ne seront pas partagées avec des tiers ni traitées en dehors de l'Union Européenne. Si vous souhaitez exercer un droit, veuillez contacter paroisse.embrun@diocesedegap.com", align=Align.J)
 
         self.y = self.h / 2
 
