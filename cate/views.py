@@ -4,6 +4,7 @@ import importlib
 import mimetypes
 import os
 import sys
+import traceback
 from hashlib import sha1
 from ipaddress import ip_address, ip_network
 from itertools import chain
@@ -224,6 +225,7 @@ def handler_500(request: HttpRequest, _template_name=None):
     """
     500 (server error) page that logs the error.
     """
+    traceback.print_exc()
     return _render_for_status(
         request,
         500,
