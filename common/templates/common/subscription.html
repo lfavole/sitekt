@@ -67,6 +67,9 @@ var csrftoken = "{{ csrf_token|escapejs }}";
 						Non payé
 					{% endif %}
 				</span>
+				{% if not child.paye %}
+					· Chèque à l'ordre de « Jeunesse Altitude Embrun »
+				{% endif %}
 				<br>
 				<span class="label-{{ child.signe|yesno:"ok,error" }}">
 					{% if child.signe %}
