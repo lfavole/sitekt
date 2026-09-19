@@ -135,7 +135,7 @@ class SubscriptionForm(forms.Form):
                 "En fonction de vos possibilités, vous êtes invités à participer "
                 "aux <b>frais du catéchisme / de l'aumônerie à partir de 35 euros par enfant</b> "
                 "(livres, photocopies, matériel pédagogique, chauffage...).<br><br>"
-                "Participation aux frais, en espèces ou par chèque, à l'ordre de « Jeunesse Altitude Embrun »"
+                "Participation aux frais, en espèces ou par chèque, à l'ordre de « <b>Jeunesse Altitude Embrun</b> »"
             ),
         }
 
