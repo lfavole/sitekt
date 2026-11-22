@@ -67,6 +67,7 @@ urlpatterns = [
     add_website("calendrier_avent_2023"),
     add_website("calendrier_avent_2024"),
     add_website("calendrier_avent_2025"),
+    add_website("calendrier_avent_2026"),
     path("debug/", include("debug_toolbar.urls")),
     path("espacecate/<emptypath:path>", views.redirect_individual_sites),
     path("export/<format>/<app_label>/<model_name>/<elements_pk>", views.export, name="export"),

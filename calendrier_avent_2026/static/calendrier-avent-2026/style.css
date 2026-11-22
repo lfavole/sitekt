@@ -1,0 +1,242 @@
+body {
+	background-color: #4ae;
+}
+body.index {
+    background-color: #ad001a;
+  	background-image: url("background.jpg"), linear-gradient(#950218, #c3001d, #950218);
+	background-size: cover;
+	background-position: center;
+}
+h1, .jours {
+	font-family: Oleo Script Swash Caps, cursive;
+}
+.index h1, body.mode-nuit h1 {
+	color: #eee;
+	text-shadow: 0 0 0.1em #111;
+}
+h1 {
+	font-size: 4.5em;
+	text-align: center;
+	background-color: unset;
+	border: unset;
+}
+h1 sup {
+	margin-left: 0.1em;
+}
+@media screen and (max-width: 500px) {
+	h1 {
+		font-size: 3em;
+	}
+	.calendrier-avent h1 {
+		font-size: 2.5em;
+	}
+}
+
+h1 .fleche,
+h1 .fleche::before,
+h1 .fleche::after {
+	background-color: #000;
+}
+body.mode-nuit h1 .fleche,
+body.mode-nuit h1 .fleche::before,
+body.mode-nuit h1 .fleche::after {
+	background-color: #eee;
+}
+h1 a {
+	margin-left: 0.3em;
+}
+h1 .fleche {
+	--taille: 1em;
+	width: var(--taille);
+	height: calc(var(--taille) / 8.75);
+	border-radius: calc(var(--taille) / 17.5);
+}
+h1 .fleche::before, h1 .fleche::after, .plein-ecran .fleche::before, .plein-ecran .fleche::after {
+	top: calc(50% - var(--taille) / 16);
+	width: calc(var(--taille) / 1.6);
+	height: calc(var(--taille) / 8);
+	border-radius: calc(var(--taille) / 16);
+	transform-origin: calc(100% - var(--taille) / 16) 50%;
+}
+h1 .fl-gauche::before, h1 .fl-gauche::after {
+	transform-origin: calc(var(--taille) / 16) 50%;
+}
+
+.picture-popup {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(0, 0, 255, 0.4);
+    transition: opacity 0.4s;
+    display: flex;
+}
+.picture-popup img {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+	margin: auto;
+}
+
+body.index main {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+}
+.jours {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	grid-auto-rows: 1fr;
+	grid-gap: 20px;
+	max-width: 700px;
+	margin: 0px auto;
+}
+@media screen and (max-width: 500px) {
+	.jours {
+		grid-template-columns: repeat(4, 1fr);
+		grid-gap: 10px;
+		max-width: 350px;
+	}
+}
+.jours + .jours {
+	display: flex;
+	justify-content: center;
+}
+.jours a {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	font-size: 64px;
+	color: white;
+	text-decoration: none;
+	background-color: #003522;
+	border: 5px solid #007a46;
+	transition: background-color 0.4s, border-color 0.4s;
+}
+@media screen and (max-width: 500px) {
+	.jours a {
+		width: 80px;
+		height: 80px;
+		font-size: 50px;
+		border-width: 4px;
+	}
+}
+body.mode-nuit .jours a {
+	color: #222;
+}
+.jours + .jours a {
+	background-color: #ffd54f;
+	border-color: #f57f17;
+	color: black;
+	position: relative;
+	border-radius: 50%;
+	margin-top: 40px;
+}
+.jours + .jours a::before, .jours + .jours a::after {
+	content: "";
+	position: absolute;
+	bottom: 100%;
+	width: 60px;
+	height: 40px;
+	border: 4px solid #007a46;
+	z-index: -1;
+}
+.jours + .jours a::before {
+	right: calc(50% - 2px);
+	border-radius: 20% 80%;
+}
+.jours + .jours a::after {
+	left: calc(50% - 2px);
+	border-radius: 80% 20%;
+}
+.jours a.ajd {
+	background-color: #ff8a7e;
+	border-color: #b00f0f;
+	box-shadow: 0 0 0.25em white;
+}
+
+.note-photos {
+	display: none;
+}
+@media screen and (max-width: 500px) {
+	.note-photos {
+		padding: 8px;
+		text-align: center;
+	}
+}
+@media screen and (min-width: 501px) {
+	.note-photos {
+		position: absolute;
+		left: 4px;
+		bottom: 4px;
+	}
+}
+
+p {
+	text-align: justify;
+}
+.too-early, .intro {
+	font-size: 3em;
+	text-align: center;
+	line-height: 1.5em;
+	margin: 0.5em 0;
+}
+
+.intro img {
+	height: 100px;
+	border-radius: 50%;
+	vertical-align: middle;
+}
+
+.content, .attributes, .feast {
+	border: 0.125em solid;
+	border-radius: 1em;
+	padding: 0.5em;
+	margin: 1em 0;
+	color: black;
+}
+:is(.content, .attributes, .feast) p:first-child {
+	margin-top: 0;
+}
+:is(.content, .attributes, .feast) p:last-child {
+	margin-bottom: 0;
+}
+.content {
+    background-color: #c5e1a5;
+    border-color: #689f38;
+}
+.attributes {
+    background-color: #fff59d;
+    border-color: #fbc02d;
+}
+.feast {
+    background-color: #ffab91;
+    border-color: #e64a19;
+}
+.images {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+.images img {
+	height: 15em;
+	border-radius: 1em;
+	box-shadow: 0 0 0.5em currentColor;
+}
+
+/* Admin */
+form, input {
+	text-align: center;
+    line-height: 1.3em;
+}
+footer {
+    padding: 1em 0.5em;
+	background-color: white;
+}

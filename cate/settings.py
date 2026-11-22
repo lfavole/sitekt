@@ -100,6 +100,7 @@ INSTALLED_APPS = [
     "calendrier_avent_2023",
     "calendrier_avent_2024",
     "calendrier_avent_2025",
+    "calendrier_avent_2026",
     "old_website",
     # admin and allauth (for template overridding)
     "django.contrib.admin",

@@ -1,0 +1,24 @@
+{% extends "calendrier_avent_2026/page_base.html" %}
+{% load static %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static "calendrier-avent-2026/stars.css" %}">
+{% endblock css %}
+{% block js %}
+{{ block.super }}
+<script src="{% static "calendrier-avent-2026/stars.js" %}"></script>
+{% endblock js %}
+
+{% block title %}Calendrier de l'Avent du caté{% endblock %}
+
+{% block body_class %}index{% endblock body_class %}
+{% block content %}
+<h1>Calendrier de l'Avent du caté</h1>
+<div class="jours">{% for day in days %}{% if day == 25 %}
+</div>
+<div class="jours">{% endif %}
+	<a href="{{ day }}"{% if day == today %} class="ajd"{% endif %}>{{ day }}</a>{% endfor %}
+</div>
+<div class="note-photos">NB : n’hésitez pas à cliquer sur les photos pour les agrandir.</div>
+{% endblock %}
