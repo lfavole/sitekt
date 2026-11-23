@@ -12,6 +12,7 @@ from storage.fields import ImageField
 class Day(models.Model):
     day = models.fields.IntegerField("jour", unique=True)
     child = models.ForeignKey(Child, on_delete=models.CASCADE, verbose_name="enfant", related_name="+")
+    letter = models.fields.CharField("lettre", blank=True, max_length=1)
     content = models.fields.TextField("contenu", blank=True)
 
     class Meta:
